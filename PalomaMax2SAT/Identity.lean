@@ -348,12 +348,14 @@ Complete finite search through arity three: no smaller gadget exists, and the
 minimum labelled counts are `1,2,6`, i.e. the occurrence clique with one-to-one
 falsifying-terminal attachments up to auxiliary-vertex relabelling.
 -/
+set_option maxHeartbeats 0 in
+set_option maxRecDepth 100000 in
 theorem exhaustiveSmallGadgetSearch_proof :
     clauseORGadgetCount 1 0 = 0 ∧ clauseORGadgetCount 1 1 = 1 ∧
     clauseORGadgetCount 2 0 = 0 ∧ clauseORGadgetCount 2 1 = 0 ∧
       clauseORGadgetCount 2 2 = 2 ∧
     clauseORGadgetCount 3 0 = 0 ∧ clauseORGadgetCount 3 1 = 0 ∧
       clauseORGadgetCount 3 2 = 0 ∧ clauseORGadgetCount 3 3 = 6 := by
-  native_decide
+  decide
 
 end PalomaMax2SAT
