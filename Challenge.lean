@@ -31,14 +31,18 @@ def EvalLiteral (assignment : Fin N → Bool) (literal : Literal N) : Prop :=
   assignment literal.1 = literal.2
 
 instance (assignment : Fin N → Bool) (literal : Literal N) :
-    Decidable (EvalLiteral assignment literal) := inferInstance
+    Decidable (EvalLiteral assignment literal) := by
+  unfold EvalLiteral
+  infer_instance
 
 def SatisfiesClause {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) (j : Fin q) : Prop :=
   ∃ literal ∈ φ.clause j, EvalLiteral assignment literal
 
 instance {N q : ℕ} (φ : Instance N q) (assignment : Fin N → Bool) (j : Fin q) :
-    Decidable (SatisfiesClause φ assignment j) := inferInstance
+    Decidable (SatisfiesClause φ assignment j) := by
+  unfold SatisfiesClause
+  infer_instance
 
 def satisfiedClauses {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) : Finset (Fin q) :=
@@ -89,18 +93,33 @@ def IsMaximumScore {N q K : ℕ} (φ : Instance N q) (target : ℕ) : Prop :=
 /-- `α(G_{φ,K}) = N + K OPT_MAX2SAT(φ)`. -/
 theorem exactMax2SATIdentity {N q K opt : ℕ} (φ : Instance N q)
     (hopt : IsMAX2SATOptimum φ opt) :
-    IsMaximumScore φ (N + K * opt) := by
+    IsMaximumScore (K := K) φ (N + K * opt) := by
   sorry
 
 theorem satisfiable_iff_optimum_eq_clauseCount {N q opt : ℕ}
     (φ : Instance N q) (hopt : IsMAX2SATOptimum φ opt) :
     Satisfiable φ ↔ opt = q := by
-  sorry
+  constructor
+  · rintro ⟨assignment, hall⟩
+    have hqopt : q ≤ opt := by simpa [hall] using hopt.1 assignment
+    obtain ⟨best, hbest⟩ := hopt.2
+    have hoptq : opt ≤ q := by
+      rw [← hbest]
+      simpa [satCount] using Finset.card_le_univ (satisfiedClauses φ best)
+    omega
+  · intro h
+    obtain ⟨assignment, hassignment⟩ := hopt.2
+    exact ⟨assignment, hassignment.trans h⟩
 
 theorem satisfiable_iff_target {N q K opt : ℕ} (φ : Instance N q)
     (hopt : IsMAX2SATOptimum φ opt) (hK : 0 < K) :
     Satisfiable φ ↔ N + K * opt = N + K * q := by
-  sorry
+  rw [satisfiable_iff_optimum_eq_clauseCount φ hopt]
+  constructor
+  · intro h
+    simp [h]
+  · intro h
+    omega
 
 theorem conditionalUnsatOfRatioGap {N q K score graphOrder a b : ℕ}
     (φ : Instance N q)
@@ -108,19 +127,20 @@ theorem conditionalUnsatOfRatioGap {N q K score graphOrder a b : ℕ}
       (N + K * q) ^ b ≤ score ^ b * graphOrder ^ (b - a))
     (hgap : score ^ b * graphOrder ^ (b - a) < (N + K * q) ^ b) :
     ¬ Satisfiable φ := by
-  sorry
+  intro hsat
+  exact (not_le_of_gt hgap) (hratio hsat)
 
 def binaryClauseReward (left right : Bool) : ℕ :=
   if left || right then 1 else 0
 
 theorem binaryClauseReward_truthTable (left right : Bool) :
     binaryClauseReward left right = 1 ↔ left = true ∨ right = true := by
-  sorry
+  cases left <;> cases right <;> decide
 
 /-- `2(10^0+10^1+10^2+10^3)=2222` tested formula/multiplicity pairs. -/
 theorem exhaustiveAuditCount :
     2 * (∑ clauseCount ∈ Finset.range 4, 10 ^ clauseCount) = 2222 := by
-  sorry
+  norm_num [Finset.sum_range_succ]
 
 def internalBitCount (auxiliary : ℕ) : ℕ := auxiliary * (auxiliary - 1) / 2
 
@@ -138,7 +158,7 @@ def gadgetAttached (arity auxiliary encoding vertex terminal : ℕ) : Bool :=
   encoding.testBit (internalBitCount auxiliary + vertex * arity + terminal)
 
 def subsetCard (order subset : ℕ) : ℕ :=
-  ((Finset.range order).filter subset.testBit).card
+  ((Finset.range order).filter fun vertex => subset.testBit vertex = true).card
 
 def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) : Prop :=
   (∀ vertex ∈ Finset.range auxiliary,
@@ -154,7 +174,9 @@ def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) 
 
 instance (arity auxiliary encoding falseTerminals subset : ℕ) :
     Decidable (gadgetSubsetFeasible arity auxiliary encoding falseTerminals subset) :=
-  inferInstance
+  by
+    unfold gadgetSubsetFeasible
+    infer_instance
 
 def gadgetReward (arity auxiliary encoding falseTerminals : ℕ) : ℕ :=
   (Finset.range (2 ^ auxiliary)).sup fun subset =>
@@ -170,7 +192,9 @@ def RealizesClauseOR (arity auxiliary encoding : ℕ) : Prop :=
       baseline + if falseTerminals = allFalse then 0 else 1
 
 instance (arity auxiliary encoding : ℕ) :
-    Decidable (RealizesClauseOR arity auxiliary encoding) := inferInstance
+    Decidable (RealizesClauseOR arity auxiliary encoding) := by
+  unfold RealizesClauseOR
+  infer_instance
 
 def clauseORGadgetCount (arity auxiliary : ℕ) : ℕ :=
   let bits := internalBitCount auxiliary + auxiliary * arity
@@ -183,6 +207,6 @@ theorem exhaustiveSmallGadgetSearch :
       clauseORGadgetCount 2 2 = 2 ∧
     clauseORGadgetCount 3 0 = 0 ∧ clauseORGadgetCount 3 1 = 0 ∧
       clauseORGadgetCount 3 2 = 0 ∧ clauseORGadgetCount 3 3 = 6 := by
-  sorry
+  native_decide
 
 end PalomaMax2SAT

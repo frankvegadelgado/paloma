@@ -37,7 +37,9 @@ def EvalLiteral (assignment : Fin N → Bool) (literal : Literal N) : Prop :=
   assignment literal.1 = literal.2
 
 instance (assignment : Fin N → Bool) (literal : Literal N) :
-    Decidable (EvalLiteral assignment literal) := inferInstance
+    Decidable (EvalLiteral assignment literal) := by
+  unfold EvalLiteral
+  infer_instance
 
 /-- A clause is satisfied when one of its literals evaluates to true. -/
 def SatisfiesClause {N q : ℕ} (φ : Instance N q)
@@ -45,7 +47,9 @@ def SatisfiesClause {N q : ℕ} (φ : Instance N q)
   ∃ literal ∈ φ.clause j, EvalLiteral assignment literal
 
 instance {N q : ℕ} (φ : Instance N q) (assignment : Fin N → Bool) (j : Fin q) :
-    Decidable (SatisfiesClause φ assignment j) := inferInstance
+    Decidable (SatisfiesClause φ assignment j) := by
+  unfold SatisfiesClause
+  infer_instance
 
 /-- The finite set of clauses satisfied by an assignment. -/
 def satisfiedClauses {N q : ℕ} (φ : Instance N q)
@@ -170,7 +174,7 @@ theorem independentScore_le_decodedAssignment {N q K : ℕ} {φ : Instance N q}
 /-- The exact assignment--witness optimum identity. -/
 theorem exactMax2SATIdentity_proof {N q K opt : ℕ} (φ : Instance N q)
     (hopt : IsMAX2SATOptimum φ opt) :
-    IsMaximumScore φ (N + K * opt) := by
+    IsMaximumScore (K := K) φ (N + K * opt) := by
   constructor
   · obtain ⟨assignment, hassignment⟩ := hopt.2
     let independent : GraphIndependentSet φ K := {
@@ -298,7 +302,7 @@ def gadgetAttached (arity auxiliary encoding vertex terminal : ℕ) : Bool :=
   encoding.testBit (internalBitCount auxiliary + vertex * arity + terminal)
 
 def subsetCard (order subset : ℕ) : ℕ :=
-  ((Finset.range order).filter subset.testBit).card
+  ((Finset.range order).filter fun vertex => subset.testBit vertex = true).card
 
 def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) : Prop :=
   (∀ vertex ∈ Finset.range auxiliary,
@@ -314,7 +318,9 @@ def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) 
 
 instance (arity auxiliary encoding falseTerminals subset : ℕ) :
     Decidable (gadgetSubsetFeasible arity auxiliary encoding falseTerminals subset) :=
-  inferInstance
+  by
+    unfold gadgetSubsetFeasible
+    infer_instance
 
 /-- Maximum available independent auxiliary reward for one false-terminal mask. -/
 def gadgetReward (arity auxiliary encoding falseTerminals : ℕ) : ℕ :=
@@ -332,7 +338,9 @@ def RealizesClauseOR (arity auxiliary encoding : ℕ) : Prop :=
       baseline + if falseTerminals = allFalse then 0 else 1
 
 instance (arity auxiliary encoding : ℕ) :
-    Decidable (RealizesClauseOR arity auxiliary encoding) := inferInstance
+    Decidable (RealizesClauseOR arity auxiliary encoding) := by
+  unfold RealizesClauseOR
+  infer_instance
 
 /-- Number of labelled internal-graph/attachment encodings realizing clause OR. -/
 def clauseORGadgetCount (arity auxiliary : ℕ) : ℕ :=

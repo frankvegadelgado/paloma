@@ -8,7 +8,7 @@ namespace PalomaMax2SAT
 
 theorem exactMax2SATIdentity {N q K opt : ℕ} (φ : Instance N q)
     (hopt : IsMAX2SATOptimum φ opt) :
-    IsMaximumScore φ (N + K * opt) := by
+    IsMaximumScore (K := K) φ (N + K * opt) := by
   exact exactMax2SATIdentity_proof φ hopt
 
 theorem satisfiable_iff_optimum_eq_clauseCount {N q opt : ℕ}
