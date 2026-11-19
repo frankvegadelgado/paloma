@@ -44,6 +44,12 @@ noncomputable def transitionPairs {n : ℕ} (z : Fin n → Fin 4 → Bool) :
     Finset (Fin n × Fin 4) :=
   Finset.univ.filter fun pair => transition z pair.1 pair.2
 
+set_option pp.all true in
+#print transitionPairs
+
+set_option pp.all true in
+#print transition
+
 noncomputable def transitionVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   (transitionPairs z).image Prod.fst
 
