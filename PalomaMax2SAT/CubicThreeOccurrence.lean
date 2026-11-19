@@ -33,14 +33,9 @@ def IsIndependenceNumber {n m : ℕ} (G : PortGraph n m) (alpha : ℕ) : Prop :=
 
 def edgeClone (p : Fin 3) : Fin 4 := ⟨p.val + 1, by omega⟩
 
-def transition {n : ℕ} (z : Fin n → Fin 4 → Bool)
+abbrev transition {n : ℕ} (z : Fin n → Fin 4 → Bool)
     (v : Fin n) (i : Fin 4) : Prop :=
   z v i = true ∧ z v ⟨(i.val + 1) % 4, Nat.mod_lt _ (by omega)⟩ = false
-
-instance {n : ℕ} (z : Fin n → Fin 4 → Bool) (v : Fin n) (i : Fin 4) :
-    Decidable (transition z v i) := by
-  unfold transition
-  infer_instance
 
 def selectedVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   Finset.univ.filter fun v => z v 0 = false
