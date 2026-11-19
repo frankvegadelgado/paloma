@@ -1,93 +1,102 @@
-# A weighted three-occurrence MAX-HORN-2SAT image class
+# An 83/84 approximation for a cubic three-occurrence Horn class
 
-This repository focuses on one result: a dominant-weight occurrence split
-whose image is a special weighted three-occurrence MAX-HORN-2SAT class with a
-polynomial `18/19` approximation and, more generally, a PTAS.
+This repository formalizes Frank Vega's cubic-graph construction for an
+unweighted MAX-HORN-2SAT subclass in which every variable occurs exactly three
+times.
 
-**Author:** Frank Vega  
-**Affiliation:** Information Physics Institute, 840 W 67th St, Hialeah, FL
-33012, USA  
-**Email:** [vega.frank@gmail.com](mailto:vega.frank@gmail.com)
-
-## Construction and exact identity
-
-For a weighted MAX-HORN-2SAT instance `F`, let `W` be its total clause weight
-and `C` its number of literal occurrences. Split every occurrence into a clone.
-For the clones of each original variable, add a directed cycle of consistency
-implications, each of weight `M > W` (for example, `M = W + 1`).
-
-Each clone then occurs exactly three times: once in its source clause, once
-negatively in its outgoing implication, and once positively in its incoming
-implication. The resulting instance `T_M(F)` satisfies
+For a simple cubic graph `H=(V,E)`, the formula `T_H` has four clones per
+vertex, one source clause per clone, and four cyclic consistency implications.
+Its exact optimum is
 
 ```text
-OPT(T_M(F)) = C*M + OPT(F).
+OPT(T_H) = 4*|V| + |E| + alpha(H).
 ```
 
-An inconsistent assignment loses at least one clause of weight `M`; all source
-clauses together have weight at most `W < M`. Hence every optimum is consistent
-and the identity follows.
-
-## Approximation result
-
-The image class has a polynomial `18/19` approximation:
-
-- If `C <= 17`, enumerate at most `2^17` clone assignments and solve exactly.
-- If `C >= 18`, set every clone to false. This satisfies all consistency
-  implications and earns at least `C*M`.
-
-Since `OPT(F) <= W < M`, the second branch has ratio
+Every assignment of value `A` is repaired in polynomial time to an independent
+set of size at least
 
 ```text
-C*M / (C*M + OPT(F)) > C/(C+1) >= 18/19
+A - (4*|V| + |E|).
 ```
 
-and `18/19 = 0.947368421... > 0.94615981`.
+## The 83/84 guarantee
 
-The same dichotomy is a PTAS: for fixed `epsilon`, enumerate when
-`C < 1/epsilon`; otherwise the all-false assignment has ratio greater than
-`1 - epsilon`. The running time is
-`2^O(1/epsilon) * poly(input size)`.
+Berman and Fujito's `7/6` approximation for independent set on cubic graphs
+returns `|I| >= 6*alpha/7`. For a cubic graph, `m=3n/2` and `alpha<=n/2`, so
 
-The comparison is with the tight UGC threshold reported for the unrestricted
-weighted MAX `{1,2}`-HORN-SAT language. A better algorithm on this proper image
-class does not contradict that general hardness result, and the additive
-offset `C*M` cannot in general be subtracted from a multiplicative guarantee
-to recover the same ratio for the source instance.
-
-## Verification
-
-`PalomaMax2SAT/WeightedSplit.lean` contains only the formal numerical core:
-
-- the dominant-weight optimum identity;
-- the division-free `18/19` baseline inequality; and
-- the exact comparison `18/19 > 0.94615981`.
-
-`experiments/weighted_test_horn_split.py` independently checks the optimum
-identity on 4,218 small weighted formula shapes and prints the ratio comparison.
-
-The Lean sources contain no admitted placeholders. GitHub Actions is the verification
-authority: it installs the pinned toolchain, builds the focused library, runs
-the source-policy check, and compares the public `Challenge.lean` and
-`Solution.lean` statements through Comparator and its independent kernels.
-
-The paper is `doc/paper.tex`, with its compiled artifact at `doc/paper.pdf`.
-
-## Build
-
-```sh
-python experiments/weighted_test_horn_split.py
+```text
+(4n + m + |I|)/(4n + m + alpha)
+    >= (11 + 6/7)/12
+    = 83/84.
 ```
 
-Lean is intentionally checked by `.github/workflows/palomar.yml` rather than
-by a local build that could download a toolchain.
+Thus the exact cubic image class has a polynomial-time `83/84` approximation.
+The repair also gives an L-reduction with constants 23 and 1, proving
+APX-completeness.
 
-## Reference
+`83/84` is the solution/optimum ratio. `83/64` is greater than one and cannot
+be that ratio for a maximization problem.
 
-J. Brakensiek, N. Huang, and U. Zwick, “Tight approximability of MAX 2-SAT
-and relatives, under UGC,” SODA 2024.
+## Lean formalization
+
+`PalomaMax2SAT/CubicThreeOccurrence.lean` contains:
+
+- the port-labelled cubic graph representation;
+- the three-occurrence score decomposition;
+- the explicit deletion repair and proof that it is independent;
+- the repair cardinality bound;
+- the matching assignment induced by an independent set;
+- the exact optimum identity; and
+- the division-free arithmetic transfer from the `7/6` MIS guarantee to
+  `83/84`.
+
+There are no admitted placeholders. GitHub Actions installs the pinned Lean
+toolchain, builds the project, and runs Comparator on the public theorems.
+Lean is intentionally not built locally.
+
+## Hard-consistency weighted occurrence split
+
+The general weighted occurrence split keeps every source-clause weight and
+makes every cyclic implication
+
+```text
+(not x_i or x_(i+1))
+```
+
+a mandatory hard clause with zero objective contribution. Feasible split
+assignments are therefore exactly the consistent lifts of source assignments,
+so
+
+```text
+OPT_partial(split(F)) = OPT(F)
+```
+
+with no additive offset. Every feasible solution has exactly the objective
+value of its decoded source assignment, so multiplicative approximation ratios
+are preserved.
+
+`PalomaMax2SAT/HardOccurrenceSplit.lean` formalizes the directed-cycle
+consistency lemma, exact hard-split optimum preservation, feasible-solution
+value preservation, and the exact comparison
+`83/84 > 0.94615981`.
+
+`experiments/weighted_test_horn_split.py` checks 16,314 small Horn formula
+shapes. It verifies equality of the optima and, more strongly, equality of all
+attainable objective-value sets between source assignments and feasible split
+assignments.
+
+## Paper
+
+The source is `doc/paper.tex` and the compiled paper is `doc/paper.pdf`.
 
 Repository: [frankvegadelgado/paloma](https://github.com/frankvegadelgado/paloma)
+
+## References
+
+- P. Berman and T. Fujito, “On Approximation Properties of the Independent Set
+  Problem for Low Degree Graphs,” *Theory of Computing Systems* 32 (1999).
+- P. Alimonti and V. Kann, “Some APX-completeness Results for Cubic Graphs,”
+  *Theoretical Computer Science* 237 (2000).
 
 ## License
 

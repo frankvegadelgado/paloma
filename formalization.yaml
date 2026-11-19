@@ -2,55 +2,62 @@
 version: "v0.4"
 
 project:
-  name: "A weighted three-occurrence MAX-HORN-2SAT image class"
+  name: "An 83/84 approximation for a cubic three-occurrence Horn class"
   description: >-
-    Lean formalization of the dominant-weight optimum identity and the exact
-    arithmetic behind an 18/19 approximation for a structured weighted
-    three-occurrence MAX-HORN-2SAT image class.
+    Lean formalization of Frank Vega's cubic-MIS construction, its constructive
+    assignment repair, exact 4n+m+alpha optimum identity, and the arithmetic
+    transfer of the Berman--Fujito 7/6 guarantee to an 83/84 approximation.
   authors: ["Frank Vega"]
   license: "MIT"
   responsible_maintainers: ["Frank Vega"]
 
 classification:
   arxiv: ["cs.CC", "math.CO"]
-  msc2020: ["68Q17", "68W25"]
+  msc2020: ["05C69", "68Q17", "68W25"]
 
 sources:
-  - title: "A PTAS for a weighted three-occurrence MAX-HORN-2SAT image class"
+  - title: "An exact cubic-MIS correspondence and an 83/84 approximation"
     authors: ["Frank Vega"]
     id: "https://github.com/frankvegadelgado/paloma"
     type: "original-proof"
     location: "https://github.com/frankvegadelgado/paloma/blob/main/doc/paper.tex"
     relationship: "other"
-    note: >-
-      The paper, Lean development, and independent finite checker are contained
-      in this standalone repository.
     license: "MIT"
     author_endorsement: "participated"
-  - title: "Tight approximability of MAX 2-SAT and relatives, under UGC"
-    authors: ["Joshua Brakensiek", "Neng Huang", "Uri Zwick"]
-    id: "https://doi.org/10.1137/1.9781611977912.53"
+  - title: "On approximation properties of the independent set problem for low degree graphs"
+    authors: ["Piotr Berman", "Toshihiro Fujito"]
+    id: "https://doi.org/10.1007/s002240000113"
     type: "informal"
     relationship: "background"
-    note: "Source of the general weighted Horn threshold used for comparison."
+    note: "Source of the 7/6 cubic-MIS approximation guarantee."
 
 related_formalizations: []
 
 status:
   scope: >-
-    Formalized: the abstract weighted split score; the exact C*M+opt identity
-    when one lost consistency clause outweighs all source clauses; the
-    division-free 18/19 baseline inequality for C at least 18; and the exact
-    rational comparison 18/19 > 0.94615981. The occurrence-cycle syntax and
-    PTAS control flow are proved in the paper but are not encoded as a full
-    Boolean-language implementation in Lean.
+    Formalized: a finite port-labelled cubic graph interface; the four-clone
+    Horn score; transition, false-edge, and deletion sets; independence and
+    cardinality of the constructive repair; the matching assignment from an
+    independent set; the exact 4n+m+alpha optimum identity; and the exact
+    division-free implication from cubic identities and a 7/6 MIS solution to
+    the 83/84 Horn guarantee. Also formalized: consistency forced by a strongly
+    connected directed cycle of hard Horn implications; exact optimum
+    preservation for the zero-objective hard-consistency occurrence split;
+    feasible-solution objective preservation; and the exact inequality
+    83/84 > 0.94615981.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
   main_results:
-    - "PalomaMax2SAT.WeightedSplit.dominant_consistency_weight_identity"
-    - "PalomaMax2SAT.WeightedSplit.dominant_baseline_18_19"
-    - "PalomaMax2SAT.WeightedSplit.ratio_18_19_exceeds_general_weighted_horn"
+    - "PalomaMax2SAT.CubicPublic.repairedSet_independent"
+    - "PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound"
+    - "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
+    - "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
+    - "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic"
+    - "PalomaMax2SAT.HardSplitPublic.hard_implication_cycle_consistent"
+    - "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
+    - "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
+    - "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold"
 
 automation:
   methods:
@@ -65,17 +72,19 @@ automation:
         spend_usd: "Not tracked"
         hardware: "Local Windows workstation and API service"
       prompting_notes: >-
-        The user requested a focused formalization of the dominant weighted
-        split identity and the ratio exceeding 0.94615981.
+        The user directed the formalization of the cubic three-occurrence
+        construction and its Berman--Fujito 83/84 consequence.
   spend_usd: "Not tracked"
   notes: "Human-directed, AI-assisted formalization with remote verification."
 
 fidelity:
   divergences: >-
-    Lean formalizes the numerical dominance and approximation inequalities.
-    The paper supplies the concrete Horn occurrence-cycle construction and
-    the algorithmic PTAS case split. The Python checker is independent finite
-    evidence and is not imported by Lean.
+    The Lean theorem assumes the numerical 7*found >= 6*alpha guarantee rather
+    than formalizing the Berman--Fujito algorithm internally. It proves the
+    complete cubic reduction, repair, optimum identity, and ratio arithmetic.
+    The hard-split theorem abstracts the source and split assignment types and
+    explicitly assumes the proved encoding/decoding score equalities; the
+    directed-cycle theorem proves the consistency mechanism independently.
 
 review:
   status: "self-assessed; not peer reviewed"
@@ -85,22 +94,29 @@ review:
     checks, and runs Comparator with independent kernels.
 
 alignment:
-  namespace: "PalomaMax2SAT.WeightedSplit"
+  namespace: "PalomaMax2SAT.CubicPublic"
   statements:
-    - source: "Theorem 2 (Exact weighted identity)"
-      lean: "PalomaMax2SAT.WeightedSplit.dominant_consistency_weight_identity"
+    - source: "Lemma 2 (Quantitative repair)"
+      lean: "PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound"
       module: "Challenge"
       status: "proved"
-      note: "Formalizes the dominant-weight C*M+opt identity."
-    - source: "Theorem 3 (Explicit improvement)"
-      lean: "PalomaMax2SAT.WeightedSplit.dominant_baseline_18_19"
+    - source: "Theorem 3 (Exact identity)"
+      lean: "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
       module: "Challenge"
       status: "proved"
-      note: "Formalizes the division-free 18/19 baseline guarantee."
-    - source: "Theorem 3 (threshold comparison)"
-      lean: "PalomaMax2SAT.WeightedSplit.ratio_18_19_exceeds_general_weighted_horn"
+    - source: "Theorem 4 (Cubic Horn approximation)"
+      lean: "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
       module: "Challenge"
       status: "proved"
-      note: "Checks the decimal comparison by exact rational normalization."
+    - source: "Hard-consistency weighted occurrence split"
+      lean: "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
+      module: "Challenge"
+      status: "proved"
+      note: "Formalizes exact optimum preservation with no additive offset."
+    - source: "Feasible-solution approximation transfer"
+      lean: "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
+      module: "Challenge"
+      status: "proved"
+      note: "Formalizes exact objective preservation for every feasible split solution."
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."

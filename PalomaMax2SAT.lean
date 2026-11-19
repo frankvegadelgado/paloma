@@ -1,3 +1,4 @@
 module
 
-public import PalomaMax2SAT.WeightedSplit
+public import PalomaMax2SAT.CubicThreeOccurrence
+public import PalomaMax2SAT.HardOccurrenceSplit

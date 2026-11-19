@@ -1,71 +1,77 @@
 module
 
-public import Mathlib
+public import PalomaMax2SAT
 
 public section
 
-/-!
-# Dominant weighted occurrence-splitting challenge
+namespace PalomaMax2SAT.CubicPublic
 
-The public statements isolate the exact weighted optimum identity and the
-`18/19` approximation arithmetic for the structured three-occurrence image
-class.
--/
+open CubicThreeOccurrence
 
-namespace PalomaMax2SAT.WeightedSplit
+theorem repairedSet_independent {n m : ℕ} (G : PortGraph n m)
+    (z : Fin n → Fin 4 → Bool) : Independent G (repairedSet G z) := by
+  exact repairedSet_independent_proof G z
 
-def weightedSplitScore {Assignment : Type} (C M : ℕ)
-    (sourceScore consistencyFailures : Assignment → ℕ) (a : Assignment) : ℕ :=
-  (C - consistencyFailures a) * M + sourceScore a
+theorem repairedSet_card_lower_bound {n m : ℕ} (G : PortGraph n m)
+    (z : Fin n → Fin 4 → Bool) :
+    score G z ≤ 4 * n + m + (repairedSet G z).card := by
+  exact repairedSet_card_lower_bound_proof G z
 
-def IsWeightedSplitOptimum {Assignment : Type} (C M : ℕ)
-    (sourceScore consistencyFailures : Assignment → ℕ) (target : ℕ) : Prop :=
-  (∀ a, weightedSplitScore C M sourceScore consistencyFailures a ≤ target) ∧
-    ∃ a, weightedSplitScore C M sourceScore consistencyFailures a = target
+theorem exact_three_occurrence_identity {n m alpha : ℕ}
+    (G : PortGraph n m) (halpha : IsIndependenceNumber G alpha) :
+    (∀ z, score G z ≤ 4 * n + m + alpha) ∧
+      ∃ z, score G z = 4 * n + m + alpha := by
+  exact exact_three_occurrence_identity_proof G halpha
 
-theorem dominant_consistency_weight_identity {Assignment : Type}
-    (C M W opt : ℕ) (sourceScore consistencyFailures : Assignment → ℕ)
-    (hfail : ∀ a, consistencyFailures a ≤ C)
-    (hsource : ∀ a, sourceScore a ≤ W)
-    (hconsistent : ∀ a, consistencyFailures a = 0 → sourceScore a ≤ opt)
-    (hattain : ∃ a, consistencyFailures a = 0 ∧ sourceScore a = opt)
-    (hdominates : W < M) :
-    IsWeightedSplitOptimum C M sourceScore consistencyFailures (C * M + opt) := by
-  constructor
-  · intro a
-    by_cases hz : consistencyFailures a = 0
-    · simp [weightedSplitScore, hz, hconsistent a hz]
-    · have hpos : 0 < consistencyFailures a := Nat.pos_of_ne_zero hz
-      have hCpos : 0 < C := lt_of_lt_of_le hpos (hfail a)
-      have hremaining : C - consistencyFailures a ≤ C - 1 := by omega
-      have hupper : weightedSplitScore C M sourceScore consistencyFailures a ≤
-          (C - 1) * M + W := by
-        unfold weightedSplitScore
-        exact Nat.add_le_add (Nat.mul_le_mul_right M hremaining) (hsource a)
-      have hstrict : (C - 1) * M + W < C * M := by
-        calc
-          (C - 1) * M + W < (C - 1) * M + M :=
-            Nat.add_lt_add_left hdominates _
-          _ = ((C - 1) + 1) * M := by ring
-          _ = C * M := by congr 1 <;> omega
-      exact le_trans hupper
-        (Nat.le_of_lt (lt_of_lt_of_le hstrict (Nat.le_add_right _ _)))
-  · obtain ⟨a, hzero, hopt⟩ := hattain
-    exact ⟨a, by simp [weightedSplitScore, hzero, hopt]⟩
+theorem ratio_83_84_from_cubic_mis
+    (n m alpha found : ℕ)
+    (hcubic : 2 * m = 3 * n)
+    (halpha : 2 * alpha ≤ n)
+    (happrox : 7 * found ≥ 6 * alpha) :
+    84 * (4 * n + m + found) ≥ 83 * (4 * n + m + alpha) := by
+  exact ratio_83_84_from_cubic_mis_proof n m alpha found hcubic halpha happrox
 
-theorem dominant_baseline_18_19 (C M opt : ℕ) (hC : 18 ≤ C)
-    (hopt : opt < M) :
-    18 * (C * M + opt) ≤ 19 * (C * M) := by
-  have hoptM : 18 * opt ≤ 18 * M :=
-    Nat.mul_le_mul_left 18 (Nat.le_of_lt hopt)
-  have hMC : 18 * M ≤ C * M := Nat.mul_le_mul_right M hC
-  calc
-    18 * (C * M + opt) = 18 * (C * M) + 18 * opt := by ring
-    _ ≤ 18 * (C * M) + C * M := Nat.add_le_add_left (hoptM.trans hMC) _
-    _ = 19 * (C * M) := by ring
+theorem ratio_83_84_arithmetic :
+    (11 : ℚ) + 6 / 7 = (83 / 84) * 12 := by
+  exact ratio_83_84_arithmetic_proof
 
-theorem ratio_18_19_exceeds_general_weighted_horn :
-    (18 : ℚ) / 19 > 94615981 / 100000000 := by
-  norm_num
+end PalomaMax2SAT.CubicPublic
 
-end PalomaMax2SAT.WeightedSplit
+namespace PalomaMax2SAT.HardSplitPublic
+
+open HardOccurrenceSplit
+
+theorem hard_implication_cycle_consistent {α : Type} (next : α → α)
+    (z : α → Bool) (horbit : OrbitConnected next)
+    (hhard : HardImplicationsHold next z) :
+    ∀ i j, z i = z j := by
+  exact hard_implication_cycle_consistent_proof next z horbit hhard
+
+theorem exact_hard_occurrence_split
+    {Source Split : Type}
+    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
+    (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
+    (opt : ℕ)
+    (hsource : IsOptimum sourceScore opt)
+    (hencodeFeasible : ∀ a, feasible (encode a))
+    (hencodeScore : ∀ a, splitScore (encode a) = sourceScore a)
+    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z) :
+    IsHardOptimum feasible splitScore opt := by
+  exact exact_hard_occurrence_split_proof sourceScore splitScore feasible
+    encode decode opt hsource hencodeFeasible hencodeScore hdecodeScore
+
+theorem feasible_solution_ratio_preserved
+    {Source Split : Type}
+    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
+    (feasible : Split → Prop) (decode : Split → Source)
+    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
+    (z : Split) (hz : feasible z) :
+    splitScore z = sourceScore (decode z) := by
+  exact feasible_solution_ratio_preserved_proof sourceScore splitScore feasible
+    decode hdecodeScore z hz
+
+theorem ratio_83_84_exceeds_general_horn_threshold :
+    (83 : ℚ) / 84 > 94615981 / 100000000 := by
+  exact ratio_83_84_exceeds_general_horn_threshold_proof
+
+end PalomaMax2SAT.HardSplitPublic

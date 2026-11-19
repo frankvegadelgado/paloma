@@ -6,9 +6,11 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 
-\title[A weighted three-occurrence Horn image class]
-{A PTAS for a Weighted Three-Occurrence MAX-HORN-2SAT Image Class}
+\title[An $83/84$ approximation and a hard-consistency split]
+{An $83/84$ Approximation and a Ratio-Preserving Hard-Consistency Split for
+Three-Occurrence MAX-HORN-2SAT}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
@@ -16,205 +18,320 @@
 
 \begin{document}
 \begin{abstract}
-We define a weighted three-occurrence image class obtained by splitting every
-literal occurrence of a weighted MAX-HORN-2SAT instance and enforcing each
-original variable by a directed cycle of heavy Horn implications. If $C$ is
-the number of source occurrences, $W$ is the total source weight, and every
-consistency implication has weight $M>W$, then
+We define an unweighted MAX-HORN-2SAT class from simple cubic graphs in which
+every Boolean variable has exactly three literal occurrences. For the formula
+$T_H$ associated with a cubic graph $H=(V,E)$, we prove the exact identity
 \[
-  \operatorname{OPT}(T_M(F))=CM+\operatorname{OPT}(F).
+  \operatorname{OPT}(T_H)=4|V|+|E|+\alpha(H).
 \]
-Every clone occurs exactly three times. We give a direct polynomial-time
-$18/19$-approximation for the image class, where
-$18/19=0.947368\ldots>0.94615981$, the tight Unique-Games threshold reported
-for general weighted MAX~$\{1,2\}$-HORN-SAT. More generally, the same argument
-gives a PTAS for the image class. The improvement concerns the structured
-image class and therefore does not conflict with hardness for the unrestricted
-language. Lean~4 formalizes the dominant-weight identity and the arithmetic
-inequality underlying the $18/19$ bound.
+The upper bound is constructive: every assignment of value $A$ is repaired in
+polynomial time to an independent set of size at least
+$A-(4|V|+|E|)$. Combining this identity with the Berman--Fujito $7/6$
+approximation for independent set on cubic graphs yields a polynomial-time
+$83/84$ approximation for the exact clause pattern. The repair also gives an
+$L$-reduction from cubic MIS and proves APX-completeness. The accompanying
+Lean~4 development formalizes the score decomposition, repair, exact optimum
+identity, and the arithmetic transfer to $83/84$. We additionally give a
+ratio-preserving occurrence split for arbitrary weighted MAX-HORN-2SAT: the
+source clauses retain their weights, while the cyclic implications are
+mandatory hard clauses with zero objective contribution. This hard-consistency
+image has exactly the source optimum and preserves every feasible solution
+value without an additive offset.
 \end{abstract}
 \maketitle
 
 \section{Introduction}
 
-Weighted MAX-HORN-2SAT asks for an assignment maximizing the total weight of
-satisfied unary and binary Horn clauses. We allow either of the two globally
-complementary Horn conventions: clauses with at most one positive literal, or
-clauses with at most one negative literal. Complementing every variable
-converts one convention into the other without changing any assignment value.
+MAX-HORN-2SAT maximizes the number of satisfied unary and binary Horn clauses.
+We use the polarity convention of MAX~$\{1,2\}$-HORN-SAT in which a clause
+does not contain two negative literals. A global complementation converts this
+to the conventional logical definition without changing objective values.
 
-Brakensiek, Huang, and Zwick give the value $0.94615981$ for weighted
-MAX~$\{1,2\}$-HORN-SAT and prove the corresponding conditional hardness under
-the Unique Games Conjecture~\cite{BrakensiekHuangZwick2024}. Their MAX-CSP
-model explicitly assigns a nonnegative weight to each constraint. That
-threshold concerns the unrestricted Horn language. This note isolates a
-proper, highly structured image class and proves a stronger guarantee on that
-class.
+The construction below starts from cubic Maximum Independent Set (MIS), uses
+four clones for every graph vertex, and connects them by a directed cycle of
+implications. One clone participates in a unit clause and the other three in
+the three incident edge clauses. Each clone additionally occurs in its incoming
+and outgoing implication. Consequently every formula variable occurs exactly
+three times.
 
-The result has two parts. First, a dominant consistency weight gives an exact
-affine optimum identity. Second, the same dominant offset makes the image
-class easier to approximate: either it contains only constantly many clones
-and can be solved by enumeration, or satisfying all heavy implications already
-captures almost all of the optimum. This dichotomy gives both the explicit
-$18/19$ ratio and a PTAS.
+The contribution is quantitative rather than merely satisfiability preserving.
+We prove an explicit repair of every inconsistent clone assignment, obtain an
+exact affine optimum identity, and transfer the Berman--Fujito cubic-MIS
+guarantee~\cite{BermanFujito1999} to the Horn class. Cubic MIS is
+APX-complete~\cite{AlimontiKann2000}, and the same repair proves
+APX-completeness of the image class.
 
-\section{The weighted occurrence split}
+\section{The cubic three-occurrence construction}
 
-Let $F$ be a weighted MAX-HORN-2SAT instance. Its clause weights are positive
-rationals encoded in binary, and
+Let $H=(V,E)$ be a finite simple cubic graph, with $n=|V|$ and $m=|E|$.
+Thus $m=3n/2$. At each vertex $v$, label its incident edges with the three
+ports $1,2,3$. Introduce four Boolean variables
 \[
-  W=\sum_{D\in F}w(D)
+  z_{v,0},z_{v,1},z_{v,2},z_{v,3}.
 \]
-is their total. Let $C$ be the total number of literal occurrences in $F$.
-For every occurrence of a literal of an original variable $x$, introduce a
-distinct clone. Replace that occurrence in its source clause by the clone,
-with the same polarity and clause weight.
+The formula $T_H$ contains the following clauses.
 
-Suppose the occurrences of $x$ receive clones
-$x_0,\ldots,x_{d-1}$. Add the directed cyclic implications
-\[
-  (\neg x_i\vee x_{i+1}) \qquad (i\bmod d),
-\]
-each with a common weight $M>W$. Repeated literals are allowed when $d=1$;
-equivalently, that one consistency clause is the tautological implication
-$x_0\to x_0$. Denote the resulting instance by $T_M(F)$. One may always
-choose $M=W+1$, so the construction is polynomial in the binary encoding.
+\begin{enumerate}
+\item For every vertex $v$, one unit clause $(\neg z_{v,0})$.
+\item For every edge $e=uv$, whose endpoint ports are $p$ at $u$ and $q$ at
+      $v$, one edge clause $(z_{u,p}\vee z_{v,q})$.
+\item For every vertex $v$ and $i\in\mathbb Z/4\mathbb Z$, one consistency
+      implication $(\neg z_{v,i}\vee z_{v,i+1})$.
+\end{enumerate}
 
-Every clone occurs once in a source clause, once negatively in its outgoing
-implication, and once positively in its incoming implication. Thus every
-variable of $T_M(F)$ has exactly three literal occurrences. All consistency
-clauses are Horn, and the source clauses remain Horn, so $T_M(F)$ is a weighted
-three-occurrence MAX-HORN-2SAT instance. We call the set of instances produced
-in this way the \emph{dominant split image class}.
+Every clause has at most one negative literal. Every clone occurs in exactly
+one source clause, one outgoing implication, and one incoming implication;
+hence it occurs exactly three times. There are $4n$ variables and
+$n+m+4n=5n+m$ clauses.
 
-\begin{lemma}[Cycle consistency]\label{lem:cycle}
-An assignment satisfies every implication on the cycle of an original
-variable if and only if all clones on that cycle have the same value.
+For an assignment $z$, let
+\begin{align*}
+ U(z)&=|\{v:z_{v,0}=0\}|,\\
+ F(z)&=|\{uv\in E:z_{u,p}=z_{v,q}=0\}|,\\
+ T(z)&=|\{(v,i):z_{v,i}=1,\ z_{v,i+1}=0\}|.
+\end{align*}
+These are respectively the satisfied unit clauses, falsified edge clauses, and
+falsified consistency implications. Therefore
+\begin{equation}\label{eq:score}
+  \operatorname{val}_{T_H}(z)=U(z)+(m-F(z))+(4n-T(z)).
+\end{equation}
+
+\section{Constructive repair and exact optimum}
+
+Call a vertex selected when $z_{v,0}=0$, and clean when it is selected and
+its four-bit cycle has no $1$-to-$0$ transition.
+
+\begin{lemma}[Cycle lemma]\label{lem:cycle}
+If $z_{v,0}=0$ and the cycle at $v$ has no $1$-to-$0$ transition, then
+$z_{v,i}=0$ for all $i$.
 \end{lemma}
+
 \begin{proof}
-A constant assignment clearly satisfies the cycle. Conversely, a nonconstant
-cyclic binary sequence has a $1$-to-$0$ transition. The implication at that
+A nonconstant cyclic binary word has both a $0$-to-$1$ and a $1$-to-$0$
+transition. Since the word begins with zero, absence of a $1$-to-$0$
+transition forces it to be constantly zero.
+\end{proof}
+
+Let $C(z)$ be the clean selected vertices. Delete the left endpoint of every
+edge induced by $C(z)$, ignoring repetitions, and call the remaining set
+$R(z)$.
+
+\begin{lemma}[Quantitative repair]\label{lem:repair}
+$R(z)$ is independent and
+\[
+  |R(z)|\ge \operatorname{val}_{T_H}(z)-(4n+m).
+\]
+The set is computable in polynomial time.
+\end{lemma}
+
+\begin{proof}
+Every edge induced by $C(z)$ loses an endpoint, so $R(z)$ is independent.
+At most $T(z)$ selected vertices are nonclean, because each such vertex
+contributes at least one transition. By Lemma~\ref{lem:cycle}, both endpoint
+clones of every edge induced by $C(z)$ are zero; hence every such edge is
+counted by $F(z)$. Deleting one endpoint for each induced edge removes at most
+$F(z)$ further vertices. Thus
+\[
+ |R(z)|\ge U(z)-T(z)-F(z).
+\]
+Substituting \eqref{eq:score} gives the claimed inequality.
+\end{proof}
+
+\begin{theorem}[Exact identity]\label{thm:identity}
+For every simple cubic graph $H$,
+\[
+  \operatorname{OPT}(T_H)=4n+m+\alpha(H).
+\]
+Moreover, an assignment of value $A$ decodes in polynomial time to an
+independent set of size at least $A-(4n+m)$.
+\end{theorem}
+
+\begin{proof}
+The upper bound follows from Lemma~\ref{lem:repair}. For the lower bound, let
+$I$ be an independent set and set all four clones of $v$ to zero exactly when
+$v\in I$. Every consistency implication and every edge clause is satisfied,
+while precisely $|I|$ unit clauses are satisfied. The value is
+$4n+m+|I|$. Taking $I$ maximum proves equality.
+\end{proof}
+
+\section{The $83/84$ approximation}
+
+Berman and Fujito give a polynomial-time $7/6$ approximation for MIS on cubic
+graphs~\cite{BermanFujito1999}. In solution-ratio notation their algorithm
+returns an independent set $I$ satisfying $|I|\ge6\alpha(H)/7$.
+
+We also use the elementary inequality $\alpha(H)\le n/2$. Indeed, every
+vertex in an independent set has three edges to its complement; the complement
+has total incident capacity at most three times its cardinality, so
+$3\alpha(H)\le3(n-\alpha(H))$.
+
+\begin{theorem}[Cubic Horn approximation]\label{thm:ratio}
+The three-occurrence class $\{T_H:H\text{ is simple and cubic}\}$ admits a
+polynomial-time $83/84$ approximation.
+\end{theorem}
+
+\begin{proof}
+Run Berman--Fujito and lift its independent set $I$ using
+Theorem~\ref{thm:identity}. Put $B=4n+m$. Since $m=3n/2$ and
+$\alpha(H)\le n/2$, we have $B/\alpha(H)\ge11$. Therefore
+\[
+ \frac{B+|I|}{B+\alpha(H)}
+ \ge
+ \frac{B+6\alpha(H)/7}{B+\alpha(H)}
+ \ge
+ \frac{11+6/7}{12}
+ =\frac{83}{84}.
+\]
+\end{proof}
+
+\section{APX-completeness}
+
+\begin{theorem}\label{thm:apx}
+The cubic three-occurrence Horn class is APX-complete under $L$-reductions.
+The reduction from cubic MIS has constants $23$ and $1$.
+\end{theorem}
+
+\begin{proof}
+A greedy maximal independent set in a graph of maximum degree three has size
+at least $n/4$, so $n\le4\alpha(H)$. Since $m=3n/2$,
+\[
+ \operatorname{OPT}(T_H)=\frac{11n}{2}+\alpha(H)
+ \le22\alpha(H)+\alpha(H)=23\alpha(H).
+\]
+For an assignment of value $A$, Lemma~\ref{lem:repair} returns $R$ with
+$|R|\ge A-(4n+m)$. Hence
+\[
+ \alpha(H)-|R|
+ \le (4n+m+\alpha(H))-A
+ =\operatorname{OPT}(T_H)-A.
+\]
+These are the two $L$-reduction inequalities. Cubic MIS is APX-complete and
+Theorem~\ref{thm:ratio} places the image class in APX.
+\end{proof}
+
+\section{The ratio-preserving hard-consistency split}
+
+Let $F$ be an arbitrary weighted MAX-HORN-2SAT instance. Its source clauses
+have nonnegative rational weights. Give every literal occurrence a distinct
+clone, and replace that occurrence in its source clause by the clone without
+changing the clause weight. If the occurrences of an original variable $x$
+receive clones $x_0,\ldots,x_{d-1}$, add the directed cycle
+\[
+  (\neg x_i\vee x_{i+1})\qquad(i\bmod d).
+\]
+These implications are \emph{hard}: every feasible assignment must satisfy
+them. They contribute zero to the maximized objective. This is a partial
+weighted MAX-HORN-2SAT instance, denoted by $P(F)$.
+
+Every clone appears once in a weighted source clause, once negatively in its
+outgoing hard implication, and once positively in its incoming hard
+implication. Thus every variable has exactly three occurrences.
+
+\begin{lemma}[Hard-cycle consistency]\label{lem:hard-cycle}
+A clone assignment satisfies every hard implication on one directed cycle if
+and only if all clones on that cycle have the same value.
+\end{lemma}
+
+\begin{proof}
+A constant cycle satisfies every implication. Conversely, a nonconstant
+cyclic binary word has a $1$-to-$0$ transition, and the implication at that
 transition is false.
 \end{proof}
 
-\begin{theorem}[Exact weighted identity]\label{thm:identity}
-For every weighted MAX-HORN-2SAT instance $F$ and every $M>W$,
+\begin{theorem}[Exact hard-split identity]\label{thm:hard-split}
+The transformation $F\mapsto P(F)$ is polynomial, and
 \[
-  \operatorname{OPT}(T_M(F))=CM+\operatorname{OPT}(F).
+  \operatorname{OPT}_{\mathrm{partial}}(P(F))=
+  \operatorname{OPT}_{\mathrm{weighted}}(F).
 \]
+More strongly, feasible split assignments and source assignments have exactly
+the same attainable objective values under encoding and decoding.
 \end{theorem}
-\begin{proof}
-Lift an optimum assignment of $F$ by giving every clone the value of its
-original variable. All $C$ consistency implications are satisfied and the
-source contribution is unchanged, giving $CM+\operatorname{OPT}(F)$.
 
-If a split assignment is inconsistent, Lemma~\ref{lem:cycle} shows that it
-loses at least one implication. Even if it satisfies every source clause, its
-value is at most
-\[
-  (C-1)M+W<CM\le CM+\operatorname{OPT}(F).
-\]
-Hence no inconsistent assignment is optimal. Every consistent assignment
-decodes to a source assignment with the same source contribution, proving the
-matching upper bound.
+\begin{proof}
+Lift a source assignment by giving every occurrence clone the value of its
+original variable. The result satisfies all hard cycles and preserves every
+source clause's truth value and weight. Conversely, by
+Lemma~\ref{lem:hard-cycle}, every feasible split assignment is constant on each
+original-variable cycle. Decode that common value. Again every weighted source
+clause has the same truth value. Encoding and decoding therefore preserve the
+objective pointwise, proving both claims.
 \end{proof}
 
-\section{Approximation above the general threshold}
+\begin{corollary}[Ratio preservation]\label{cor:ratio-preservation}
+For every $0\le\rho\le1$, a polynomial-time $\rho$-approximation for the hard
+three-occurrence image $\{P(F)\}$ yields a polynomial-time $\rho$-approximation
+for weighted MAX-HORN-2SAT.
+\end{corollary}
 
-For a maximization instance, the solution ratio is its returned value divided
-by its optimum.
-
-\begin{theorem}[Explicit improvement]\label{thm:ratio}
-The dominant split image class admits a polynomial-time $18/19$ approximation.
-In particular,
-\[
-  \frac{18}{19}=0.947368421\ldots>0.94615981.
-\]
-\end{theorem}
 \begin{proof}
-The split instance has exactly $C$ clone variables. If $C\le17$, enumerate
-its at most $2^{17}$ assignments and return an optimum.
-
-If $C\ge18$, set every clone to false. Every heavy clause
-$\neg x_i\vee x_{i+1}$ is then true, so the returned value is at least $CM$.
-Theorem~\ref{thm:identity} and $\operatorname{OPT}(F)\le W<M$ give
-\[
- \frac{CM}{\operatorname{OPT}(T_M(F))}
- =\frac{CM}{CM+\operatorname{OPT}(F)}
- >\frac{CM}{CM+M}
- =\frac{C}{C+1}
- \ge\frac{18}{19}.
-\]
-Both branches run in polynomial time; the enumeration bound is absolute.
+Apply the image-class algorithm and decode its feasible assignment. Both its
+value and the optimum are unchanged by Theorem~\ref{thm:hard-split}.
 \end{proof}
 
-The cutoff 18 is chosen only to cross the quoted general threshold. Allowing
-the cutoff to depend on an accuracy parameter yields the stronger statement.
+\section{Relation to the UGC threshold}
 
-\begin{theorem}[PTAS]\label{thm:ptas}
-For every fixed $\varepsilon>0$, the dominant split image class has a
-polynomial-time $(1-\varepsilon)$-approximation. Its running time is
-$2^{O(1/\varepsilon)}\operatorname{poly}(|T_M(F)|)$.
-\end{theorem}
-\begin{proof}
-If $C<1/\varepsilon$, enumerate all $2^C$ assignments and solve the instance
-exactly. Otherwise set every clone to false. As in Theorem~\ref{thm:ratio},
-its ratio is strictly greater than
+Brakensiek, Huang, and Zwick obtain the ratio $0.94615981$ for the unrestricted
+weighted MAX~$\{1,2\}$-HORN-SAT language and show conditional optimality under
+UGC~\cite{BrakensiekHuangZwick2024}. The present ratio satisfies
+$83/84\simeq0.988095>0.94615981$. Corollary~\ref{cor:ratio-preservation}
+places the full weighted problem inside the hard-consistency three-occurrence
+image without ratio loss.
+
+Therefore, a polynomial-time $83/84$ approximation for the \emph{entire}
+hard-consistency image $\{P(F)\}$ would, together with the cited UGC hardness
+theorem, refute UGC. Theorem~\ref{thm:ratio} proves that ratio for the cubic
+subfamily $\{T_H\}$; extending its algorithm to all of $\{P(F)\}$ is a separate
+algorithmic requirement. UGC being false would not by itself imply
+$\mathrm P=\mathrm{NP}$, since UGC is a stronger additional conjecture rather
+than a theorem equivalent to $\mathrm P\ne\mathrm{NP}$.
+
+\section{Lean and computational verification}
+
+The module \texttt{PalomaMax2SAT.CubicThreeOccurrence} represents the cubic
+graph with three ports at every vertex. It formalizes the transition count,
+false edge clauses, explicit deletion repair, independence of the repaired
+set, its cardinality bound, the matching assignment from an independent set,
+and the exact optimum identity. It also proves the division-free inequality
 \[
-  \frac{C}{C+1}=1-\frac{1}{C+1}>1-\varepsilon.
+ 84(4n+m+|I|)\ge83(4n+m+\alpha)
 \]
-For fixed $\varepsilon$, the exponential factor depends only on
-$\varepsilon$, not on the input size.
-\end{proof}
+from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. GitHub Actions builds the
+module and runs the public theorem comparison.
 
-\section{Interpretation and scope}
-
-Theorem~\ref{thm:ratio} is a positive separation between a structured image
-class and the conditional threshold for the unrestricted weighted Horn
-language. The PTAS identifies the structural reason: the total source
-objective is smaller than one heavy consistency clause, while there are $C$
-such clauses. As $C$ grows, the heavy, simultaneously satisfiable part
-dominates the objective; when $C$ is small, exact enumeration is
-fixed-parameter tractable in $C$.
-
-This does not refute the Unique Games Conjecture. A hardness threshold for all
-weighted MAX-HORN-2SAT instances permits proper subclasses with better
-algorithms. Nor does subtracting the affine term $CM$ transfer the PTAS back
-to arbitrary source instances. If a consistent split assignment has source
-value $s$ and split ratio $\rho$, the general decoded inequality is only
+The module \texttt{PalomaMax2SAT.HardOccurrenceSplit} formalizes propagation
+around a strongly connected directed implication cycle, exact hard-split
+optimum preservation, pointwise feasible-solution value preservation, and the
+exact rational inequality
 \[
-  \frac{s}{\operatorname{OPT}(F)}
-  \ge \rho-(1-\rho)\frac{CM}{\operatorname{OPT}(F)},
+  \frac{83}{84}>0.94615981.
 \]
-whose second term is unbounded. The contribution is therefore the stronger
-approximation theory of the dominant split image class itself.
-
-\section{Verification artifacts}
-
-The accompanying Lean~4 module defines the weighted split score, proves the
-dominant-weight optimum identity from explicit hypotheses, proves the
-natural-number inequality behind the $18/19$ branch, and checks
-$18/19>0.94615981$ by exact rational normalization.
-
-The independent program
-\texttt{experiments/weighted\_test\_horn\_split.py} exhaustively checks the
-identity on 4,218 small weighted formula shapes and records the explicit ratio
-comparison. Finite testing is not used as a premise. Source, paper, and
-verification artifacts are available in the public
-repository~\cite{VegaPalomaRepository}.
+The independent Python audit checks 16,314 small Horn formula shapes and
+verifies equality of the complete sets of attainable source and feasible-split
+objective values. The repository is available at~\cite{VegaPalomaRepository}.
 
 \begin{thebibliography}{9}
+\bibitem{AlimontiKann2000}
+P.~Alimonti and V.~Kann,
+\emph{Some APX-completeness results for cubic graphs},
+Theoretical Computer Science 237 (2000), 123--134.
+\url{https://doi.org/10.1016/S0304-3975(98)00158-3}.
+
+\bibitem{BermanFujito1999}
+P.~Berman and T.~Fujito,
+\emph{On approximation properties of the independent set problem for low
+degree graphs}, Theory of Computing Systems 32 (1999), 115--132.
+\url{https://doi.org/10.1007/s002240000113}.
+
 \bibitem{BrakensiekHuangZwick2024}
 J.~Brakensiek, N.~Huang, and U.~Zwick,
 \emph{Tight approximability of MAX 2-SAT and relatives, under UGC},
-Proceedings of the 2024 ACM-SIAM Symposium on Discrete Algorithms (SODA),
-2024, pp.~4799--4897.
+Proceedings of SODA 2024, 1328--1344.
 \url{https://doi.org/10.1137/1.9781611977912.53}.
 
 \bibitem{VegaPalomaRepository}
 F.~Vega,
-\emph{Paloma MAX-HORN-2SAT formalization and experiments},
-GitHub repository, 2026.
+\emph{Paloma MAX-HORN-2SAT formalization and experiments}, GitHub, 2026.
 \url{https://github.com/frankvegadelgado/paloma}.
 \end{thebibliography}
 \end{document}

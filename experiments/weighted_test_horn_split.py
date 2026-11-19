@@ -1,28 +1,50 @@
-"""Weighted MAX-HORN-2SAT occurrence splitting test.
+"""Partial Weighted MAX-HORN-2SAT occurrence-splitting test.
 
-Source clauses may have arbitrary positive integer weights.  Chain /
-consistency clauses get weight one larger than the total source weight.
+Source clauses retain their original objective weights.  The cyclic clauses
+    (not x_i or x_{i+1})
+are mandatory hard constraints and contribute zero to the objective.
 
-If M is larger than the total source weight W, every inconsistent assignment
-loses at least M but can gain at most W on source clauses.  Therefore
-    split_opt = M*n_cons + source_opt.
+Under this hard-clause semantics, feasible clone assignments are exactly the
+consistent lifts of source assignments, so the transformation is exactly
+objective- and approximation-ratio preserving.
 """
 
 from itertools import combinations, combinations_with_replacement, product
-from fractions import Fraction
 
 Literal = tuple[int, bool]
 Clause  = tuple[Literal, ...]
+
+SOURCE_WEIGHT = 1
+
 
 def satisfied(clause, assignment):
     return any(assignment[v] == s for v, s in clause)
 
 
-def weighted_optimum(n, weighted_clauses):
-    return max(
-        sum(w for c, w in weighted_clauses if satisfied(c, a))
-        for a in product((False, True), repeat=n)
+def feasible_assignments(n, hard_clauses=()):
+    return (
+        assignment
+        for assignment in product((False, True), repeat=n)
+        if all(satisfied(clause, assignment) for clause in hard_clauses)
     )
+
+
+def objective_value(weighted_clauses, assignment):
+    return sum(w for clause, w in weighted_clauses if satisfied(clause, assignment))
+
+
+def weighted_optimum(n, weighted_clauses, hard_clauses=()):
+    return max(
+        objective_value(weighted_clauses, assignment)
+        for assignment in feasible_assignments(n, hard_clauses)
+    )
+
+
+def attainable_values(n, weighted_clauses, hard_clauses=()):
+    return {
+        objective_value(weighted_clauses, assignment)
+        for assignment in feasible_assignments(n, hard_clauses)
+    }
 
 
 def split_formula(variable_count, clauses):
@@ -74,44 +96,45 @@ def main():
     tested = 0
     for nv in (1, 2, 3):
         types = horn_clause_types(nv)
-        for nc in range(1, 5):
+        for nc in range(1, 6):
             for clauses in combinations_with_replacement(types, nc):
                 tested += 1
 
-                # Test genuine weighted sources, not only unit weights.
-                for source_weights in product((1, 2), repeat=nc):
-                    source = tuple(zip(clauses, source_weights))
-                    total_source_weight = sum(source_weights)
-                    consistency_weight = total_source_weight + 1
-                    src_opt = weighted_optimum(nv, source)
-                    nclones, split, nsrc, ncons = split_formula(nv, clauses)
+                src_opt = weighted_optimum(
+                    nv, tuple((c, SOURCE_WEIGHT) for c in clauses)
+                )
+                nclones, split, nsrc, ncons = split_formula(nv, clauses)
 
-                    weighted = (
-                        tuple((c, w) for c, w in zip(split[:nsrc], source_weights)) +
-                        tuple((c, consistency_weight) for c in split[nsrc:])
-                    )
-                    spl_opt = weighted_optimum(nclones, weighted)
-                    expected = ncons * consistency_weight + src_opt
+                source_weighted = tuple((c, SOURCE_WEIGHT) for c in clauses)
+                split_weighted = tuple(
+                    (c, SOURCE_WEIGHT) for c in split[:nsrc]
+                )
+                hard_consistency = split[nsrc:]
+                spl_opt = weighted_optimum(
+                    nclones, split_weighted, hard_consistency
+                )
+                expected = src_opt
 
-                    if spl_opt != expected:
-                        print("COUNTEREXAMPLE")
-                        print("variables:", nv)
-                        print("clauses:", clauses)
-                        print("source weights:", source_weights)
-                        print("source optimum:", src_opt)
-                        print("consistency clauses:", ncons)
-                        print("consistency weight:", consistency_weight)
-                        print("split weighted optimum:", spl_opt)
-                        print("expected:", expected)
-                        return
-    print("NO OPTIMUM-IDENTITY COUNTEREXAMPLE", tested)
+                # Equality of all attainable objective values is stronger than
+                # equality of optima and directly checks ratio preservation.
+                source_values = attainable_values(nv, source_weighted)
+                split_values = attainable_values(
+                    nclones, split_weighted, hard_consistency
+                )
 
-    image_ratio = Fraction(18, 19)
-    general_weighted_horn = Fraction(94615981, 100000000)
-    assert image_ratio > general_weighted_horn
-    print("WEIGHTED IMAGE-CLASS GUARANTEE")
-    print("18/19 =", float(image_ratio), ">", float(general_weighted_horn))
-    print("PTAS: enumerate if C < 1/epsilon; otherwise set every clone false")
+                if spl_opt != expected or split_values != source_values:
+                    print("COUNTEREXAMPLE")
+                    print("variables:", nv)
+                    print("clauses:", clauses)
+                    print("source optimum:", src_opt)
+                    print("hard consistency clauses:", ncons)
+                    print("split partial-weighted optimum:", spl_opt)
+                    print("expected:", expected)
+                    print("source attainable values:", sorted(source_values))
+                    print("split attainable values:", sorted(split_values))
+                    return
+    print("NO HARD-CONSISTENCY COUNTEREXAMPLE", tested)
+    print("OPTIMUM AND ALL ATTAINABLE OBJECTIVE VALUES PRESERVED")
 
 
 if __name__ == "__main__":
