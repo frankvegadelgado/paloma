@@ -81,7 +81,7 @@ namespace PalomaMax2SAT.ConcreteHardSplit
 open PalomaMax2SAT.HardOccurrenceSplit
 
 theorem concrete_exact_hard_occurrence_split
-    {Var Occ Clause : Type*} [Fintype Clause]
+    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
     (horb : ∀ v, OrbitConnected (next v))
@@ -90,7 +90,7 @@ theorem concrete_exact_hard_occurrence_split
   exact concrete_exact_hard_occurrence_split_proof F next base horb opt hsource
 
 theorem concrete_feasible_solution_ratio_preserved
-    {Var Occ Clause : Type*} [Fintype Clause]
+    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
     (horb : ∀ v, OrbitConnected (next v))

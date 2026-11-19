@@ -1,7 +1,6 @@
 module
 
-public import PalomaMax2SAT.HardOccurrenceSplit
-public import PalomaMax2SAT.CubicThreeOccurrence
+public import Mathlib
 
 public section
 
@@ -310,13 +309,13 @@ structure WeightedHornSplit (Var : Type*) (Occ : Var → Type*) (Clause : Type*)
   lits : Clause → Finset (Literal Var Occ)
   horn : ∀ c, HornClause (lits c)
 
-noncomputable def sourceScore {Var Occ Clause : Type*} [Fintype Clause]
+noncomputable def sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ := by
   classical
   exact ∑ c : Clause,
     if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
 
-noncomputable def splitScore {Var Occ Clause : Type*} [Fintype Clause]
+noncomputable def splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (z : (v : Var) → Occ v → Bool) : ℕ := by
   classical
@@ -342,7 +341,7 @@ theorem encode_feasible {Var : Type*} {Occ : Var → Type*}
   intro v o ho
   simpa [encode] using ho
 
-theorem encodeScore {Var Occ Clause : Type*} [Fintype Clause]
+theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
     splitScore F (encode (Occ := Occ) x) = sourceScore F x := by
@@ -360,19 +359,19 @@ theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
   intro v o
   cases hb : z v (base v) <;> cases ho : z v o
   · rfl
-  · obtain ⟨k, hk⟩ := horb v (base v) o
-    have htrue :=
-      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
-    rw [hk, ho] at htrue
-    simp at htrue
   · obtain ⟨k, hk⟩ := horb v o (base v)
     have htrue :=
       propagate_hard_implications (next v) (z v) (hz v) k o ho
     rw [hk, hb] at htrue
     simp at htrue
+  · obtain ⟨k, hk⟩ := horb v (base v) o
+    have htrue :=
+      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
+    rw [hk, ho] at htrue
+    simp at htrue
   · rfl
 
-theorem decodeScore {Var Occ Clause : Type*} [Fintype Clause]
+theorem decodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
     (horb : ∀ v, OrbitConnected (next v))
@@ -399,7 +398,7 @@ theorem decodeScore {Var Occ Clause : Type*} [Fintype Clause]
     simp [h, h']
 
 theorem concrete_exact_hard_occurrence_split
-    {Var Occ Clause : Type*} [Fintype Clause]
+    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
     (horb : ∀ v, OrbitConnected (next v))
@@ -414,7 +413,7 @@ theorem concrete_exact_hard_occurrence_split
     rw [encodeScore F next x, hx]
 
 theorem concrete_feasible_solution_ratio_preserved
-    {Var Occ Clause : Type*} [Fintype Clause]
+    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
     (horb : ∀ v, OrbitConnected (next v))
