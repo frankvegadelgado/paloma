@@ -75,3 +75,27 @@ theorem ratio_83_84_exceeds_general_horn_threshold :
   exact ratio_83_84_exceeds_general_horn_threshold_proof
 
 end PalomaMax2SAT.HardSplitPublic
+
+namespace PalomaMax2SAT.ConcreteHardSplit
+
+open PalomaMax2SAT.HardOccurrenceSplit
+
+theorem concrete_exact_hard_occurrence_split
+    {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    (opt : ℕ) (hsource : IsOptimum (sourceScore F) opt) :
+    IsHardOptimum (Feasible next) (splitScore F) opt := by
+  exact concrete_exact_hard_occurrence_split_proof F next base horb opt hsource
+
+theorem concrete_feasible_solution_ratio_preserved
+    {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    (z : (v : Var) → Occ v → Bool) (hz : Feasible next z) :
+    splitScore F z = sourceScore F (decode base z) := by
+  exact concrete_feasible_solution_ratio_preserved_proof F next base horb z hz
+
+end PalomaMax2SAT.ConcreteHardSplit

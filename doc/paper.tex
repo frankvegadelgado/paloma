@@ -8,7 +8,8 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 
-\title{An $83/84$ approximation and a hard-consistency split}
+\title{An $83/84$ approximation for a cubic three-occurrence Horn class,\\
+and a ratio-preserving hard-consistency split}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
@@ -30,7 +31,9 @@ approximation for independent set on cubic graphs yields a polynomial-time
 $83/84$ approximation for the exact clause pattern. The repair also gives an
 $L$-reduction from cubic MIS and proves APX-completeness. The accompanying
 Lean~4 development formalizes the score decomposition, repair, exact optimum
-identity, and the arithmetic transfer to $83/84$. We additionally give a
+identity, and the arithmetic transfer to $83/84$, and, for the hard-consistency
+split, the concrete encode/decode score equalities together with their
+optimum- and feasible-solution value-preservation consequences. We additionally give a
 ratio-preserving occurrence split for arbitrary weighted MAX-HORN-2SAT: the
 source clauses retain their weights, while the cyclic implications are
 mandatory hard clauses with zero objective contribution. This hard-consistency
@@ -48,7 +51,11 @@ to the conventional logical definition without changing objective values.
 
 The construction below starts from cubic Maximum Independent Set (MIS), uses
 four clones for every graph vertex, and connects them by a directed cycle of
-implications. One clone participates in a unit clause and the other three in
+implications. The reduction from cubic MIS to MAX-HORN-2SAT is a standard gadget composition
+of unit, edge, and consistency clauses; the quantitative contribution here is
+the exact optimum identity and the explicit cardinality bound of the repair,
+together with the ratio-preserving split of Section~\ref{sec:ratio} and their Lean
+formalization. One clone participates in a unit clause and the other three in
 the three incident edge clauses. Each clone additionally occurs in its incoming
 and outgoing implication. Consequently every formula variable occurs exactly
 three times.
@@ -128,8 +135,7 @@ Every edge induced by $C(z)$ loses an endpoint, so $R(z)$ is independent.
 At most $T(z)$ selected vertices are nonclean, because each such vertex
 contributes at least one transition. By Lemma~\ref{lem:cycle}, both endpoint
 clones of every edge induced by $C(z)$ are zero; hence every such edge is
-counted by $F(z)$. Deleting one endpoint for each induced edge removes at most
-$F(z)$ further vertices. Thus
+counted by $F(z)$. The number of distinct removed endpoints is at most the number of edges induced by $C(z)$, which is at most $F(z)$. Thus
 \[
  |R(z)|\ge U(z)-T(z)-F(z).
 \]
@@ -209,8 +215,8 @@ Theorem~\ref{thm:ratio} places the image class in APX.
 \end{proof}
 
 \section{The ratio-preserving hard-consistency split}
-
-Let $F$ be an arbitrary weighted MAX-HORN-2SAT instance. Its source clauses
+\label{sec:ratio}
+Let $F$ be an well-formed (clauses contain no repeated identical literals) weighted MAX-HORN-2SAT instance. Its source clauses
 have nonnegative rational weights. Give every literal occurrence a distinct
 clone, and replace that occurrence in its source clause by the clone without
 changing the clause weight. If the occurrences of an original variable $x$
@@ -221,6 +227,12 @@ receive clones $x_0,\ldots,x_{d-1}$, add the directed cycle
 These implications are \emph{hard}: every feasible assignment must satisfy
 them. They contribute zero to the maximized objective. This is a partial
 weighted MAX-HORN-2SAT instance, denoted by $P(F)$.
+
+Note that the construction remains faithful even when a source clause contains
+several occurrences of the same underlying variable, or both polarities of a
+variable: by Lemma~\ref{lem:hard-cycle}, feasibility forces all clones of a
+variable to take the same value, so the split clause is satisfied exactly
+when the source clause is.
 
 Every clone appears once in a weighted source clause, once negatively in its
 outgoing hard implication, and once positively in its incoming hard
@@ -311,15 +323,23 @@ from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. GitHub Actions builds the
 module and runs the public theorem comparison.
 
 The module \texttt{PalomaMax2SAT.HardOccurrenceSplit} formalizes propagation
-around a strongly connected directed implication cycle, exact hard-split
-optimum preservation, pointwise feasible-solution value preservation, and the
-exact rational inequality
+around a strongly connected directed implication cycle, together with abstract
+transfer lemmas for optimum and feasible-solution-value preservation that take
+the encoding and decoding score equalities as hypotheses. The module
+\texttt{PalomaMax2SAT.ConcreteHardSplit} instantiates those hypotheses in a
+concrete weighted Horn occurrence model with occurrence-indexed literals,
+weighted Horn clauses, and hard cyclic implications. It proves that encoding a
+source assignment is feasible, that encoding preserves score, that decoding
+any feasible split assignment preserves score, and derives the concrete
+optimum-preservation and concrete feasible-solution value-preservation
+theorems. The exact rational inequality
 \[
-  \frac{83}{84}>0.94615981.
+  \frac{83}{84}>0.94615981
 \]
-The independent Python audit checks 16,314 small Horn formula shapes and
-verifies equality of the complete sets of attainable source and feasible-split
-objective values. The repository is available at~\cite{VegaPalomaRepository}.
+is also formalized. The independent Python audit checks 16,314 small Horn
+formula shapes and verifies equality of the complete sets of attainable source
+and feasible-split objective values. The repository is
+available at~\cite{VegaPalomaRepository}.
 
 \begin{thebibliography}{9}
 \bibitem{AlimontiKann2000}

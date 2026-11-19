@@ -4,100 +4,134 @@ public import Mathlib
 
 public section
 
-/-!
-# Hard-consistency weighted occurrence splitting
+namespace PalomaMax2SAT.ConcreteHardSplit
 
-The cyclic Horn implications are mandatory feasibility constraints and have
-zero objective contribution. Source clauses retain their weights.
--/
+open PalomaMax2SAT.HardOccurrenceSplit
 
-namespace PalomaMax2SAT.HardOccurrenceSplit
+structure Literal (Var : Type*) (Occ : Var → Type*) where
+  var : Var
+  occ : Occ var
+  pos : Bool
 
-/-- Repeated application of the successor map around an occurrence cycle. -/
-def advance {α : Type} (next : α → α) (k : ℕ) (i : α) : α :=
-  Nat.rec i (fun _ current => next current) k
+def HornClause {Var : Type*} {Occ : Var → Type*}
+    (c : Finset (Literal Var Occ)) : Prop :=
+  ∀ l₁ ∈ c, ∀ l₂ ∈ c, l₁.pos = true → l₂.pos = true → l₁ = l₂
 
-/-- Every clone can reach every other clone by following the directed cycle. -/
-def OrbitConnected {α : Type} (next : α → α) : Prop :=
-  ∀ i j, ∃ k, advance next k i = j
+structure WeightedHornSplit (Var : Type*) (Occ : Var → Type*) (Clause : Type*) where
+  weight : Clause → ℕ
+  lits : Clause → Finset (Literal Var Occ)
+  horn : ∀ c, HornClause (lits c)
 
-/-- Satisfaction of every hard implication `(not z_i or z_(i+1))`. -/
-def HardImplicationsHold {α : Type} (next : α → α) (z : α → Bool) : Prop :=
-  ∀ i, z i = true → z (next i) = true
+noncomputable def sourceScore {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ := by
+  classical
+  exact ∑ c : Clause,
+    if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
 
-private theorem propagate_hard_implications {α : Type} (next : α → α)
-    (z : α → Bool) (h : HardImplicationsHold next z) :
-    ∀ k i, z i = true → z (advance next k i) = true := by
-  intro k
-  induction k with
-  | zero =>
-      intro i hi
-      simpa [advance] using hi
-  | succ k ih =>
-      intro i hi
-      change z (next (advance next k i)) = true
-      exact h _ (ih i hi)
+noncomputable def splitScore {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (z : (v : Var) → Occ v → Bool) : ℕ := by
+  classical
+  exact ∑ c : Clause,
+    if ∃ l ∈ F.lits c, z l.var l.occ = l.pos then F.weight c else 0
 
-/-- A directed hard-implication cycle forces all occurrence clones to agree. -/
-theorem hard_implication_cycle_consistent_proof {α : Type} (next : α → α)
-    (z : α → Bool) (horbit : OrbitConnected next)
-    (hhard : HardImplicationsHold next z) :
-    ∀ i j, z i = z j := by
-  intro i j
-  cases hi : z i <;> cases hj : z j
+def Feasible {Var : Type*} {Occ : Var → Type*}
+    (next : ∀ v, Occ v → Occ v)
+    (z : (v : Var) → Occ v → Bool) : Prop :=
+  ∀ v, HardImplicationsHold (next v) (z v)
+
+def encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
+    (v : Var) → Occ v → Bool :=
+  fun v _ => x v
+
+def decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
+    (z : (v : Var) → Occ v → Bool) : Var → Bool :=
+  fun v => z v (base v)
+
+theorem encode_feasible {Var : Type*} {Occ : Var → Type*}
+    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
+    Feasible next (encode (Occ := Occ) x) := by
+  intro v o ho
+  simpa [encode] using ho
+
+theorem encodeScore {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
+    splitScore F (encode (Occ := Occ) x) = sourceScore F x := by
+  classical
+  unfold splitScore sourceScore
+  apply Finset.sum_congr rfl
+  intro c _
+  simp [encode]
+
+theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    {z : (v : Var) → Occ v → Bool} (hz : Feasible next z) :
+    ∀ v o, z v (base v) = z v o := by
+  intro v o
+  cases hb : z v (base v) <;> cases ho : z v o
   · rfl
-  · obtain ⟨k, hk⟩ := horbit j i
-    have htrue := propagate_hard_implications next z hhard k j hj
-    rw [hk, hi] at htrue
+  · obtain ⟨k, hk⟩ := horb v (base v) o
+    have htrue :=
+      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
+    rw [hk, ho] at htrue
     simp at htrue
-  · obtain ⟨k, hk⟩ := horbit i j
-    have htrue := propagate_hard_implications next z hhard k i hi
-    rw [hk, hj] at htrue
+  · obtain ⟨k, hk⟩ := horb v o (base v)
+    have htrue :=
+      propagate_hard_implications (next v) (z v) (hz v) k o ho
+    rw [hk, hb] at htrue
     simp at htrue
   · rfl
 
-def IsOptimum {Assignment : Type} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
-  (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
+theorem decodeScore {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    {z : (v : Var) → Occ v → Bool} (hz : Feasible next z) :
+    sourceScore F (decode base z) = splitScore F z := by
+  classical
+  have hconst : ∀ v o, z v (base v) = z v o :=
+    feasible_constant next base horb hz
+  unfold sourceScore splitScore decode
+  apply Finset.sum_congr rfl
+  intro c _
+  have hsat : (∃ l ∈ F.lits c, z l.var (base l.var) = l.pos) ↔
+      (∃ l ∈ F.lits c, z l.var l.occ = l.pos) := by
+    constructor
+    · rintro ⟨l, hl, h⟩
+      exact ⟨l, hl, by rw [← hconst l.var l.occ]; exact h⟩
+    · rintro ⟨l, hl, h⟩
+      exact ⟨l, hl, by rw [hconst l.var l.occ]; exact h⟩
+  by_cases h : ∃ l ∈ F.lits c, z l.var l.occ = l.pos
+  · have h' : ∃ l ∈ F.lits c, z l.var (base l.var) = l.pos := hsat.mpr h
+    simp [h, h']
+  · have h' : ¬ ∃ l ∈ F.lits c, z l.var (base l.var) = l.pos :=
+      fun hp => h (hsat.mp hp)
+    simp [h, h']
 
-def IsHardOptimum {Assignment : Type} (feasible : Assignment → Prop)
-    (score : Assignment → ℕ) (opt : ℕ) : Prop :=
-  (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
-
-/--
-An encoding/decoding pair that preserves objective values on feasible split
-assignments preserves the optimum exactly. This is the abstract core of the
-hard zero-objective consistency-cycle construction.
--/
-theorem exact_hard_occurrence_split_proof
-    {Source Split : Type}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
-    (opt : ℕ)
-    (hsource : IsOptimum sourceScore opt)
-    (hencodeFeasible : ∀ a, feasible (encode a))
-    (hencodeScore : ∀ a, splitScore (encode a) = sourceScore a)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z) :
-    IsHardOptimum feasible splitScore opt := by
+theorem concrete_exact_hard_occurrence_split_proof
+    {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    (opt : ℕ) (hsource : IsOptimum (sourceScore F) opt) :
+    IsHardOptimum (Feasible next) (splitScore F) opt := by
   constructor
   · intro z hz
-    rw [← hdecodeScore z hz]
-    exact hsource.1 (decode z)
-  · obtain ⟨a, ha⟩ := hsource.2
-    exact ⟨encode a, hencodeFeasible a, (hencodeScore a).trans ha⟩
+    rw [← decodeScore F next base horb hz]
+    exact hsource.1 (decode base z)
+  · obtain ⟨x, hx⟩ := hsource.2
+    refine ⟨encode (Occ := Occ) x, encode_feasible next x, ?_⟩
+    rw [encodeScore F next x, hx]
 
-/-- Every feasible split solution has exactly its decoded source value. -/
-theorem feasible_solution_ratio_preserved_proof
-    {Source Split : Type}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (decode : Split → Source)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
-    (z : Split) (hz : feasible z) :
-    splitScore z = sourceScore (decode z) := by
-  exact (hdecodeScore z hz).symm
+theorem concrete_feasible_solution_ratio_preserved_proof
+    {Var Occ Clause : Type*} [Fintype Clause]
+    (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
+    (horb : ∀ v, OrbitConnected (next v))
+    (z : (v : Var) → Occ v → Bool) (hz : Feasible next z) :
+    splitScore F z = sourceScore F (decode base z) := by
+  exact (decodeScore F next base horb hz).symm
 
-/-- The cubic `83/84` ratio is strictly above the general Horn threshold. -/
-theorem ratio_83_84_exceeds_general_horn_threshold_proof :
-    (83 : ℚ) / 84 > 94615981 / 100000000 := by
-  norm_num
-
-end PalomaMax2SAT.HardOccurrenceSplit
+end PalomaMax2SAT.ConcreteHardSplit
