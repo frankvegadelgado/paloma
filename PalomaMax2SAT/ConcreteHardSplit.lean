@@ -13,7 +13,7 @@ structure Literal (Var : Type*) (Occ : Var → Type*) where
   occ : Occ var
   pos : Bool
 
-def HornClause {Var : Type*} {Occ : Var → Type*}
+abbrev HornClause {Var : Type*} {Occ : Var → Type*}
     (c : Finset (Literal Var Occ)) : Prop :=
   ∀ l₁ ∈ c, ∀ l₂ ∈ c, l₁.pos = true → l₂.pos = true → l₁ = l₂
 
@@ -22,31 +22,27 @@ structure WeightedHornSplit (Var : Type*) (Occ : Var → Type*) (Clause : Type*)
   lits : Clause → Finset (Literal Var Occ)
   horn : ∀ c, HornClause (lits c)
 
-noncomputable def sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
+noncomputable abbrev sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
     [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ := by
-  classical
-  exact ∑ c : Clause,
-    if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
+    (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ :=
+  ∑ c : Clause, if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
 
-noncomputable def splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
+noncomputable abbrev splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
     [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
-    (z : (v : Var) → Occ v → Bool) : ℕ := by
-  classical
-  exact ∑ c : Clause,
-    if ∃ l ∈ F.lits c, z l.var l.occ = l.pos then F.weight c else 0
+    (z : (v : Var) → Occ v → Bool) : ℕ :=
+  ∑ c : Clause, if ∃ l ∈ F.lits c, z l.var l.occ = l.pos then F.weight c else 0
 
-def Feasible {Var : Type*} {Occ : Var → Type*}
+abbrev Feasible {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v)
     (z : (v : Var) → Occ v → Bool) : Prop :=
   ∀ v, HardImplicationsHold (next v) (z v)
 
-def encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
+abbrev encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
     (v : Var) → Occ v → Bool :=
   fun v _ => x v
 
-def decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
+abbrev decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
     (z : (v : Var) → Occ v → Bool) : Var → Bool :=
   fun v => z v (base v)
 
@@ -59,7 +55,7 @@ theorem encode_feasible {Var : Type*} {Occ : Var → Type*}
 theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
     [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
-    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
+    (_next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
     splitScore F (encode (Occ := Occ) x) = sourceScore F x := by
   classical
   unfold splitScore sourceScore
@@ -68,11 +64,10 @@ theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
   by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos
   · have h' : ∃ l ∈ F.lits c, encode (Occ := Occ) x l.var l.occ = l.pos := by
       simpa [encode] using h
-    rw [if_pos h', if_pos h]
+    simp [h, h']
   · have h' : ¬ ∃ l ∈ F.lits c, encode (Occ := Occ) x l.var l.occ = l.pos := by
-      simp [encode]
-      exact h
-    rw [if_neg h', if_neg h]
+      simpa [encode] using h
+    simp [h, h']
 
 theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
@@ -82,15 +77,15 @@ theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
   intro v o
   cases hb : z v (base v) <;> cases ho : z v o
   · rfl
-  · obtain ⟨k, hk⟩ := horb v (base v) o
-    have htrue :=
-      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
-    rw [hk, ho] at htrue
-    simp at htrue
   · obtain ⟨k, hk⟩ := horb v o (base v)
     have htrue :=
       propagate_hard_implications (next v) (z v) (hz v) k o ho
     rw [hk, hb] at htrue
+    simp at htrue
+  · obtain ⟨k, hk⟩ := horb v (base v) o
+    have htrue :=
+      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
+    rw [hk, ho] at htrue
     simp at htrue
   · rfl
 

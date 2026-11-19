@@ -6,23 +6,23 @@ public section
 
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
-abbrev advance {α : Type} (next : α → α) (k : ℕ) (i : α) : α :=
+abbrev advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
   Nat.rec i (fun _ current => next current) k
 
-abbrev OrbitConnected {α : Type} (next : α → α) : Prop :=
+abbrev OrbitConnected {α : Type*} (next : α → α) : Prop :=
   ∀ i j, ∃ k, advance next k i = j
 
-abbrev HardImplicationsHold {α : Type} (next : α → α) (z : α → Bool) : Prop :=
+abbrev HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
 
-abbrev IsOptimum {Assignment : Type} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
+abbrev IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
 
-abbrev IsHardOptimum {Assignment : Type} (feasible : Assignment → Prop)
+abbrev IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
 
-theorem propagate_hard_implications {α : Type} (next : α → α)
+theorem propagate_hard_implications {α : Type*} (next : α → α)
     (z : α → Bool) (h : HardImplicationsHold next z) :
     ∀ k i, z i = true → z (advance next k i) = true := by
   intro k
