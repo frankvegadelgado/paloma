@@ -35,8 +35,7 @@ theorem propagate_hard_implications {α : Type*} (next : α → α)
       change z (next (advance next k i)) = true
       exact h _ (ih i hi)
 
-/-- Restored: the proof used by `Solution.lean` for
-`HardSplitPublic.hard_implication_cycle_consistent`. -/
+/-- A directed hard-implication cycle forces all occurrence clones to agree. -/
 theorem hard_implication_cycle_consistent_proof {α : Type*} (next : α → α)
     (z : α → Bool) (horbit : OrbitConnected next)
     (hhard : HardImplicationsHold next z) :
@@ -54,10 +53,10 @@ theorem hard_implication_cycle_consistent_proof {α : Type*} (next : α → α)
     simp at htrue
   · rfl
 
-/-- Restored: the proof used by `Solution.lean` for
-`HardSplitPublic.exact_hard_occurrence_split`. -/
+/-- An encoding/decoding pair that preserves objective values on feasible
+split assignments preserves the optimum exactly. -/
 theorem exact_hard_occurrence_split_proof
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
     (opt : ℕ)
@@ -73,10 +72,9 @@ theorem exact_hard_occurrence_split_proof
   · obtain ⟨a, ha⟩ := hsource.2
     exact ⟨encode a, hencodeFeasible a, (hencodeScore a).trans ha⟩
 
-/-- Restored: the proof used by `Solution.lean` for
-`HardSplitPublic.feasible_solution_ratio_preserved`. -/
+/-- Every feasible split solution has exactly its decoded source value. -/
 theorem feasible_solution_ratio_preserved_proof
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (decode : Split → Source)
     (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
@@ -84,8 +82,7 @@ theorem feasible_solution_ratio_preserved_proof
     splitScore z = sourceScore (decode z) := by
   exact (hdecodeScore z hz).symm
 
-/-- Restored: the proof used by `Solution.lean` for
-`HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold`. -/
+/-- The cubic `83/84` ratio is strictly above the general Horn threshold. -/
 theorem ratio_83_84_exceeds_general_horn_threshold_proof :
     (83 : ℚ) / 84 > 94615981 / 100000000 := by
   norm_num
