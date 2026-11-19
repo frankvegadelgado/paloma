@@ -19,6 +19,8 @@ jobs:
           persist-credentials: false
       - name: Check Lean source requirements
         run: python3 scripts/check-lean-sources.py
+      - name: Check weighted split finite audit
+        run: python3 experiments/weighted_test_horn_split.py
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
         with:
           build: true
@@ -38,5 +40,5 @@ jobs:
           sudo apt-get update -qq >/dev/null
           sudo apt-get install -y -qq bubblewrap >/dev/null
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-      - name: Compare Challenge and Solution
+      - name: Compare weighted split Challenge and Solution
         run: bash scripts/verify-comparator.sh

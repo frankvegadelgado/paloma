@@ -4,45 +4,26 @@ public import PalomaMax2SAT
 
 public section
 
-namespace PalomaMax2SAT
+namespace PalomaMax2SAT.WeightedSplit
 
-theorem exactMax2SATIdentity {N q K opt : ℕ} (φ : Instance N q)
-    (hopt : IsMAX2SATOptimum φ opt) :
-    IsMaximumScore (K := K) φ (N + K * opt) := by
-  exact exactMax2SATIdentity_proof φ hopt
+theorem dominant_consistency_weight_identity {Assignment : Type}
+    (C M W opt : ℕ) (sourceScore consistencyFailures : Assignment → ℕ)
+    (hfail : ∀ a, consistencyFailures a ≤ C)
+    (hsource : ∀ a, sourceScore a ≤ W)
+    (hconsistent : ∀ a, consistencyFailures a = 0 → sourceScore a ≤ opt)
+    (hattain : ∃ a, consistencyFailures a = 0 ∧ sourceScore a = opt)
+    (hdominates : W < M) :
+    IsWeightedSplitOptimum C M sourceScore consistencyFailures (C * M + opt) := by
+  exact dominant_consistency_weight_identity_proof C M W opt sourceScore
+    consistencyFailures hfail hsource hconsistent hattain hdominates
 
-theorem satisfiable_iff_optimum_eq_clauseCount {N q opt : ℕ}
-    (φ : Instance N q) (hopt : IsMAX2SATOptimum φ opt) :
-    Satisfiable φ ↔ opt = q := by
-  exact satisfiable_iff_optimum_eq_clauseCount_proof φ hopt
+theorem dominant_baseline_18_19 (C M opt : ℕ) (hC : 18 ≤ C)
+    (hopt : opt < M) :
+    18 * (C * M + opt) ≤ 19 * (C * M) := by
+  exact dominant_baseline_18_19_proof C M opt hC hopt
 
-theorem satisfiable_iff_target {N q K opt : ℕ} (φ : Instance N q)
-    (hopt : IsMAX2SATOptimum φ opt) (hK : 0 < K) :
-    Satisfiable φ ↔ N + K * opt = N + K * q := by
-  exact satisfiable_iff_target_proof φ hopt hK
+theorem ratio_18_19_exceeds_general_weighted_horn :
+    (18 : ℚ) / 19 > 94615981 / 100000000 := by
+  exact ratio_18_19_exceeds_general_weighted_horn_proof
 
-theorem conditionalUnsatOfRatioGap {N q K score graphOrder a b : ℕ}
-    (φ : Instance N q)
-    (hratio : Satisfiable φ →
-      (N + K * q) ^ b ≤ score ^ b * graphOrder ^ (b - a))
-    (hgap : score ^ b * graphOrder ^ (b - a) < (N + K * q) ^ b) :
-    ¬ Satisfiable φ := by
-  exact conditionalUnsatOfRatioGap_proof φ hratio hgap
-
-theorem binaryClauseReward_truthTable (left right : Bool) :
-    binaryClauseReward left right = 1 ↔ left = true ∨ right = true := by
-  exact binaryClauseReward_truthTable_proof left right
-
-theorem exhaustiveAuditCount :
-    2 * (∑ clauseCount ∈ Finset.range 4, 10 ^ clauseCount) = 2222 := by
-  exact exhaustiveAuditCount_proof
-
-theorem exhaustiveSmallGadgetSearch :
-    clauseORGadgetCount 1 0 = 0 ∧ clauseORGadgetCount 1 1 = 1 ∧
-    clauseORGadgetCount 2 0 = 0 ∧ clauseORGadgetCount 2 1 = 0 ∧
-      clauseORGadgetCount 2 2 = 2 ∧
-    clauseORGadgetCount 3 0 = 0 ∧ clauseORGadgetCount 3 1 = 0 ∧
-      clauseORGadgetCount 3 2 = 0 ∧ clauseORGadgetCount 3 3 = 6 := by
-  exact exhaustiveSmallGadgetSearch_proof
-
-end PalomaMax2SAT
+end PalomaMax2SAT.WeightedSplit

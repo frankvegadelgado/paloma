@@ -2,14 +2,14 @@
   "challenge_module": "Challenge",
   "solution_module": "Solution",
   "theorem_names": [
-    "PalomaMax2SAT.exactMax2SATIdentity",
-    "PalomaMax2SAT.satisfiable_iff_optimum_eq_clauseCount",
-    "PalomaMax2SAT.satisfiable_iff_target",
-    "PalomaMax2SAT.conditionalUnsatOfRatioGap",
-    "PalomaMax2SAT.binaryClauseReward_truthTable",
-    "PalomaMax2SAT.exhaustiveAuditCount"
+    "PalomaMax2SAT.WeightedSplit.dominant_consistency_weight_identity",
+    "PalomaMax2SAT.WeightedSplit.dominant_baseline_18_19",
+    "PalomaMax2SAT.WeightedSplit.ratio_18_19_exceeds_general_weighted_horn"
   ],
-  "definition_names": [],
+  "definition_names": [
+    "PalomaMax2SAT.WeightedSplit.weightedSplitScore",
+    "PalomaMax2SAT.WeightedSplit.IsWeightedSplitOptimum"
+  ],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
   "enable_nanoda": true
 }

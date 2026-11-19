@@ -1,159 +1,93 @@
-# Exact MAX-2SAT assignment--witness identity
+# A weighted three-occurrence MAX-HORN-2SAT image class
 
-This standalone Lean 4 project formalizes an exact reduction from MAX-2SAT to
-Maximum Independent Set (MIS), together with its SAT threshold, conditional
-approximation consequence, and finite gadget audit.
+This repository focuses on one result: a dominant-weight occurrence split
+whose image is a special weighted three-occurrence MAX-HORN-2SAT class with a
+polynomial `18/19` approximation and, more generally, a PTAS.
 
-**Author:** Frank Vega<br>
+**Author:** Frank Vega  
 **Affiliation:** Information Physics Institute, 840 W 67th St, Hialeah, FL
-33012, USA<br>
+33012, USA  
 **Email:** [vega.frank@gmail.com](mailto:vega.frank@gmail.com)
 
-## Main result
+## Construction and exact identity
 
-For a 2-CNF formula `φ` on `N` variables, with every clause copied `K` times,
-the assignment--witness conflict graph satisfies
+For a weighted MAX-HORN-2SAT instance `F`, let `W` be its total clause weight
+and `C` its number of literal occurrences. Split every occurrence into a clone.
+For the clones of each original variable, add a directed cycle of consistency
+implications, each of weight `M > W` (for example, `M = W + 1`).
 
-```text
-α(G_{φ,K}) = N + K * OPT_MAX2SAT(φ).
-```
-
-The graph has two adjacent assignment values for each variable, one witness
-for each literal occurrence in each clause-copy, a clique on the witnesses of
-each clause-copy, edges between complementary witnesses, and an edge from each
-witness to the assignment value that falsifies it.
-
-The identity has matching constructive bounds. From an assignment satisfying
-`r` clauses, select all `N` corresponding assignment vertices and one true
-witness from every copy of each satisfied clause, obtaining an independent set
-of size `N + K*r`. Conversely, the witnesses of any independent set have
-consistent signs. They determine a partial assignment that can be completed
-without invalidating a selected witness. Each clause-copy contributes at most
-one witness, so a set decoded to an assignment satisfying `r` clauses has size
-at most `N + K*r`. Taking the best assignment proves equality.
-
-`PalomaMax2SAT/Identity.lean` formalizes:
-
-- finite MAX-2SAT syntax, literal evaluation, satisfaction, and optimum;
-- the four conflict constraints defining graph-independent selections;
-- construction of a total decoded assignment from any independent selection;
-- truth of every selected witness under that assignment;
-- the exact identity and the target `N + Kq` characterization of SAT;
-- the exact powered-integer conditional approximation implication;
-- the binary clause-gadget truth table;
-- the audit cardinality `2(1 + 10 + 10^2 + 10^3) = 2222`; and
-- exhaustive local gadget enumeration through arity three, proving minimum
-  auxiliary orders `1,2,3` and labelled minimum counts `1,2,6`.
-
-## Consequences and limits
-
-The reduction is affine and optimum-preserving. Given an exact MIS optimum,
+Each clone then occurs exactly three times: once in its source clause, once
+negatively in its outgoing implication, and once positively in its incoming
+implication. The resulting instance `T_M(F)` satisfies
 
 ```text
-OPT_MAX2SAT(φ) = (α(G_{φ,K}) - N) / K.
+OPT(T_M(F)) = C*M + OPT(F).
 ```
 
-For `K > 0`, satisfiability is characterized exactly by the graph threshold
-`α(G_{φ,K}) = N + K*q`. Reaching only the `N` assignment vertices is not a
-SAT certificate; a positive certificate must provide an assignment satisfying
-all `q` clauses.
+An inconsistent assignment loses at least one clause of weight `M`; all source
+clauses together have weight at most `W < M`. Hence every optimum is consistent
+and the identity follows.
 
-The formalization also proves a conditional approximation test using exact
-natural-number arithmetic. If a claimed MIS guarantee would imply
+## Approximation result
+
+The image class has a polynomial `18/19` approximation:
+
+- If `C <= 17`, enumerate at most `2^17` clone assignments and solve exactly.
+- If `C >= 18`, set every clone to false. This satisfies all consistency
+  implications and earns at least `C*M`.
+
+Since `OPT(F) <= W < M`, the second branch has ratio
 
 ```text
-(N + K*q)^b ≤ score^b * graphOrder^(b-a)
+C*M / (C*M + OPT(F)) > C/(C+1) >= 18/19
 ```
 
-on satisfiable instances, observing the strict reverse inequality establishes
-unsatisfiability under that guarantee. Without the guarantee, the observation
-instead exposes a failed approximation claim and is not by itself an UNSAT
-proof.
+and `18/19 = 0.947368421... > 0.94615981`.
 
-Uniformly copying each clause supplies integer weights and an additive gap,
-but does not create the polynomial multiplicative gap needed for an
-`n^(1-ε)` MIS inapproximability result: the satisfiable/unsatisfiable ratio
-approaches only `q/(q-1)`. The repository claims the exact identity and its
-stated consequences, not such a gap amplification.
+The same dichotomy is a PTAS: for fixed `epsilon`, enumerate when
+`C < 1/epsilon`; otherwise the all-false assignment has ratio greater than
+`1 - epsilon`. The running time is
+`2^O(1/epsilon) * poly(input size)`.
 
-## Independent finite evidence
+The comparison is with the tight UGC threshold reported for the unrestricted
+weighted MAX `{1,2}`-HORN-SAT language. A better algorithm on this proper image
+class does not contradict that general hardness result, and the additive
+offset `C*M` cannot in general be subtracted from a multiplicative guarantee
+to recover the same ratio for the source instance.
 
-The repository also contains a separate Python bit-mask checker:
+## Verification
 
-- `experiments/max2sat_exhaustive.py`
-- `experiments/results/max2sat_exhaustive.json`
+`PalomaMax2SAT/WeightedSplit.lean` contains only the formal numerical core:
 
-It calls neither NetworkX nor the Lean development. It independently enumerates
-truth assignments, constructs integer edge masks, enumerates every graph vertex
-subset, and checks the exact identity. The recorded two-variable audit covers
-2,222 ordered formula/multiplicity instances with zero counterexamples.
+- the dominant-weight optimum identity;
+- the division-free `18/19` baseline inequality; and
+- the exact comparison `18/19 > 0.94615981`.
 
-The Lean theorem does not import or assume those finite outcomes. It imports
-only Mathlib and proves the identity for every finite instance represented by
-its definitions and every natural multiplicity `K`.
+`experiments/weighted_test_horn_split.py` independently checks the optimum
+identity on 4,218 small weighted formula shapes and prints the ratio comparison.
 
-The separate local gadget search enumerates every auxiliary graph and terminal
-attachment through arity three. It proves minimum auxiliary orders `1,2,3`
-and labelled minimum counts `1,2,6`: the clause clique with one-to-one
-falsifying-terminal attachments, up to relabelling.
+The Lean sources contain no admitted placeholders. GitHub Actions is the verification
+authority: it installs the pinned toolchain, builds the focused library, runs
+the source-policy check, and compares the public `Challenge.lean` and
+`Solution.lean` statements through Comparator and its independent kernels.
 
-## Formal proof and trust boundary
+The paper is `doc/paper.tex`, with its compiled artifact at `doc/paper.pdf`.
 
-`GraphIndependentSet` is an extensional encoding of independent selections.
-Finite-set indexing enforces the assignment-pair and clause-copy clique
-constraints; explicit fields enforce complementary-witness consistency and
-assignment--witness compatibility. Witness truth is derived by the decoder,
-not assumed as part of the structure.
-
-`Challenge.lean` intentionally retains one `sorry` placeholder for the main
-exact-identity theorem that Comparator asks `Solution.lean` to prove; the
-short supporting results are proved directly, minimizing placeholder warnings.
-That remaining warning belongs to the challenge interface and is not an
-admitted proof in the submitted solution. The implementation in
-`PalomaMax2SAT/Identity.lean` and every theorem in `Solution.lean` contain no
-`sorry`. Comparator replays the exact identity, its corollaries, the binary
-truth table, and the 2,222-case domain count through Lean's kernel and the
-toolchain's NanoDa and con-ron independent kernels. The exhaustive local gadget
-search uses fast `native_decide` evaluation and is deliberately excluded from
-Comparator because native evaluation introduces a generated proof axiom that
-those independent kernels reject. Its result is also recorded by the separate
-Python audit. The Comparator-permitted foundational axioms are limited to
-`propext`, `Quot.sound`, and `Classical.choice`.
-
-## Standalone paper
-
-`doc/paper.tex` is a self-contained AMS note. It introduces MIS and MAX-2SAT,
-proves the identity, explains exact optimization transfer, SAT certification,
-the conditional approximation test, the limitation of uniform replication,
-and cites the standard complexity and approximation literature.
-This README summarizes its main technical content; the paper supplies the
-continuous mathematical exposition and bibliography.
-
-## Project layout
-
-- `Challenge.lean` is the small, Mathlib-only public statement surface.
-- `Solution.lean` supplies proofs from `PalomaMax2SAT/Identity.lean`.
-- `comparator.json` selects the axiom-free public mathematical theorems for
-  independent-kernel comparison; the executable gadget search is build-checked
-  separately.
-- `formalization.yaml` records scope, provenance, and theorem alignment.
-- `scripts/check-lean-sources.py` performs source-policy checks.
-- `.github/workflows/palomar.yml` builds and runs Comparator remotely.
-
-## Remote verification
-
-The GitHub Actions workflow installs the pinned toolchain and Mathlib, builds
-the project, checks source policy, and runs Comparator. A public immutable
-commit can then be submitted to Palomar for Lean, Comparator, and independent
-kernel verification.
-
-The equivalent commands are:
+## Build
 
 ```sh
-lake build
-python3 scripts/check-lean-sources.py
-bash scripts/verify-comparator.sh
+python experiments/weighted_test_horn_split.py
 ```
+
+Lean is intentionally checked by `.github/workflows/palomar.yml` rather than
+by a local build that could download a toolchain.
+
+## Reference
+
+J. Brakensiek, N. Huang, and U. Zwick, “Tight approximability of MAX 2-SAT
+and relatives, under UGC,” SODA 2024.
+
+Repository: [frankvegadelgado/paloma](https://github.com/frankvegadelgado/paloma)
 
 ## License
 

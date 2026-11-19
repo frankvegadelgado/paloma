@@ -1,3 +1,3 @@
 module
 
-public import PalomaMax2SAT.Identity
+public import PalomaMax2SAT.WeightedSplit

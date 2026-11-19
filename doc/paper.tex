@@ -7,7 +7,8 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 
-\title{The Exact MAX-2SAT Assignment--Witness Identity}
+\title[A weighted three-occurrence Horn image class]
+{A PTAS for a Weighted Three-Occurrence MAX-HORN-2SAT Image Class}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
@@ -15,193 +16,205 @@
 
 \begin{document}
 \begin{abstract}
-We prove an exact MAX-2SAT-to-MIS identity and isolate its valid algorithmic
-consequences.  The accompanying Lean~4 development imports only Mathlib and is
-independent of NetworkX and the Python exhaustive checker.  The checker
-supplies separate finite evidence by reconstructing the reduction as integer
-edge masks.
+We define a weighted three-occurrence image class obtained by splitting every
+literal occurrence of a weighted MAX-HORN-2SAT instance and enforcing each
+original variable by a directed cycle of heavy Horn implications. If $C$ is
+the number of source occurrences, $W$ is the total source weight, and every
+consistency implication has weight $M>W$, then
+\[
+  \operatorname{OPT}(T_M(F))=CM+\operatorname{OPT}(F).
+\]
+Every clone occurs exactly three times. We give a direct polynomial-time
+$18/19$-approximation for the image class, where
+$18/19=0.947368\ldots>0.94615981$, the tight Unique-Games threshold reported
+for general weighted MAX~$\{1,2\}$-HORN-SAT. More generally, the same argument
+gives a PTAS for the image class. The improvement concerns the structured
+image class and therefore does not conflict with hardness for the unrestricted
+language. Lean~4 formalizes the dominant-weight identity and the arithmetic
+inequality underlying the $18/19$ bound.
 \end{abstract}
 \maketitle
 
 \section{Introduction}
 
-For a finite simple graph $G=(V,E)$, an \emph{independent set} is a set
-$S\subseteq V$ containing no edge of $G$.  The Maximum Independent Set (MIS)
-problem asks for
+Weighted MAX-HORN-2SAT asks for an assignment maximizing the total weight of
+satisfied unary and binary Horn clauses. We allow either of the two globally
+complementary Horn conventions: clauses with at most one positive literal, or
+clauses with at most one negative literal. Complementing every variable
+converts one convention into the other without changing any assignment value.
+
+Brakensiek, Huang, and Zwick give the value $0.94615981$ for weighted
+MAX~$\{1,2\}$-HORN-SAT and prove the corresponding conditional hardness under
+the Unique Games Conjecture~\cite{BrakensiekHuangZwick2024}. Their MAX-CSP
+model explicitly assigns a nonnegative weight to each constraint. That
+threshold concerns the unrestricted Horn language. This note isolates a
+proper, highly structured image class and proves a stronger guarantee on that
+class.
+
+The result has two parts. First, a dominant consistency weight gives an exact
+affine optimum identity. Second, the same dominant offset makes the image
+class easier to approximate: either it contains only constantly many clones
+and can be solved by enumeration, or satisfying all heavy implications already
+captures almost all of the optimum. This dichotomy gives both the explicit
+$18/19$ ratio and a PTAS.
+
+\section{The weighted occurrence split}
+
+Let $F$ be a weighted MAX-HORN-2SAT instance. Its clause weights are positive
+rationals encoded in binary, and
 \[
- \alpha(G)=\max\{|S|:S\subseteq V\text{ is independent}\}.
+  W=\sum_{D\in F}w(D)
 \]
-Equivalently, an independent set of $G$ is a clique in the complement graph,
-and its complement in $V$ is a vertex cover.  MIS is one of the classical
-NP-hard graph-optimization problems~\cite{Karp1972,GareyJohnson1979}; its
-approximation behavior is correspondingly severe~\cite{Zuckerman2007}.
+is their total. Let $C$ be the total number of literal occurrences in $F$.
+For every occurrence of a literal of an original variable $x$, introduce a
+distinct clone. Replace that occurrence in its source clause by the clone,
+with the same polarity and clause weight.
 
-MAX-2SAT is the optimization version of 2-CNF satisfiability: each clause has
-at most two literals, and the objective is to maximize the number of satisfied
-clauses.  Although deciding satisfiability of a 2-CNF formula is polynomial,
-MAX-2SAT is an NP-hard optimization problem and is a central test case for
-approximation algorithms~\cite{GareyJohnsonStockmeyer1976,GoemansWilliamson1995}.
-It is therefore useful to know exactly what objective value is represented by
-a graph reduction, rather than only whether a one-way implication holds.
+Suppose the occurrences of $x$ receive clones
+$x_0,\ldots,x_{d-1}$. Add the directed cyclic implications
+\[
+  (\neg x_i\vee x_{i+1}) \qquad (i\bmod d),
+\]
+each with a common weight $M>W$. Repeated literals are allowed when $d=1$;
+equivalently, that one consistency clause is the tautological implication
+$x_0\to x_0$. Denote the resulting instance by $T_M(F)$. One may always
+choose $M=W+1$, so the construction is polynomial in the binary encoding.
 
-This note gives such an exact identity.  It supplies matching lower and upper
-bounds, a decoding theorem, an exact SAT threshold, and a conditional test for
-a claimed MIS approximation ratio.  It also records the limitation of uniform
-clause replication: copies implement integer weights but do not amplify the
-multiplicative gap to a polynomial one.  The Lean development formalizes these
-claims from finite definitions, while a separate exhaustive checker provides
-independent small-instance evidence.
+Every clone occurs once in a source clause, once negatively in its outgoing
+implication, and once positively in its incoming implication. Thus every
+variable of $T_M(F)$ has exactly three literal occurrences. All consistency
+clauses are Horn, and the source clauses remain Horn, so $T_M(F)$ is a weighted
+three-occurrence MAX-HORN-2SAT instance. We call the set of instances produced
+in this way the \emph{dominant split image class}.
 
-\section{The assignment--witness graph}
-
-Let $\varphi=C_1\wedge\cdots\wedge C_q$ be a 2-CNF formula on $N$
-variables, and let every clause have $K\ge1$ copies.  The graph
-$G_{\varphi,K}$ has two assignment vertices $x_i^T,x_i^F$ joined by an edge,
-and one witness vertex for each literal occurrence in each clause-copy.
-The two witnesses of a binary clause-copy are adjacent.  Every pair of
-witnesses carrying complementary literals is adjacent, and every witness is
-adjacent to the assignment value that falsifies its literal.
-
-\begin{lemma}[Assignment completion]
-Every independent set extends, without deleting a witness, to an independent
-set containing exactly one assignment vertex for every variable.  Every
-selected witness is true under the resulting assignment.
+\begin{lemma}[Cycle consistency]\label{lem:cycle}
+An assignment satisfies every implication on the cycle of an original
+variable if and only if all clones on that cycle have the same value.
 \end{lemma}
-
 \begin{proof}
-Selected witnesses cannot carry complementary literals, so they define a
-consistent partial assignment.  Extend it arbitrarily to all variables and
-select the corresponding assignment vertex for each variable.  The
-complementary-witness edges guarantee consistency, the assignment edge permits
-only one value per variable, and the witness--assignment compatibility edge
-excludes precisely the value that would falsify a selected witness.
+A constant assignment clearly satisfies the cycle. Conversely, a nonconstant
+cyclic binary sequence has a $1$-to-$0$ transition. The implication at that
+transition is false.
 \end{proof}
 
-Write $\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)$ for the largest number
-of clauses satisfied by one assignment.
-
-\begin{theorem}[Exact identity]
+\begin{theorem}[Exact weighted identity]\label{thm:identity}
+For every weighted MAX-HORN-2SAT instance $F$ and every $M>W$,
 \[
- \alpha(G_{\varphi,K})
- =N+K\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi).
+  \operatorname{OPT}(T_M(F))=CM+\operatorname{OPT}(F).
 \]
-Consequently, $\varphi$ is satisfiable if and only if
-$\alpha(G_{\varphi,K})=N+Kq$.
 \end{theorem}
-
 \begin{proof}
-If an assignment satisfies $r$ clauses, select its $N$ assignment vertices and
-one true witness in every copy of each satisfied clause.  The result is
-independent and has size $N+Kr$, proving the lower bound at an optimal
-assignment.
+Lift an optimum assignment of $F$ by giving every clone the value of its
+original variable. All $C$ consistency implications are satisfied and the
+source contribution is unchanged, giving $CM+\operatorname{OPT}(F)$.
 
-Conversely, complete an arbitrary independent set by the lemma.  A
-clause-copy contributes at most one witness, and every selected witness is
-true under the completed assignment.  If that assignment satisfies $r$
-clauses, the set has at most $N+Kr$, which is at most
-$N+K\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)$.  The bounds coincide.
+If a split assignment is inconsistent, Lemma~\ref{lem:cycle} shows that it
+loses at least one implication. Even if it satisfies every source clause, its
+value is at most
+\[
+  (C-1)M+W<CM\le CM+\operatorname{OPT}(F).
+\]
+Hence no inconsistent assignment is optimal. Every consistent assignment
+decodes to a source assignment with the same source contribution, proving the
+matching upper bound.
 \end{proof}
 
-\section{Applications and significance}
+\section{Approximation above the general threshold}
 
-The identity is stronger than a one-way reduction: it is an affine,
-optimum-preserving correspondence.  An exact MIS optimum immediately yields
-the MAX-2SAT optimum by
+For a maximization instance, the solution ratio is its returned value divided
+by its optimum.
+
+\begin{theorem}[Explicit improvement]\label{thm:ratio}
+The dominant split image class admits a polynomial-time $18/19$ approximation.
+In particular,
 \[
- \operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)
- =\frac{\alpha(G_{\varphi,K})-N}{K}.
+  \frac{18}{19}=0.947368421\ldots>0.94615981.
 \]
-Conversely, an assignment satisfying $r$ clauses constructs an independent
-set of size $N+Kr$.  Thus exact solvers on either side provide exact numerical
-certificates for the other side.
+\end{theorem}
+\begin{proof}
+The split instance has exactly $C$ clone variables. If $C\le17$, enumerate
+its at most $2^{17}$ assignments and return an optimum.
 
-The threshold $N+Kq$ gives a SAT application.  Reaching it is equivalent to
-satisfiability, but merely selecting $N$ assignment vertices is not a SAT
-certificate: every total assignment does that.  A positive certificate must
-include a decoded assignment and a direct check that all $q$ source clauses
-are true.  The graph proof explains why each selected occurrence witness is
-sound under that decoded assignment.
-
-There is also a sound conditional approximation test.  Suppose an MIS
-algorithm returns a set of size $s$ on a graph of order $n_G$ and is claimed
-to satisfy ratio $n_G^{1-a/b}$, where $0<a<b$.  If $\varphi$ were satisfiable,
-the theorem would give $\alpha=N+Kq$, so the claimed ratio would require
+If $C\ge18$, set every clone to false. Every heavy clause
+$\neg x_i\vee x_{i+1}$ is then true, so the returned value is at least $CM$.
+Theorem~\ref{thm:identity} and $\operatorname{OPT}(F)\le W<M$ give
 \[
- (N+Kq)^b\le s^b n_G^{\,b-a}.
+ \frac{CM}{\operatorname{OPT}(T_M(F))}
+ =\frac{CM}{CM+\operatorname{OPT}(F)}
+ >\frac{CM}{CM+M}
+ =\frac{C}{C+1}
+ \ge\frac{18}{19}.
 \]
-Therefore
+Both branches run in polynomial time; the enumeration bound is absolute.
+\end{proof}
+
+The cutoff 18 is chosen only to cross the quoted general threshold. Allowing
+the cutoff to depend on an accuracy parameter yields the stronger statement.
+
+\begin{theorem}[PTAS]\label{thm:ptas}
+For every fixed $\varepsilon>0$, the dominant split image class has a
+polynomial-time $(1-\varepsilon)$-approximation. Its running time is
+$2^{O(1/\varepsilon)}\operatorname{poly}(|T_M(F)|)$.
+\end{theorem}
+\begin{proof}
+If $C<1/\varepsilon$, enumerate all $2^C$ assignments and solve the instance
+exactly. Otherwise set every clone to false. As in Theorem~\ref{thm:ratio},
+its ratio is strictly greater than
 \[
- s^b n_G^{\,b-a}<(N+Kq)^b
+  \frac{C}{C+1}=1-\frac{1}{C+1}>1-\varepsilon.
 \]
-proves that either $\varphi$ is unsatisfiable or the claimed approximation
-guarantee fails on this graph.  Under the guarantee hypothesis it is a valid
-UNSAT conclusion; without that hypothesis it is not.
+For fixed $\varepsilon$, the exponential factor depends only on
+$\varepsilon$, not on the input size.
+\end{proof}
 
-The identity also prevents an invalid hardness inference.  Replacing every
-clause by $K$ copies supplies integer weights and an additive gap $K$, but the
-satisfiable/unsatisfiable optimum ratio tends only to $q/(q-1)$.  Uniform
-replication therefore does not create the polynomial gap required for an
-$n^{1-\varepsilon}$ MIS inapproximability reduction.  This distinction is an
-important application of the exact formula: it identifies both what the
-construction certifies and what it cannot certify.
+\section{Interpretation and scope}
 
-\section{Independent exhaustive evidence}
+Theorem~\ref{thm:ratio} is a positive separation between a structured image
+class and the conditional threshold for the unrestricted weighted Horn
+language. The PTAS identifies the structural reason: the total source
+objective is smaller than one heavy consistency clause, while there are $C$
+such clauses. As $C$ grows, the heavy, simultaneously satisfiable part
+dominates the objective; when $C$ is small, exact enumeration is
+fixed-parameter tractable in $C$.
 
-The Python audit does not call NetworkX.  It enumerates every
-truth assignment to compute $\operatorname{OPT}_{\mathrm{MAX2SAT}}$, builds
-the graph independently as integer edge masks, enumerates every vertex subset
-to compute $\alpha$, and asserts the identity.  On two variables, for every
-ordered formula with zero through three nonempty unary or binary clauses and
-$K\in\{1,2\}$, this gives
+This does not refute the Unique Games Conjecture. A hardness threshold for all
+weighted MAX-HORN-2SAT instances permits proper subclasses with better
+algorithms. Nor does subtracting the affine term $CM$ transfer the PTAS back
+to arbitrary source instances. If a consistent split assignment has source
+value $s$ and split ratio $\rho$, the general decoded inequality is only
 \[
- 2(10^0+10^1+10^2+10^3)=2222
+  \frac{s}{\operatorname{OPT}(F)}
+  \ge \rho-(1-\rho)\frac{CM}{\operatorname{OPT}(F)},
 \]
-formula--multiplicity instances and zero counterexamples.
+whose second term is unbounded. The contribution is therefore the stronger
+approximation theory of the dominant split image class itself.
 
-The local search independently enumerates every auxiliary graph and terminal
-attachment through arity three.  It proves minimum auxiliary orders $1,2,3$
-and labelled minimum counts $1,2,6$: precisely the clause clique with
-one-to-one falsifying-terminal attachments, up to relabelling.
+\section{Verification artifacts}
 
-\section{Lean alignment}
+The accompanying Lean~4 module defines the weighted split score, proves the
+dominant-weight optimum identity from explicit hypotheses, proves the
+natural-number inequality behind the $18/19$ branch, and checks
+$18/19>0.94615981$ by exact rational normalization.
 
-The public exact-identity theorem formalizes this result.  The source
-constructs the completed assignment from the
-complementary-witness and assignment-compatibility invariants, rather than
-assuming witness validity.  The audit-count theorem proves the $2222$ count,
-and the gadget-search theorem evaluates the
-finite local search through arity three.  GitHub Actions and Palomar run the
-pinned Lean, Comparator, and independent-kernel checks on the public commit.
+The independent program
+\texttt{experiments/weighted\_test\_horn\_split.py} exhaustively checks the
+identity on 4,218 small weighted formula shapes and records the explicit ratio
+comparison. Finite testing is not used as a premise. Source, paper, and
+verification artifacts are available in the public
+repository~\cite{VegaPalomaRepository}.
 
 \begin{thebibliography}{9}
+\bibitem{BrakensiekHuangZwick2024}
+J.~Brakensiek, N.~Huang, and U.~Zwick,
+\emph{Tight approximability of MAX 2-SAT and relatives, under UGC},
+Proceedings of the 2024 ACM-SIAM Symposium on Discrete Algorithms (SODA),
+2024, pp.~4799--4897.
+\url{https://doi.org/10.1137/1.9781611977912.53}.
 
-\bibitem{GareyJohnson1979}
-M.~R. Garey and D.~S. Johnson,
-\emph{Computers and Intractability: A Guide to the Theory of NP-Completeness},
-W.~H. Freeman, 1979.
-
-\bibitem{GareyJohnsonStockmeyer1976}
-M.~R. Garey, D.~S. Johnson, and L.~Stockmeyer,
-Some simplified NP-complete graph problems,
-\emph{Theoretical Computer Science} \textbf{1} (1976), 237--267.
-
-\bibitem{GoemansWilliamson1995}
-M.~X. Goemans and D.~P. Williamson,
-Improved approximation algorithms for maximum cut and satisfiability problems
-using semidefinite programming,
-\emph{Journal of the ACM} \textbf{42} (1995), 1115--1145.
-
-\bibitem{Karp1972}
-R.~M. Karp,
-Reducibility among combinatorial problems,
-in \emph{Complexity of Computer Computations}, Plenum Press, 1972, pp.~85--103.
-
-\bibitem{Zuckerman2007}
-D.~Zuckerman,
-Linear degree extractors and the inapproximability of Max Clique and Chromatic
-Number,
-\emph{Theory of Computing} \textbf{3} (2007), 103--128.
-
+\bibitem{VegaPalomaRepository}
+F.~Vega,
+\emph{Paloma MAX-HORN-2SAT formalization and experiments},
+GitHub repository, 2026.
+\url{https://github.com/frankvegadelgado/paloma}.
 \end{thebibliography}
-
 \end{document}
