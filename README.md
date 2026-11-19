@@ -49,8 +49,11 @@ APX-completeness.
 - the division-free arithmetic transfer from the `7/6` MIS guarantee to
   `83/84`.
 
-There are no admitted placeholders. GitHub Actions installs the pinned Lean
-toolchain, builds the project, and runs Comparator on the public theorems.
+The implementation modules and `Solution.lean` contain no admitted
+placeholders. The standalone canonical `Challenge.lean` uses three theorem
+placeholders for the cubic repair statements, which Comparator replaces with
+the implementations from `Solution.lean`. GitHub Actions installs the pinned
+Lean toolchain, builds the project, and runs Comparator on the public theorems.
 Lean is intentionally not built locally.
 
 ## Hard-consistency weighted occurrence split
@@ -84,6 +87,40 @@ shapes. It verifies equality of the optima and, more strongly, equality of all
 attainable objective-value sets between source assignments and feasible split
 assignments.
 
+## UGC barrier and the P versus NP implication
+
+Brakensiek, Huang, and Zwick prove that the approximation ratio
+`0.94615981` for weighted MAX `{1,2}`-HORN-SAT is tight under the Unique Games
+Conjecture (UGC). Since
+
+```text
+83/84 = 0.988095238... > 0.94615981,
+```
+
+the hard-consistency split gives the following exact conditional chain:
+
+```text
+UGC
++ a polynomial 83/84-approximation for the full hard-split image
++ exact ratio-preserving decoding
+=> a polynomial algorithm exceeding the UGC-hard Horn threshold
+=> P = NP.
+```
+
+OpenAI's 2026 preprint *The Unique Games Theorem* claims a deterministic
+polynomial-time reduction from 3SAT to Unique Games with the completeness and
+soundness gap required by UGC. The preprint is public and includes associated
+formal artifacts, but it has not yet been peer reviewed. If that claimed proof
+is accepted, the first premise in the chain above becomes a theorem rather
+than a conjectural assumption.
+
+The present repository proves the `83/84` algorithm for the cubic subfamily
+`{T_H}` and proves exact ratio preservation for the full hard-consistency
+image `{P(F)}`. To complete the displayed `P = NP` implication, one must also
+extend the `83/84` algorithm from the cubic subfamily to every instance in the
+full hard-split image. A better ratio on the cubic subfamily alone does not
+cross the unrestricted Horn hardness barrier.
+
 ## Paper
 
 The source is `doc/paper.tex` and the compiled paper is `doc/paper.pdf`.
@@ -93,9 +130,19 @@ Repository: [frankvegadelgado/paloma](https://github.com/frankvegadelgado/paloma
 ## References
 
 - P. Berman and T. Fujito, “On Approximation Properties of the Independent Set
-  Problem for Low Degree Graphs,” *Theory of Computing Systems* 32 (1999).
+  Problem for Low Degree Graphs,” *Theory of Computing Systems* 32 (1999),
+  115–132. [DOI](https://doi.org/10.1007/s002240000113)
 - P. Alimonti and V. Kann, “Some APX-completeness Results for Cubic Graphs,”
-  *Theoretical Computer Science* 237 (2000).
+  *Theoretical Computer Science* 237 (2000), 123–134.
+  [DOI](https://doi.org/10.1016/S0304-3975(98)00158-3)
+- J. Brakensiek, N. Huang, and U. Zwick, “Tight Approximability of MAX 2-SAT
+  and Relatives, under UGC,” *SODA 2024*, 1328–1344.
+  [DOI](https://doi.org/10.1137/1.9781611977912.53) ·
+  [arXiv](https://arxiv.org/abs/2310.12911)
+- OpenAI, *The Unique Games Theorem*, OpenAI Math Release preprint,
+  September 23, 2026. This manuscript claims a proof of UGC and is not yet
+  peer reviewed.
+  [Preprint and source](https://github.com/openai/math/tree/main/preprints/The-Unique-Games-Theorem-September-23-2026)
 
 ## License
 
