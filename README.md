@@ -49,12 +49,12 @@ APX-completeness.
 - the division-free arithmetic transfer from the `7/6` MIS guarantee to
   `83/84`.
 
-The implementation modules and `Solution.lean` contain no admitted
-placeholders. The standalone canonical `Challenge.lean` uses three theorem
-placeholders for the cubic repair statements, which Comparator replaces with
-the implementations from `Solution.lean`. GitHub Actions installs the pinned
-Lean toolchain, builds the project, and runs Comparator on the public theorems.
-Lean is intentionally not built locally.
+The implementation modules, `Solution.lean`, and the standalone canonical
+`Challenge.lean` contain no admitted placeholders. In particular, the cubic
+repair, cardinality bound, and exact optimum identity are proved directly in
+the canonical challenge. GitHub Actions installs the pinned Lean toolchain,
+builds the project, and runs Comparator on the public theorems. Lean is
+intentionally not built locally.
 
 ## Hard-consistency weighted occurrence split
 

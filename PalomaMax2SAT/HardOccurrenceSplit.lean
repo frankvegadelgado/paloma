@@ -14,9 +14,8 @@ zero objective contribution. Source clauses retain their weights.
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
 /-- Repeated application of the successor map around an occurrence cycle. -/
-def advance {α : Type} (next : α → α) : ℕ → α → α
-  | 0, i => i
-  | k + 1, i => advance next k (next i)
+def advance {α : Type} (next : α → α) (k : ℕ) (i : α) : α :=
+  Nat.rec i (fun _ current => next current) k
 
 /-- Every clone can reach every other clone by following the directed cycle. -/
 def OrbitConnected {α : Type} (next : α → α) : Prop :=
@@ -36,8 +35,8 @@ private theorem propagate_hard_implications {α : Type} (next : α → α)
       simpa [advance] using hi
   | succ k ih =>
       intro i hi
-      simp only [advance]
-      exact ih (next i) (h i hi)
+      change z (next (advance next k i)) = true
+      exact h _ (ih i hi)
 
 /-- A directed hard-implication cycle forces all occurrence clones to agree. -/
 theorem hard_implication_cycle_consistent_proof {α : Type} (next : α → α)
