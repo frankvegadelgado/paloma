@@ -31,11 +31,11 @@ def IsIndependenceNumber {n m : ℕ} (G : PortGraph n m) (alpha : ℕ) : Prop :=
   (∀ I, Independent G I → I.card ≤ alpha) ∧
     ∃ I, Independent G I ∧ I.card = alpha
 
-def edgeClone (p : Fin 3) : Fin 4 := ⟨p.val + 1, by omega⟩
+def edgeClone (p : Fin 3) : Fin 4 := ⟨p.val + 1, Nat.add_lt_add_right p.isLt 1⟩
 
 abbrev transition {n : ℕ} (z : Fin n → Fin 4 → Bool)
     (v : Fin n) (i : Fin 4) : Prop :=
-  z v i = true ∧ z v ⟨(i.val + 1) % 4, Nat.mod_lt _ (by omega)⟩ = false
+  z v i = true ∧ z v ⟨(i.val + 1) % 4, Nat.mod_lt _ (Nat.succ_pos 3)⟩ = false
 
 def selectedVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   Finset.univ.filter fun v => z v 0 = false
