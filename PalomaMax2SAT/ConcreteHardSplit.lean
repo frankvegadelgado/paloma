@@ -63,7 +63,7 @@ theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintyp
   unfold splitScore sourceScore
   apply Finset.sum_congr rfl
   intro c _
-  simp [encode]
+  by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos <;> simp [encode, h]
 
 theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)

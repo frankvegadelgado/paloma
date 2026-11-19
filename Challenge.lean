@@ -130,23 +130,23 @@ end PalomaMax2SAT.CubicThreeOccurrence
 
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
-def advance {α : Type} (next : α → α) (k : ℕ) (i : α) : α :=
+def advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
   Nat.rec i (fun _ current => next current) k
 
-def OrbitConnected {α : Type} (next : α → α) : Prop :=
+def OrbitConnected {α : Type*} (next : α → α) : Prop :=
   ∀ i j, ∃ k, advance next k i = j
 
-def HardImplicationsHold {α : Type} (next : α → α) (z : α → Bool) : Prop :=
+def HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
 
-def IsOptimum {Assignment : Type} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
+def IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
 
-def IsHardOptimum {Assignment : Type} (feasible : Assignment → Prop)
+def IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
 
-theorem propagate_hard_implications {α : Type} (next : α → α)
+theorem propagate_hard_implications {α : Type*} (next : α → α)
     (z : α → Bool) (h : HardImplicationsHold next z) :
     ∀ k i, z i = true → z (advance next k i) = true := by
   intro k
@@ -242,7 +242,7 @@ namespace PalomaMax2SAT.HardSplitPublic
 
 open HardOccurrenceSplit
 
-theorem hard_implication_cycle_consistent {α : Type} (next : α → α)
+theorem hard_implication_cycle_consistent {α : Type*} (next : α → α)
     (z : α → Bool) (horbit : OrbitConnected next)
     (hhard : HardImplicationsHold next z) :
     ∀ i j, z i = z j := by
@@ -260,7 +260,7 @@ theorem hard_implication_cycle_consistent {α : Type} (next : α → α)
   · rfl
 
 theorem exact_hard_occurrence_split
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
     (opt : ℕ)
@@ -277,7 +277,7 @@ theorem exact_hard_occurrence_split
     exact ⟨encode a, hencodeFeasible a, (hencodeScore a).trans ha⟩
 
 theorem feasible_solution_ratio_preserved
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (decode : Split → Source)
     (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
@@ -349,7 +349,7 @@ theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintyp
   unfold splitScore sourceScore
   apply Finset.sum_congr rfl
   intro c _
-  simp [encode]
+  by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos <;> simp [encode, h]
 
 theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)

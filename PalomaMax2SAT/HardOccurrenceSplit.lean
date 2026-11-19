@@ -14,18 +14,18 @@ zero objective contribution. Source clauses retain their weights.
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
 /-- Repeated application of the successor map around an occurrence cycle. -/
-def advance {α : Type} (next : α → α) (k : ℕ) (i : α) : α :=
+def advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
   Nat.rec i (fun _ current => next current) k
 
 /-- Every clone can reach every other clone by following the directed cycle. -/
-def OrbitConnected {α : Type} (next : α → α) : Prop :=
+def OrbitConnected {α : Type*} (next : α → α) : Prop :=
   ∀ i j, ∃ k, advance next k i = j
 
 /-- Satisfaction of every hard implication `(not z_i or z_(i+1))`. -/
-def HardImplicationsHold {α : Type} (next : α → α) (z : α → Bool) : Prop :=
+def HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
 
-theorem propagate_hard_implications {α : Type} (next : α → α)
+theorem propagate_hard_implications {α : Type*} (next : α → α)
     (z : α → Bool) (h : HardImplicationsHold next z) :
     ∀ k i, z i = true → z (advance next k i) = true := by
   intro k
@@ -39,7 +39,7 @@ theorem propagate_hard_implications {α : Type} (next : α → α)
       exact h _ (ih i hi)
 
 /-- A directed hard-implication cycle forces all occurrence clones to agree. -/
-theorem hard_implication_cycle_consistent_proof {α : Type} (next : α → α)
+theorem hard_implication_cycle_consistent_proof {α : Type*} (next : α → α)
     (z : α → Bool) (horbit : OrbitConnected next)
     (hhard : HardImplicationsHold next z) :
     ∀ i j, z i = z j := by
@@ -56,10 +56,10 @@ theorem hard_implication_cycle_consistent_proof {α : Type} (next : α → α)
     simp at htrue
   · rfl
 
-def IsOptimum {Assignment : Type} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
+def IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
 
-def IsHardOptimum {Assignment : Type} (feasible : Assignment → Prop)
+def IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
 
@@ -69,7 +69,7 @@ assignments preserves the optimum exactly. This is the abstract core of the
 hard zero-objective consistency-cycle construction.
 -/
 theorem exact_hard_occurrence_split_proof
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
     (opt : ℕ)
@@ -87,7 +87,7 @@ theorem exact_hard_occurrence_split_proof
 
 /-- Every feasible split solution has exactly its decoded source value. -/
 theorem feasible_solution_ratio_preserved_proof
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (decode : Split → Source)
     (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)

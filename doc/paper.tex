@@ -51,14 +51,14 @@ to the conventional logical definition without changing objective values.
 
 The construction below starts from cubic Maximum Independent Set (MIS), uses
 four clones for every graph vertex, and connects them by a directed cycle of
-implications. The reduction from cubic MIS to MAX-HORN-2SAT is a standard gadget composition
-of unit, edge, and consistency clauses; the quantitative contribution here is
-the exact optimum identity and the explicit cardinality bound of the repair,
-together with the ratio-preserving split of Section~\ref{sec:ratio} and their Lean
-formalization. One clone participates in a unit clause and the other three in
+implications. One clone participates in a unit clause and the other three in
 the three incident edge clauses. Each clone additionally occurs in its incoming
 and outgoing implication. Consequently every formula variable occurs exactly
-three times.
+three times. The reduction from cubic MIS to MAX-HORN-2SAT is a standard gadget
+composition of unit, edge, and consistency clauses; the quantitative
+contribution here is the exact optimum identity and the explicit cardinality
+bound of the repair, together with the ratio-preserving split of
+Section~\ref{sec:ratio} and their Lean formalization.
 
 The contribution is quantitative rather than merely satisfiability preserving.
 We prove an explicit repair of every inconsistent clone assignment, obtain an
@@ -216,7 +216,7 @@ Theorem~\ref{thm:ratio} places the image class in APX.
 
 \section{The ratio-preserving hard-consistency split}
 \label{sec:ratio}
-Let $F$ be an well-formed (clauses contain no repeated identical literals) weighted MAX-HORN-2SAT instance. Its source clauses
+Let $F$ be a weighted MAX-HORN-2SAT instance. Its source clauses
 have nonnegative rational weights. Give every literal occurrence a distinct
 clone, and replace that occurrence in its source clause by the clone without
 changing the clause weight. If the occurrences of an original variable $x$
@@ -236,7 +236,8 @@ when the source clause is.
 
 Every clone appears once in a weighted source clause, once negatively in its
 outgoing hard implication, and once positively in its incoming hard
-implication. Thus every variable has exactly three occurrences.
+implication. Thus every clone, viewed as a variable of the split formula $P(F)$, has exactly
+three occurrences.
 
 \begin{lemma}[Hard-cycle consistency]\label{lem:hard-cycle}
 A clone assignment satisfies every hard implication on one directed cycle if
@@ -304,10 +305,7 @@ public and includes associated formal artifacts, but it has not yet been peer
 reviewed. If that claimed proof is accepted, UGC becomes a theorem rather than
 a conjecture, and the implication above becomes unconditional on UGC: a
 polynomial-time $83/84$ approximation for the entire hard-split image
-$\{P(F)\}$ would then imply $\mathrm P=\mathrm{NP}$. By contrast, UGC being
-false would not by itself imply $\mathrm P=\mathrm{NP}$, since UGC is a
-stronger additional conjecture rather than a theorem equivalent to
-$\mathrm P\ne\mathrm{NP}$.
+$\{P(F)\}$ would then imply $\mathrm P=\mathrm{NP}$. Note that UGC being false would not by itself imply $\mathrm P=\mathrm{NP}$.
 
 \section{Lean and computational verification}
 

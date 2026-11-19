@@ -41,14 +41,14 @@ namespace PalomaMax2SAT.HardSplitPublic
 
 open HardOccurrenceSplit
 
-theorem hard_implication_cycle_consistent {α : Type} (next : α → α)
+theorem hard_implication_cycle_consistent {α : Type*} (next : α → α)
     (z : α → Bool) (horbit : OrbitConnected next)
     (hhard : HardImplicationsHold next z) :
     ∀ i j, z i = z j := by
   exact hard_implication_cycle_consistent_proof next z horbit hhard
 
 theorem exact_hard_occurrence_split
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
     (opt : ℕ)
@@ -61,7 +61,7 @@ theorem exact_hard_occurrence_split
     encode decode opt hsource hencodeFeasible hencodeScore hdecodeScore
 
 theorem feasible_solution_ratio_preserved
-    {Source Split : Type}
+    {Source Split : Type*}
     (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
     (feasible : Split → Prop) (decode : Split → Source)
     (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
