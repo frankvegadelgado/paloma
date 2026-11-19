@@ -42,8 +42,7 @@ def selectedVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :
 
 noncomputable def transitionPairs {n : ℕ} (z : Fin n → Fin 4 → Bool) :
     Finset (Fin n × Fin 4) :=
-  @Finset.filter _ (fun pair => transition z pair.1 pair.2)
-    (fun _ => Classical.propDecidable _) Finset.univ
+  Finset.univ.filter fun pair => transition z pair.1 pair.2
 
 noncomputable def transitionVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   (transitionPairs z).image Prod.fst
