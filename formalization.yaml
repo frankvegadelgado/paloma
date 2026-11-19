@@ -42,9 +42,10 @@ status:
     graph independent sets; the exact N + K OPT identity; the N + Kq SAT
     threshold; the exact-integer conditional ratio implication; the binary OR
     truth table; and the exact 2222 audit cardinality. The Lean proof imports
-    only Mathlib and does not call NetworkX or Python. The independent Python
-    edge-mask enumeration is separate executable evidence and is not used as
-    an axiom.
+    only Mathlib and does not call NetworkX or Python. The local gadget search
+    is evaluated with native_decide and is excluded from independent-kernel
+    Comparator export; the independent Python edge-mask enumeration is
+    separate executable evidence and is not used as an axiom.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -55,7 +56,6 @@ status:
     - "PalomaMax2SAT.conditionalUnsatOfRatioGap"
     - "PalomaMax2SAT.binaryClauseReward_truthTable"
     - "PalomaMax2SAT.exhaustiveAuditCount"
-    - "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
 
 automation:
   methods:
@@ -119,6 +119,9 @@ alignment:
       lean: "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
       module: "Challenge"
       status: "proved"
-      note: "Exhausts all internal-edge and terminal-attachment masks through arity three."
+      note: >-
+        Exhausts all internal-edge and terminal-attachment masks through arity
+        three using native_decide; build-checked but intentionally excluded
+        from independent-kernel Comparator export.
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar starter project."

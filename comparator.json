@@ -7,8 +7,7 @@
     "PalomaMax2SAT.satisfiable_iff_target",
     "PalomaMax2SAT.conditionalUnsatOfRatioGap",
     "PalomaMax2SAT.binaryClauseReward_truthTable",
-    "PalomaMax2SAT.exhaustiveAuditCount",
-    "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
+    "PalomaMax2SAT.exhaustiveAuditCount"
   ],
   "definition_names": [],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],

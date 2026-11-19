@@ -111,10 +111,14 @@ short supporting results are proved directly, minimizing placeholder warnings.
 That remaining warning belongs to the challenge interface and is not an
 admitted proof in the submitted solution. The implementation in
 `PalomaMax2SAT/Identity.lean` and every theorem in `Solution.lean` contain no
-`sorry`; Comparator replays them through
-Lean's kernel and the toolchain's NanoDa and con-ron independent kernels. The
-permitted foundational axioms are limited to `propext`, `Quot.sound`, and
-`Classical.choice`.
+`sorry`. Comparator replays the exact identity, its corollaries, the binary
+truth table, and the 2,222-case domain count through Lean's kernel and the
+toolchain's NanoDa and con-ron independent kernels. The exhaustive local gadget
+search uses fast `native_decide` evaluation and is deliberately excluded from
+Comparator because native evaluation introduces a generated proof axiom that
+those independent kernels reject. Its result is also recorded by the separate
+Python audit. The Comparator-permitted foundational axioms are limited to
+`propext`, `Quot.sound`, and `Classical.choice`.
 
 ## Standalone paper
 
@@ -129,7 +133,9 @@ continuous mathematical exposition and bibliography.
 
 - `Challenge.lean` is the small, Mathlib-only public statement surface.
 - `Solution.lean` supplies proofs from `PalomaMax2SAT/Identity.lean`.
-- `comparator.json` selects every public theorem for comparison.
+- `comparator.json` selects the axiom-free public mathematical theorems for
+  independent-kernel comparison; the executable gadget search is build-checked
+  separately.
 - `formalization.yaml` records scope, provenance, and theorem alignment.
 - `scripts/check-lean-sources.py` performs source-policy checks.
 - `.github/workflows/palomar.yml` builds and runs Comparator remotely.
