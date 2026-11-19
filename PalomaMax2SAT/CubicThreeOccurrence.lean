@@ -23,6 +23,8 @@ structure PortGraph (n m : ℕ) where
   left_unique : ∀ e f, left e = left f → leftPort e = leftPort f → e = f
   right_unique : ∀ e f, right e = right f → rightPort e = rightPort f → e = f
   cross_unique : ∀ e f, left e = right f → leftPort e = rightPort f → False
+  port_occupied : ∀ v : Fin n, ∀ p : Fin 3,
+    (∃ e, left e = v ∧ leftPort e = p) ∨ (∃ e, right e = v ∧ rightPort e = p)
 
 def Independent {n m : ℕ} (G : PortGraph n m) (I : Finset (Fin n)) : Prop :=
   ∀ e, ¬ (G.left e ∈ I ∧ G.right e ∈ I)

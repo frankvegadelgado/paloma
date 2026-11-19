@@ -2,7 +2,19 @@
 
 This repository formalizes Frank Vega's cubic-graph construction for an
 unweighted MAX-HORN-2SAT subclass in which every variable occurs exactly three
-times.
+times, together with a second family of results on hard-consistency occurrence
+splitting.
+
+The Lean development contains two groups of results:
+
+1. the cubic construction: the four-clone score, the constructive repair, the
+   exact optimum identity `4*|V| + |E| + alpha(H)`, and the arithmetic
+   transfer of the Berman--Fujito `7/6` guarantee to `83/84`; and
+2. hard-consistency occurrence splitting: propagation of hard implications
+   around a directed cycle, two abstract transfer lemmas that take the
+   encoding and decoding score equalities as hypotheses (optimum
+   preservation and feasible-solution value preservation), and the exact
+   comparison `83/84 > 0.94615981`.
 
 For a simple cubic graph `H=(V,E)`, the formula `T_H` has four clones per
 vertex, one source clause per clone, and four cyclic consistency implications.
@@ -40,7 +52,9 @@ APX-completeness.
 
 `PalomaMax2SAT/CubicThreeOccurrence.lean` contains:
 
-- the port-labelled cubic graph representation;
+- the port-labelled cubic graph representation, in which every one of the three
+  ports of every vertex is used by exactly one edge endpoint (parallel edges
+  are not excluded by the interface);
 - the three-occurrence score decomposition;
 - the explicit deletion repair and proof that it is independent;
 - the repair cardinality bound;
@@ -78,9 +92,16 @@ value of its decoded source assignment, so multiplicative approximation ratios
 are preserved.
 
 `PalomaMax2SAT/HardOccurrenceSplit.lean` formalizes the directed-cycle
-consistency lemma, exact hard-split optimum preservation, feasible-solution
-value preservation, and the exact comparison
+consistency lemma, two abstract transfer lemmas, and the exact comparison
 `83/84 > 0.94615981`.
+
+The two transfer lemmas (`exact_hard_occurrence_split` and
+`feasible_solution_ratio_preserved`) are stated for arbitrary assignment types,
+score functions and feasibility predicates. They assume the encoding and
+decoding score equalities as hypotheses. The Lean development does not prove
+those equalities for the concrete weighted Horn occurrence split; that
+statement is argued in the paper and checked experimentally as described
+below.
 
 `experiments/weighted_test_horn_split.py` checks 16,314 small Horn formula
 shapes. It verifies equality of the optima and, more strongly, equality of all

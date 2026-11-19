@@ -7,6 +7,13 @@ project:
     Lean formalization of Frank Vega's cubic-MIS construction, its constructive
     assignment repair, exact 4n+m+alpha optimum identity, and the arithmetic
     transfer of the Berman--Fujito 7/6 guarantee to an 83/84 approximation.
+    The cubic class is formalized as port-labelled graphs in which all three
+    ports of every vertex are occupied. A second family of results concerns
+    hard-consistency occurrence splitting: propagation of hard implications
+    around a directed cycle, and two abstract transfer lemmas (optimum
+    preservation and feasible-solution value preservation) that take the
+    encoding and decoding score equalities as hypotheses, together with the
+    exact comparison 83/84 > 0.94615981.
   authors: ["Frank Vega"]
   license: "MIT"
   responsible_maintainers: ["Frank Vega"]
@@ -37,14 +44,18 @@ status:
   scope: >-
     Formalized: a finite port-labelled cubic graph interface; the four-clone
     Horn score; transition, false-edge, and deletion sets; independence and
-    cardinality of the constructive repair; the matching assignment from an
+    cardinality of the constructive repair, for port graphs in which every
+    port of every vertex is occupied; the matching assignment from an
     independent set; the exact 4n+m+alpha optimum identity; and the exact
     division-free implication from cubic identities and a 7/6 MIS solution to
     the 83/84 Horn guarantee. Also formalized: consistency forced by a strongly
-    connected directed cycle of hard Horn implications; exact optimum
-    preservation for the zero-objective hard-consistency occurrence split;
-    feasible-solution objective preservation; and the exact inequality
-    83/84 > 0.94615981.
+    connected directed cycle of hard Horn implications; an abstract lemma
+    that an encoding/decoding pair preserving scores on feasible assignments
+    preserves the optimum; the corresponding abstract lemma for the objective
+    value of every feasible assignment; and the exact inequality
+    83/84 > 0.94615981. The two abstract lemmas are stated for arbitrary
+    assignment types, score functions and feasibility predicates; the concrete
+    weighted Horn split is not formalized in Lean.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -82,9 +93,15 @@ fidelity:
     The Lean theorem assumes the numerical 7*found >= 6*alpha guarantee rather
     than formalizing the Berman--Fujito algorithm internally. It proves the
     complete cubic reduction, repair, optimum identity, and ratio arithmetic.
-    The hard-split theorem abstracts the source and split assignment types and
-    explicitly assumes the proved encoding/decoding score equalities; the
-    directed-cycle theorem proves the consistency mechanism independently.
+    The two hard-split transfer theorems are conditional abstract lemmas: they
+    quantify over arbitrary assignment types, scores and feasibility
+    predicates and assume the encoding and decoding score equalities as
+    hypotheses. Those equalities for the concrete weighted Horn occurrence
+    split are not proved in Lean; they are argued in the paper and checked
+    experimentally on small instances. The directed-cycle theorem proves the
+    consistency mechanism independently. The port-graph interface requires
+    every port of every vertex to be used by exactly one edge endpoint; it does
+    not exclude parallel edges.
 
 review:
   status: "self-assessed; not peer reviewed"
@@ -112,11 +129,11 @@ alignment:
       lean: "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
       module: "Challenge"
       status: "proved"
-      note: "Formalizes exact optimum preservation with no additive offset."
+      note: "Abstract conditional lemma: given encode/decode score equalities on feasible assignments, the feasible optimum equals the source optimum. The equalities for the concrete split are hypotheses."
     - source: "Feasible-solution approximation transfer"
       lean: "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
       module: "Challenge"
       status: "proved"
-      note: "Formalizes exact objective preservation for every feasible split solution."
+      note: "Abstract conditional lemma: given the decode score equality, each feasible solution has the objective value of its decoded source assignment."
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."
