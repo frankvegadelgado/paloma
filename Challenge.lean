@@ -40,9 +40,10 @@ abbrev transition {n : ℕ} (z : Fin n → Fin 4 → Bool)
 def selectedVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   Finset.univ.filter fun v => z v 0 = false
 
-def transitionPairs {n : ℕ} (z : Fin n → Fin 4 → Bool) :
-    Finset (Fin n × Fin 4) :=
-  Finset.univ.filter fun pair => transition z pair.1 pair.2
+noncomputable def transitionPairs {n : ℕ} (z : Fin n → Fin 4 → Bool) :
+    Finset (Fin n × Fin 4) := by
+  classical
+  exact Finset.univ.filter fun pair => transition z pair.1 pair.2
 
 def transitionVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   (transitionPairs z).image Prod.fst
