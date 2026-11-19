@@ -95,13 +95,18 @@ are preserved.
 consistency lemma, two abstract transfer lemmas, and the exact comparison
 `83/84 > 0.94615981`.
 
-The two transfer lemmas (`exact_hard_occurrence_split` and
-`feasible_solution_ratio_preserved`) are stated for arbitrary assignment types,
-score functions and feasibility predicates. They assume the encoding and
-decoding score equalities as hypotheses. The Lean development does not prove
-those equalities for the concrete weighted Horn occurrence split; that
-statement is argued in the paper and checked experimentally as described
-below.
+The concrete weighted Horn occurrence split is formalized in
+`PalomaMax2SAT.ConcreteHardSplit`. The model uses occurrence-indexed literals,
+weighted Horn clauses, and hard cyclic implications. Feasible split assignments
+are exactly consistent lifts. Lean proves that every encoded source assignment
+is feasible, that encoding preserves score, and that decoding any feasible
+split assignment preserves score. Consequently,
+`concrete_exact_hard_occurrence_split` proves
+`OPT_partial(split(F)) = OPT(F)` with no additive offset, and
+`concrete_feasible_solution_ratio_preserved` proves every feasible solution has
+exactly the objective value of its decoded source assignment. The earlier
+abstract transfer lemmas remain as reusable interface lemmas but are no longer
+the selected hard-split contribution.
 
 `experiments/weighted_test_horn_split.py` checks 16,314 small Horn formula
 shapes. It verifies equality of the optima and, more strongly, equality of all

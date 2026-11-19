@@ -10,10 +10,13 @@ project:
     The cubic class is formalized as port-labelled graphs in which all three
     ports of every vertex are occupied. A second family of results concerns
     hard-consistency occurrence splitting: propagation of hard implications
-    around a directed cycle, and two abstract transfer lemmas (optimum
-    preservation and feasible-solution value preservation) that take the
-    encoding and decoding score equalities as hypotheses, together with the
-    exact comparison 83/84 > 0.94615981.
+    around a directed cycle, abstract transfer lemmas, and a concrete weighted
+    Horn occurrence-split model.  For the concrete split, the Lean development
+    proves that encoded source assignments are feasible, that encoding preserves
+    score, that decoding every feasible split assignment preserves score, and
+    consequently proves exact optimum preservation and feasible-solution value
+    preservation without assuming the encode/decode score equalities.  The
+    exact comparison 83/84 > 0.94615981 is also formalized.
   authors: ["Frank Vega"]
   license: "MIT"
   responsible_maintainers: ["Frank Vega"]
@@ -55,13 +58,17 @@ status:
     independent set; the exact 4n+m+alpha optimum identity; and the exact
     division-free implication from cubic identities and a 7/6 MIS solution to
     the 83/84 Horn guarantee. Also formalized: consistency forced by a strongly
-    connected directed cycle of hard Horn implications; an abstract lemma
-    that an encoding/decoding pair preserving scores on feasible assignments
-    preserves the optimum; the corresponding abstract lemma for the objective
-    value of every feasible assignment; and the exact inequality
-    83/84 > 0.94615981. The two abstract lemmas are stated for arbitrary
-    assignment types, score functions and feasibility predicates; the concrete
-    weighted Horn split is not formalized in Lean.
+    connected directed cycle of hard Horn implications; abstract transfer
+    lemmas for arbitrary assignment types; and a concrete weighted Horn
+    occurrence-split model with occurrence-indexed literals, weighted Horn
+    clauses, and hard cyclic implications.  For the concrete split, Lean proves
+    that encoded source assignments are feasible, that encoding preserves
+    score, that decoding any feasible split assignment preserves score, and
+    therefore proves concrete optimum preservation and concrete feasible-
+    solution value preservation.  The exact inequality
+    83/84 > 0.94615981 is also formalized.  The full weighted MAX
+    {1,2}-HORN-SAT syntax and the UGC hardness result are not formalized in
+    Lean.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -75,6 +82,8 @@ status:
     - "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
     - "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
     - "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold"
+    - "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split"
+    - "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
 
 automation:
   methods:
@@ -90,24 +99,26 @@ automation:
         hardware: "Local Windows workstation and API service"
       prompting_notes: >-
         The user directed the formalization of the cubic three-occurrence
-        construction and its Berman--Fujito 83/84 consequence.
+        construction, its Berman--Fujito 83/84 consequence, and the concrete
+        hard-consistency occurrence split.
   spend_usd: "Not tracked"
   notes: "Human-directed, AI-assisted formalization with remote verification."
 
 fidelity:
   divergences: >-
-    The Lean theorem assumes the numerical 7*found >= 6*alpha guarantee rather
-    than formalizing the Berman--Fujito algorithm internally. It proves the
-    complete cubic reduction, repair, optimum identity, and ratio arithmetic.
-    The two hard-split transfer theorems are conditional abstract lemmas: they
-    quantify over arbitrary assignment types, scores and feasibility
-    predicates and assume the encoding and decoding score equalities as
-    hypotheses. Those equalities for the concrete weighted Horn occurrence
-    split are not proved in Lean; they are argued in the paper and checked
-    experimentally on small instances. The directed-cycle theorem proves the
-    consistency mechanism independently. The port-graph interface requires
-    every port of every vertex to be used by exactly one edge endpoint; it does
-    not exclude parallel edges.
+    The Lean theorem assuming the numerical 7*found >= 6*alpha guarantee is
+    used instead of formalizing the Berman--Fujito algorithm internally.  It
+    proves the complete cubic reduction, repair, optimum identity, and ratio
+    arithmetic.  The hard-split family includes both abstract transfer lemmas
+    and a concrete weighted Horn occurrence-split model.  The concrete model
+    represents weighted Horn clauses over occurrence-indexed literals and
+    represents hard cyclic implications through the feasibility predicate; it
+    proves the encode/decode score equalities and derives concrete optimum
+    preservation and concrete feasible-solution value preservation.  It does
+    not formalize the paper's full weighted MAX {1,2}-HORN-SAT parser or the
+    experimental checker, and it does not formalize the UGC hardness result.
+    The port-graph interface requires every port of every vertex to be used by
+    exactly one edge endpoint; it does not exclude parallel edges.
 
 review:
   status: "self-assessed; not peer reviewed"
@@ -131,15 +142,25 @@ alignment:
       lean: "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
       module: "Challenge"
       status: "proved"
-    - source: "Hard-consistency weighted occurrence split"
+    - source: "Hard-consistency weighted occurrence split (abstract transfer)"
       lean: "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
       module: "Challenge"
       status: "proved"
-      note: "Abstract conditional lemma: given encode/decode score equalities on feasible assignments, the feasible optimum equals the source optimum. The equalities for the concrete split are hypotheses."
-    - source: "Feasible-solution approximation transfer"
+      note: "Abstract conditional lemma retained as a reusable interface lemma."
+    - source: "Feasible-solution approximation transfer (abstract)"
       lean: "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
       module: "Challenge"
       status: "proved"
-      note: "Abstract conditional lemma: given the decode score equality, each feasible solution has the objective value of its decoded source assignment."
+      note: "Abstract conditional lemma retained as a reusable interface lemma."
+    - source: "Hard-consistency weighted occurrence split (concrete)"
+      lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split"
+      module: "ConcreteHardSplit"
+      status: "proved"
+      note: "Proves concrete optimum preservation for the weighted Horn occurrence split. The encode/decode score equalities are proved, not assumed."
+    - source: "Feasible-solution value preservation (concrete)"
+      lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
+      module: "ConcreteHardSplit"
+      status: "proved"
+      note: "Proves that every feasible split assignment has exactly the objective value of its decoded source assignment."
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."

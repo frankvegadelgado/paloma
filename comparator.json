@@ -10,7 +10,9 @@
     "PalomaMax2SAT.HardSplitPublic.hard_implication_cycle_consistent",
     "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split",
     "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved",
-    "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold"
+    "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold",
+	"PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split",
+	"PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
   ],
   "definition_names": [],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],

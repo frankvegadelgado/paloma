@@ -277,13 +277,25 @@ $83/84\simeq0.988095>0.94615981$. Corollary~\ref{cor:ratio-preservation}
 places the full weighted problem inside the hard-consistency three-occurrence
 image without ratio loss.
 
-Therefore, a polynomial-time $83/84$ approximation for the \emph{entire}
-hard-consistency image $\{P(F)\}$ would, together with the cited UGC hardness
-theorem, refute UGC. Theorem~\ref{thm:ratio} proves that ratio for the cubic
-subfamily $\{T_H\}$; extending its algorithm to all of $\{P(F)\}$ is a separate
-algorithmic requirement. UGC being false would not by itself imply
-$\mathrm P=\mathrm{NP}$, since UGC is a stronger additional conjecture rather
-than a theorem equivalent to $\mathrm P\ne\mathrm{NP}$.
+Therefore, assuming the Unique Games Conjecture, a polynomial-time $83/84$
+approximation for the \emph{entire} hard-consistency image $\{P(F)\}$ would
+yield a polynomial-time algorithm exceeding the UGC-hard Horn threshold
+$0.94615981$ of~\cite{BrakensiekHuangZwick2024}, and hence would imply
+$\mathrm P=\mathrm{NP}$. Theorem~\ref{thm:ratio} proves the $83/84$ ratio only
+for the cubic subfamily $\{T_H\}$; extending the algorithm to all of
+$\{P(F)\}$ is a separate algorithmic requirement.
+
+OpenAI's 2026 preprint \emph{The Unique Games Theorem}~\cite{OpenAI2026UGC}
+claims a deterministic polynomial-time reduction from 3SAT to Unique Games
+with the completeness and soundness gap required by UGC. The preprint is
+public and includes associated formal artifacts, but it has not yet been peer
+reviewed. If that claimed proof is accepted, UGC becomes a theorem rather than
+a conjecture, and the implication above becomes unconditional on UGC: a
+polynomial-time $83/84$ approximation for the entire hard-split image
+$\{P(F)\}$ would then imply $\mathrm P=\mathrm{NP}$. By contrast, UGC being
+false would not by itself imply $\mathrm P=\mathrm{NP}$, since UGC is a
+stronger additional conjecture rather than a theorem equivalent to
+$\mathrm P\ne\mathrm{NP}$.
 
 \section{Lean and computational verification}
 
@@ -327,6 +339,12 @@ J.~Brakensiek, N.~Huang, and U.~Zwick,
 \emph{Tight approximability of MAX 2-SAT and relatives, under UGC},
 Proceedings of SODA 2024, 1328--1344.
 \url{https://doi.org/10.1137/1.9781611977912.53}.
+
+\bibitem{OpenAI2026UGC}
+{OpenAI},
+\emph{The Unique Games Theorem},
+OpenAI Math Release preprint, September 23, 2026.
+\url{https://github.com/openai/math/tree/main/preprints/The-Unique-Games-Theorem-September-23-2026}.
 
 \bibitem{VegaPalomaRepository}
 F.~Vega,
