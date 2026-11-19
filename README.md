@@ -34,8 +34,7 @@ Thus the exact cubic image class has a polynomial-time `83/84` approximation.
 The repair also gives an L-reduction with constants 23 and 1, proving
 APX-completeness.
 
-`83/84` is the solution/optimum ratio. `83/64` is greater than one and cannot
-be that ratio for a maximization problem.
+`83/84` is the solution/optimum ratio.
 
 ## Lean formalization
 
