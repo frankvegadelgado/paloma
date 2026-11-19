@@ -118,8 +118,9 @@ theorem decodedAssignment_satisfies_witness {N q K : ℕ} {φ : Instance N q}
   let h : ∃ other : {other // other ∈ independent.chosen},
       (independent.witnessLiteral other).1 =
         (independent.witnessLiteral pair).1 := ⟨pair, rfl⟩
+  unfold EvalLiteral
   unfold decodedAssignment
-  rw [dif_pos h]
+  rw [dite_eq_left h]
   exact independent.witness_consistent (Classical.choose h) pair
     (Classical.choose_spec h)
 
