@@ -53,7 +53,7 @@ def satisfiedClauses {N q : ℕ} (φ : Instance N q)
   Finset.univ.filter (SatisfiesClause φ assignment)
 
 /-- Number of clauses satisfied by an assignment. -/
-def satCount {N q : ℕ} (φ : Instance N q)
+abbrev satCount {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) : ℕ :=
   (satisfiedClauses φ assignment).card
 
@@ -118,7 +118,8 @@ theorem decodedAssignment_satisfies_witness {N q K : ℕ} {φ : Instance N q}
   let h : ∃ other : {other // other ∈ independent.chosen},
       (independent.witnessLiteral other).1 =
         (independent.witnessLiteral pair).1 := ⟨pair, rfl⟩
-  rw [decodedAssignment, dif_pos h]
+  unfold decodedAssignment
+  rw [dif_pos h]
   exact independent.witness_consistent (Classical.choose h) pair
     (Classical.choose_spec h)
 
@@ -160,12 +161,13 @@ theorem independentScore_le_decodedAssignment {N q K : ℕ} {φ : Instance N q}
   have hwitness : independent.chosen.card ≤
       satCount φ (decodedAssignment independent) * K := by
     have hsubset := Finset.card_le_card (chosen_subset_satisfied_product independent)
-    simpa [satCount] using hsubset
+    simpa using hsubset
   calc
     independentScore independent
         ≤ N + satCount φ (decodedAssignment independent) * K :=
           Nat.add_le_add hassign hwitness
-    _ = N + K * satCount φ (decodedAssignment independent) := by omega
+    _ = N + K * satCount φ (decodedAssignment independent) := by
+      rw [Nat.mul_comm]
 
 /-- The exact assignment--witness optimum identity. -/
 theorem exactMax2SATIdentity_proof {N q K opt : ℕ} (φ : Instance N q)
@@ -207,7 +209,7 @@ theorem exactMax2SATIdentity_proof {N q K opt : ℕ} (φ : Instance N q)
         simpa [hi] using htrue
     }
     refine ⟨independent, ?_⟩
-    simp [independentScore, independent, satCount, hassignment, Nat.mul_comm]
+    simp [independentScore, independent, hassignment, Nat.mul_comm]
   · intro independent
     calc
       independentScore independent
@@ -220,7 +222,7 @@ theorem exactMax2SATIdentity_proof {N q K opt : ℕ} (φ : Instance N q)
 /-- No assignment can satisfy more than all `q` clauses. -/
 theorem satCount_le_clauseCount {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) : satCount φ assignment ≤ q := by
-  simpa [satCount] using Finset.card_le_univ (satisfiedClauses φ assignment)
+  simpa using Finset.card_le_univ (satisfiedClauses φ assignment)
 
 /-- An exact optimum equals `q` exactly when the MAX-2SAT instance is satisfiable. -/
 theorem satisfiable_iff_optimum_eq_clauseCount_proof {N q opt : ℕ}

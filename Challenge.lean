@@ -44,7 +44,7 @@ def satisfiedClauses {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) : Finset (Fin q) :=
   Finset.univ.filter (SatisfiesClause φ assignment)
 
-def satCount {N q : ℕ} (φ : Instance N q)
+abbrev satCount {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) : ℕ :=
   (satisfiedClauses φ assignment).card
 
@@ -101,7 +101,7 @@ theorem satisfiable_iff_optimum_eq_clauseCount {N q opt : ℕ}
     obtain ⟨best, hbest⟩ := hopt.2
     have hoptq : opt ≤ q := by
       rw [← hbest]
-      simpa [satCount] using Finset.card_le_univ (satisfiedClauses φ best)
+      simpa using Finset.card_le_univ (satisfiedClauses φ best)
     omega
   · intro h
     obtain ⟨assignment, hassignment⟩ := hopt.2
