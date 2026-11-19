@@ -128,6 +128,15 @@ private theorem score_assignmentOfIndependent {n m : ℕ} (G : PortGraph n m)
 
 end PalomaMax2SAT.CubicThreeOccurrence
 
+/-!
+# Supporting formalization: standard forced-equality occurrence split
+
+The results below formalize a routine consistency construction: a connected
+cycle of hard implications forces all occurrence clones of a variable to
+agree, and encoding/decoding then preserve weighted objective values pointwise.
+They are included for verification and reuse; they are **not** claimed as a
+standalone research contribution.
+-/
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
 abbrev advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
@@ -238,6 +247,14 @@ theorem ratio_83_84_arithmetic :
 
 end PalomaMax2SAT.CubicPublic
 
+/-!
+# Supporting formalization: abstract transfer lemmas
+
+The lemmas below wrap the standard forced-equality occurrence split into
+optimum- and feasible-solution value-preservation interfaces. They take the
+encode/decode score equalities as hypotheses; they are reusable supporting
+lemmas, not an independent research contribution.
+-/
 namespace PalomaMax2SAT.HardSplitPublic
 
 open HardOccurrenceSplit
@@ -291,6 +308,16 @@ theorem ratio_83_84_exceeds_general_horn_threshold :
 
 end PalomaMax2SAT.HardSplitPublic
 
+/-!
+# Supporting formalization: concrete weighted Horn occurrence split
+
+A concrete weighted Horn occurrence-split model is formalized to instantiate
+the abstract transfer lemmas. Feasible split assignments are exactly the
+consistent lifts of source assignments, and encoding/decoding preserve the
+weighted objective pointwise. This is a routine forced-equality gadget
+formalized for verification and reuse; it is **not** claimed as an independent
+research contribution.
+-/
 namespace PalomaMax2SAT.ConcreteHardSplit
 
 open PalomaMax2SAT.HardOccurrenceSplit

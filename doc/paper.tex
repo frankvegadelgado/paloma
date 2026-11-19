@@ -7,9 +7,10 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
 
-\title{An $83/84$ approximation for a cubic three-occurrence Horn class,\\
-and a ratio-preserving hard-consistency split}
+\title[An $83/84$ approximation for a cubic three-occurrence Horn class]{An $83/84$ approximation for a cubic three-occurrence Horn class,\\
+and a supporting forced-equality occurrence split}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
@@ -31,14 +32,14 @@ approximation for independent set on cubic graphs yields a polynomial-time
 $83/84$ approximation for the exact clause pattern. The repair also gives an
 $L$-reduction from cubic MIS and proves APX-completeness. The accompanying
 Lean~4 development formalizes the score decomposition, repair, exact optimum
-identity, and the arithmetic transfer to $83/84$, and, for the hard-consistency
-split, the concrete encode/decode score equalities together with their
-optimum- and feasible-solution value-preservation consequences. We additionally give a
-ratio-preserving occurrence split for arbitrary weighted MAX-HORN-2SAT: the
-source clauses retain their weights, while the cyclic implications are
-mandatory hard clauses with zero objective contribution. This hard-consistency
-image has exactly the source optimum and preserves every feasible solution
-value without an additive offset.
+identity, and the arithmetic transfer to $83/84$. As a supporting
+formalization---not an independent research contribution---the development
+also records the standard hard-consistency occurrence split: a connected
+cycle of mandatory hard implications forces all occurrence clones of a
+variable to agree, and encoding/decoding then preserve weighted objective
+values pointwise. The encode/decode score equalities, together with their
+optimum- and feasible-solution value-preservation consequences, are
+formalized for verification and reuse.
 \end{abstract}
 \maketitle
 
@@ -57,8 +58,7 @@ and outgoing implication. Consequently every formula variable occurs exactly
 three times. The reduction from cubic MIS to MAX-HORN-2SAT is a standard gadget
 composition of unit, edge, and consistency clauses; the quantitative
 contribution here is the exact optimum identity and the explicit cardinality
-bound of the repair, together with the ratio-preserving split of
-Section~\ref{sec:ratio} and their Lean formalization.
+bound of the repair, together with their Lean formalization.
 
 The contribution is quantitative rather than merely satisfiability preserving.
 We prove an explicit repair of every inconsistent clone assignment, obtain an
@@ -66,6 +66,13 @@ exact affine optimum identity, and transfer the Berman--Fujito cubic-MIS
 guarantee~\cite{BermanFujito1999} to the Horn class. Cubic MIS is
 APX-complete~\cite{AlimontiKann2000}, and the same repair proves
 APX-completeness of the image class.
+
+Section~\ref{sec:ratio} records a supporting formalization of the standard
+forced-equality occurrence split. We emphasize that this construction is a
+routine gadget---hard implication cycles force every occurrence clone of a
+variable to agree, after which encoding and decoding preserve weighted
+objective values pointwise---and is included here for verification and reuse,
+not as a novel research contribution.
 
 \section{The cubic three-occurrence construction}
 
@@ -214,8 +221,15 @@ These are the two $L$-reduction inequalities. Cubic MIS is APX-complete and
 Theorem~\ref{thm:ratio} places the image class in APX.
 \end{proof}
 
-\section{The ratio-preserving hard-consistency split}
+\section{A supporting forced-equality occurrence split}
 \label{sec:ratio}
+
+The construction in this section is a standard forced-equality occurrence
+split. It is included for completeness and because the Lean development
+formalizes its encode/decode score equalities and their optimum- and
+feasible-solution value-preservation consequences as a reusable interface.
+It is \emph{not} claimed as an independent research contribution.
+
 Let $F$ be a weighted MAX-HORN-2SAT instance. Its source clauses
 have nonnegative rational weights. Give every literal occurrence a distinct
 clone, and replace that occurrence in its source clause by the clone without
@@ -281,7 +295,18 @@ Apply the image-class algorithm and decode its feasible assignment. Both its
 value and the optimum are unchanged by Theorem~\ref{thm:hard-split}.
 \end{proof}
 
-\section{Relation to the UGC threshold}
+\begin{remark}
+The construction above is a standard forced-equality gadget, not a novel
+reduction. It makes the occurrence-level encoding of a variable explicit and
+uses the same ``all clones agree'' argument as any cycle of hard implications.
+It is recorded for verification and reuse. In particular,
+Corollary~\ref{cor:ratio-preservation} is an observation about the split, not
+an algorithmic contribution of this paper; the algorithmic content of the
+paper is Theorem~\ref{thm:ratio}, which is proved only for the cubic
+subfamily $\{T_H\}$.
+\end{remark}
+
+\section{Context: the UGC threshold}
 
 Brakensiek, Huang, and Zwick obtain the ratio $0.94615981$ for the unrestricted
 weighted MAX~$\{1,2\}$-HORN-SAT language and show conditional optimality under
@@ -290,13 +315,21 @@ $83/84\simeq0.988095>0.94615981$. Corollary~\ref{cor:ratio-preservation}
 places the full weighted problem inside the hard-consistency three-occurrence
 image without ratio loss.
 
+We stress that the split construction underlying
+Corollary~\ref{cor:ratio-preservation} is a routine forced-equality gadget,
+not a novel reduction: it makes the occurrence-level encoding of a variable
+explicit and uses the same ``all clones agree'' argument as any cycle of
+hard implications. It is recorded here for verification and reuse, not as an
+independent contribution.
+
 Therefore, assuming the Unique Games Conjecture, a polynomial-time $83/84$
 approximation for the \emph{entire} hard-consistency image $\{P(F)\}$ would
 yield a polynomial-time algorithm exceeding the UGC-hard Horn threshold
 $0.94615981$ of~\cite{BrakensiekHuangZwick2024}, and hence would imply
 $\mathrm P=\mathrm{NP}$. Theorem~\ref{thm:ratio} proves the $83/84$ ratio only
 for the cubic subfamily $\{T_H\}$; extending the algorithm to all of
-$\{P(F)\}$ is a separate algorithmic requirement.
+$\{P(F)\}$ is a separate algorithmic requirement, and the hard-split
+construction itself does not supply it.
 
 OpenAI's 2026 preprint \emph{The Unique Games Theorem}~\cite{OpenAI2026UGC}
 claims a deterministic polynomial-time reduction from 3SAT to Unique Games
@@ -320,17 +353,24 @@ and the exact optimum identity. It also proves the division-free inequality
 from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. GitHub Actions builds the
 module and runs the public theorem comparison.
 
-The module \texttt{PalomaMax2SAT.HardOccurrenceSplit} formalizes propagation
-around a strongly connected directed implication cycle, together with abstract
-transfer lemmas for optimum and feasible-solution-value preservation that take
-the encoding and decoding score equalities as hypotheses. The module
-\texttt{PalomaMax2SAT.ConcreteHardSplit} instantiates those hypotheses in a
-concrete weighted Horn occurrence model with occurrence-indexed literals,
-weighted Horn clauses, and hard cyclic implications. It proves that encoding a
-source assignment is feasible, that encoding preserves score, that decoding
-any feasible split assignment preserves score, and derives the concrete
+The supporting modules: 
+\begin{itemize}
+\item \texttt{PalomaMax2SAT.HardOccurrenceSplit} and
+\item \texttt{PalomaMax2SAT.ConcreteHardSplit} 
+\end{itemize}
+formalize the standard forced-equality
+occurrence split: propagation around a strongly connected directed implication
+cycle, abstract transfer lemmas for optimum and feasible-solution-value
+preservation that take the encoding and decoding score equalities as
+hypotheses, and a concrete weighted Horn occurrence model with
+occurrence-indexed literals, weighted Horn clauses, and hard cyclic
+implications. In the concrete model, Lean proves that encoding a source
+assignment is feasible, that encoding preserves score, that decoding any
+feasible split assignment preserves score, and derives the concrete
 optimum-preservation and concrete feasible-solution value-preservation
-theorems. The exact rational inequality
+theorems. These results are included for verification and reuse; they are
+not claimed as an independent research contribution. The exact rational
+inequality
 \[
   \frac{83}{84}>0.94615981
 \]

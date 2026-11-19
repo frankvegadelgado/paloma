@@ -5,18 +5,18 @@ project:
   name: "An 83/84 approximation for a cubic three-occurrence Horn class"
   description: >-
     Lean formalization of Frank Vega's cubic-MIS construction, its constructive
-    assignment repair, exact 4n+m+alpha optimum identity, and the arithmetic
-    transfer of the Berman--Fujito 7/6 guarantee to an 83/84 approximation.
-    The cubic class is formalized as port-labelled graphs in which all three
-    ports of every vertex are occupied. A second family of results concerns
-    hard-consistency occurrence splitting: propagation of hard implications
-    around a directed cycle, abstract transfer lemmas, and a concrete weighted
-    Horn occurrence-split model.  For the concrete split, the Lean development
-    proves that encoded source assignments are feasible, that encoding preserves
-    score, that decoding every feasible split assignment preserves score, and
-    consequently proves exact optimum preservation and feasible-solution value
-    preservation without assuming the encode/decode score equalities.  The
-    exact comparison 83/84 > 0.94615981 is also formalized.
+    assignment repair, the exact 4n+m+alpha optimum identity, and the
+    arithmetic transfer of the Berman--Fujito 7/6 guarantee to an 83/84
+    approximation. The cubic class is formalized as port-labelled graphs in
+    which all three ports of every vertex are occupied.  A supporting family of
+    formalized results covers the standard hard-consistency occurrence split:
+    propagation of hard implications around a directed cycle, abstract
+    transfer lemmas, and a concrete weighted Horn occurrence-split model.
+    These results formalize a routine forced-equality gadget for verification
+    and reuse; they are not claimed as an independent research contribution.
+    The exact comparison 83/84 > 0.94615981 is also formalized.  The main
+    mathematical content is the cubic repair, the exact optimum identity, and
+    the arithmetic transfer to 83/84.
   authors: ["Frank Vega"]
   license: "MIT"
   responsible_maintainers: ["Frank Vega"]
@@ -51,24 +51,26 @@ related_formalizations: []
 
 status:
   scope: >-
-    Formalized: a finite port-labelled cubic graph interface; the four-clone
-    Horn score; transition, false-edge, and deletion sets; independence and
-    cardinality of the constructive repair, for port graphs in which every
-    port of every vertex is occupied; the matching assignment from an
-    independent set; the exact 4n+m+alpha optimum identity; and the exact
-    division-free implication from cubic identities and a 7/6 MIS solution to
-    the 83/84 Horn guarantee. Also formalized: consistency forced by a strongly
-    connected directed cycle of hard Horn implications; abstract transfer
-    lemmas for arbitrary assignment types; and a concrete weighted Horn
-    occurrence-split model with occurrence-indexed literals, weighted Horn
-    clauses, and hard cyclic implications.  For the concrete split, Lean proves
+    Main formalized content (cubic construction): a finite port-labelled cubic
+    graph interface; the four-clone Horn score; transition, false-edge, and
+    deletion sets; independence and cardinality of the constructive repair for
+    port graphs in which every port of every vertex is occupied; the matching
+    assignment from an independent set; the exact 4n+m+alpha optimum identity;
+    and the exact division-free implication from cubic identities and a 7/6
+    MIS solution to the 83/84 Horn guarantee.  Supporting formalization
+    (standard hard-consistency occurrence split): consistency forced by a
+    strongly connected directed cycle of hard Horn implications; abstract
+    transfer lemmas for arbitrary assignment types; and a concrete weighted
+    Horn occurrence-split model with occurrence-indexed literals, weighted
+    Horn clauses, and hard cyclic implications.  The split is a routine
+    forced-equality gadget formalized for verification and reuse, not claimed
+    as a standalone research contribution; for the concrete split, Lean proves
     that encoded source assignments are feasible, that encoding preserves
     score, that decoding any feasible split assignment preserves score, and
     therefore proves concrete optimum preservation and concrete feasible-
-    solution value preservation.  The exact inequality
-    83/84 > 0.94615981 is also formalized.  The full weighted MAX
-    {1,2}-HORN-SAT syntax and the UGC hardness result are not formalized in
-    Lean.
+    solution value preservation.  The exact inequality 83/84 > 0.94615981 is
+    also formalized.  The full weighted MAX {1,2}-HORN-SAT syntax and the UGC
+    hardness result are not formalized in Lean.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -78,6 +80,7 @@ status:
     - "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic"
+  supporting_results:
     - "PalomaMax2SAT.HardSplitPublic.hard_implication_cycle_consistent"
     - "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
     - "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
@@ -99,8 +102,9 @@ automation:
         hardware: "Local Windows workstation and API service"
       prompting_notes: >-
         The user directed the formalization of the cubic three-occurrence
-        construction, its Berman--Fujito 83/84 consequence, and the concrete
-        hard-consistency occurrence split.
+        construction, its Berman--Fujito 83/84 consequence, and (as a
+        supporting formalization) the standard hard-consistency occurrence
+        split.
   spend_usd: "Not tracked"
   notes: "Human-directed, AI-assisted formalization with remote verification."
 
@@ -114,18 +118,24 @@ fidelity:
     represents weighted Horn clauses over occurrence-indexed literals and
     represents hard cyclic implications through the feasibility predicate; it
     proves the encode/decode score equalities and derives concrete optimum
-    preservation and concrete feasible-solution value preservation.  It does
-    not formalize the paper's full weighted MAX {1,2}-HORN-SAT parser or the
-    experimental checker, and it does not formalize the UGC hardness result.
-    The port-graph interface requires every port of every vertex to be used by
-    exactly one edge endpoint; it does not exclude parallel edges.
+    preservation and concrete feasible-solution value preservation.  The
+    hard-split construction is a routine forced-equality gadget; it is
+    formalized for verification and reuse and is not claimed as an independent
+    research contribution.  It does not formalize the paper's full weighted
+    MAX {1,2}-HORN-SAT parser or the experimental checker, and it does not
+    formalize the UGC hardness result.  The port-graph interface requires every
+    port of every vertex to be used by exactly one edge endpoint; it does not
+    exclude parallel edges.
 
 review:
   status: "self-assessed; not peer reviewed"
   reviewers: ["none"]
   notes: >-
     GitHub Actions builds with the pinned toolchain, applies source-policy
-    checks, and runs Comparator with independent kernels.
+    checks, and runs Comparator with independent kernels.  An earlier version
+    of this file listed the hard-split results among the main results; the
+    current version moves them to supporting_results in response to review
+    feedback.
 
 alignment:
   namespace: "PalomaMax2SAT.CubicPublic"
@@ -146,21 +156,34 @@ alignment:
       lean: "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
       module: "Challenge"
       status: "proved"
-      note: "Abstract conditional lemma retained as a reusable interface lemma."
+      note: >-
+        Supporting formalization of the standard forced-equality occurrence
+        split.  Abstract conditional lemma retained as a reusable interface
+        lemma; not claimed as an independent contribution.
     - source: "Feasible-solution approximation transfer (abstract)"
       lean: "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
       module: "Challenge"
       status: "proved"
-      note: "Abstract conditional lemma retained as a reusable interface lemma."
+      note: >-
+        Supporting formalization of the standard forced-equality occurrence
+        split.  Abstract conditional lemma retained as a reusable interface
+        lemma; not claimed as an independent contribution.
     - source: "Hard-consistency weighted occurrence split (concrete)"
       lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split"
       module: "ConcreteHardSplit"
       status: "proved"
-      note: "Proves concrete optimum preservation for the weighted Horn occurrence split. The encode/decode score equalities are proved, not assumed."
+      note: >-
+        Proves concrete optimum preservation for the weighted Horn occurrence
+        split.  The encode/decode score equalities are proved, not assumed.
+        The construction is a routine forced-equality gadget and is not
+        claimed as an independent research contribution.
     - source: "Feasible-solution value preservation (concrete)"
       lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
       module: "ConcreteHardSplit"
       status: "proved"
-      note: "Proves that every feasible split assignment has exactly the objective value of its decoded source assignment."
+      note: >-
+        Proves that every feasible split assignment has exactly the objective
+        value of its decoded source assignment.  Supporting formalization;
+        not claimed as an independent contribution.
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."

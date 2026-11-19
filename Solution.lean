@@ -37,6 +37,12 @@ theorem ratio_83_84_arithmetic :
 
 end PalomaMax2SAT.CubicPublic
 
+/-!
+# Supporting formalization: abstract hard-split transfer lemmas
+
+These wrappers expose the standard forced-equality occurrence split.  They are
+supporting lemmas, not an independent research contribution.
+-/
 namespace PalomaMax2SAT.HardSplitPublic
 
 open HardOccurrenceSplit
@@ -76,6 +82,12 @@ theorem ratio_83_84_exceeds_general_horn_threshold :
 
 end PalomaMax2SAT.HardSplitPublic
 
+/-!
+# Supporting formalization: concrete weighted Horn occurrence split
+
+Concrete wrappers for the standard forced-equality occurrence split.  These
+are supporting lemmas, not an independent research contribution.
+-/
 namespace PalomaMax2SAT.ConcreteHardSplit
 
 open PalomaMax2SAT.HardOccurrenceSplit
