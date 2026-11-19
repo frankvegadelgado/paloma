@@ -38,7 +38,9 @@ def transition {n : ℕ} (z : Fin n → Fin 4 → Bool)
   z v i = true ∧ z v ⟨(i.val + 1) % 4, Nat.mod_lt _ (by omega)⟩ = false
 
 instance {n : ℕ} (z : Fin n → Fin 4 → Bool) (v : Fin n) (i : Fin 4) :
-    Decidable (transition z v i) := inferInstance
+    Decidable (transition z v i) := by
+  unfold transition
+  infer_instance
 
 def selectedVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   Finset.univ.filter fun v => z v 0 = false
@@ -127,7 +129,8 @@ theorem repairedSet_card_lower_bound_proof {n m : ℕ} (G : PortGraph n m)
   have hclean : (selectedVertices z).card ≤
       (cleanVertices z).card + (transitionVertices z).card := by
     rw [← Finset.card_sdiff_add_card_inter (selectedVertices z) (transitionVertices z)]
-    exact Nat.add_le_add_left Finset.card_inter_le_right _
+    exact Nat.add_le_add_left
+      (Finset.card_le_card Finset.inter_subset_right) _
   have hdel : (deletionSet G z).card ≤ (falseEdges G z).card := by
     calc
       (deletionSet G z).card ≤
@@ -146,7 +149,8 @@ theorem repairedSet_card_lower_bound_proof {n m : ℕ} (G : PortGraph n m)
   have hrepair : (cleanVertices z).card ≤
       (repairedSet G z).card + (deletionSet G z).card := by
     rw [← Finset.card_sdiff_add_card_inter (cleanVertices z) (deletionSet G z)]
-    exact Nat.add_le_add_left Finset.card_inter_le_right _
+    exact Nat.add_le_add_left
+      (Finset.card_le_card Finset.inter_subset_right) _
   unfold score
   omega
 
@@ -166,7 +170,9 @@ theorem score_assignmentOfIndependent_proof {n m : ℕ} (G : PortGraph n m)
   have hfalse : falseEdges G (assignmentOfIndependent I) = ∅ := by
     ext e
     simp [falseEdges, assignmentOfIndependent, hI e]
-  simp [score, hselected, htransition, hfalse]
+  simp only [score, hselected, htransition, hfalse, Finset.card_empty,
+    Nat.sub_zero]
+  omega
 
 theorem exact_three_occurrence_identity_proof {n m alpha : ℕ}
     (G : PortGraph n m) (halpha : IsIndependenceNumber G alpha) :
