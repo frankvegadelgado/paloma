@@ -130,19 +130,19 @@ end PalomaMax2SAT.CubicThreeOccurrence
 
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
-def advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
+abbrev advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
   Nat.rec i (fun _ current => next current) k
 
-def OrbitConnected {α : Type*} (next : α → α) : Prop :=
+abbrev OrbitConnected {α : Type*} (next : α → α) : Prop :=
   ∀ i j, ∃ k, advance next k i = j
 
-def HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
+abbrev HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
 
-def IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
+abbrev IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
 
-def IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
+abbrev IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
 
@@ -153,7 +153,7 @@ theorem propagate_hard_implications {α : Type*} (next : α → α)
   induction k with
   | zero =>
       intro i hi
-      simpa [advance] using hi
+      simpa using hi
   | succ k ih =>
       intro i hi
       change z (next (advance next k i)) = true
@@ -300,7 +300,7 @@ structure Literal (Var : Type*) (Occ : Var → Type*) where
   occ : Occ var
   pos : Bool
 
-def HornClause {Var : Type*} {Occ : Var → Type*}
+abbrev HornClause {Var : Type*} {Occ : Var → Type*}
     (c : Finset (Literal Var Occ)) : Prop :=
   ∀ l₁ ∈ c, ∀ l₂ ∈ c, l₁.pos = true → l₂.pos = true → l₁ = l₂
 
@@ -309,29 +309,29 @@ structure WeightedHornSplit (Var : Type*) (Occ : Var → Type*) (Clause : Type*)
   lits : Clause → Finset (Literal Var Occ)
   horn : ∀ c, HornClause (lits c)
 
-noncomputable def sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
+noncomputable abbrev sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ := by
   classical
   exact ∑ c : Clause,
     if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
 
-noncomputable def splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
+noncomputable abbrev splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
     (F : WeightedHornSplit Var Occ Clause)
     (z : (v : Var) → Occ v → Bool) : ℕ := by
   classical
   exact ∑ c : Clause,
     if ∃ l ∈ F.lits c, z l.var l.occ = l.pos then F.weight c else 0
 
-def Feasible {Var : Type*} {Occ : Var → Type*}
+abbrev Feasible {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v)
     (z : (v : Var) → Occ v → Bool) : Prop :=
   ∀ v, HardImplicationsHold (next v) (z v)
 
-def encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
+abbrev encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
     (v : Var) → Occ v → Bool :=
   fun v _ => x v
 
-def decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
+abbrev decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
     (z : (v : Var) → Occ v → Bool) : Var → Bool :=
   fun v => z v (base v)
 
