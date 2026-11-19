@@ -37,6 +37,12 @@ sources:
     type: "informal"
     relationship: "background"
     note: "Source of the 7/6 cubic-MIS approximation guarantee."
+  - title: "Tight Approximability of MAX 2-SAT and Relatives, under UGC"
+    authors: ["Joshua Brakensiek", "Neng Huang", "Uri Zwick"]
+    id: "https://doi.org/10.1137/1.9781611977912.53"
+    type: "informal"
+    relationship: "background"
+    note: "Source of the 0.94615981 approximation threshold for weighted MAX {1,2}-HORN-SAT, which is tight under the Unique Games Conjecture; compared against 83/84 in ratio_83_84_exceeds_general_horn_threshold. The Lean development does not formalize their result."
 
 related_formalizations: []
 
