@@ -1,0 +1,124 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Exact MAX-2SAT assignment--witness identity"
+  description: >-
+    Lean formalization of the finite MAX-2SAT semantics, the completed and
+    decoded independent-certificate normal form of the conflict graph,
+    its exact N + K OPT_MAX2SAT optimum, the satisfiability target, the
+    conditional approximation implication, and the 2222-case audit count.
+  authors:
+    - "Frank Vega"
+  license: "MIT"
+  responsible_maintainers:
+    - "Frank Vega"
+
+classification:
+  arxiv: ["cs.CC", "math.CO"]
+  msc2020: ["05C69", "68Q17", "68R10"]
+
+sources:
+  - title: "The exact MAX-2SAT assignment--witness identity"
+    authors:
+      - "Frank Vega"
+    id: "https://github.com/frankvegadelgado/paloma"
+    type: "original-proof"
+    location: "https://github.com/frankvegadelgado/paloma/blob/main/doc/paper.tex"
+    relationship: "other"
+    note: >-
+      The informal AMS note, Lean development, independent exhaustive checker,
+      and recorded max2sat_exhaustive.json result are contained together in
+      this standalone repository.
+    license: "MIT"
+    author_endorsement: "participated"
+
+related_formalizations: []
+
+status:
+  scope: >-
+    Formalized: MAX-2SAT syntax and semantics; satisfied-clause counting;
+    optimum and satisfiability; the completed decoded normal form of conflict-
+    graph independent sets; the exact N + K OPT identity; the N + Kq SAT
+    threshold; the exact-integer conditional ratio implication; the binary OR
+    truth table; and the exact 2222 audit cardinality. The Lean proof imports
+    only Mathlib and does not call NetworkX or Python. The independent Python
+    edge-mask enumeration is separate executable evidence and is not used as
+    an axiom.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+  main_results:
+    - "PalomaMax2SAT.exactMax2SATIdentity"
+    - "PalomaMax2SAT.satisfiable_iff_optimum_eq_clauseCount"
+    - "PalomaMax2SAT.satisfiable_iff_target"
+    - "PalomaMax2SAT.conditionalUnsatOfRatioGap"
+    - "PalomaMax2SAT.binaryClauseReward_truthTable"
+    - "PalomaMax2SAT.exhaustiveAuditCount"
+    - "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-5 Codex"]
+      framework: "Codex desktop"
+      tool_setup: >-
+        AI-assisted Lean authoring with repository verification delegated to
+        the pinned GitHub Actions and Palomar remote environments.
+      cost:
+        wall_time: "Not tracked"
+        spend_usd: "Not tracked"
+        hardware: "Local Windows workstation and API service"
+      prompting_notes: >-
+        The user requested a complete formal statement of the MAX-2SAT identity
+        and the mathematical obligations represented by the independent CAR
+        exhaustive audit.
+  spend_usd: "Not tracked"
+  notes: "Human-directed, AI-assisted formalization with pinned remote verification."
+
+fidelity:
+  divergences: >-
+    The universal Lean identity strictly subsumes the 2222 finite identity
+    checks. Lean separately proves the exact cardinality of that audit domain
+    and executes the local gadget search through arity three. The Python
+    checker independently reconstructs the graph as integer edge masks and is
+    deliberately not imported by Lean.
+
+review:
+  status: "self-assessed; not peer reviewed"
+  reviewers:
+    - "none"
+  notes: >-
+    GitHub Actions builds with the pinned toolchain and runs source-policy and
+    Comparator checks; Palomar independently verifies the submitted commit.
+
+alignment:
+  namespace: "PalomaMax2SAT"
+  statements:
+    - source: "Theorem thm:max2sat-identity"
+      lean: "PalomaMax2SAT.exactMax2SATIdentity"
+      module: "Challenge"
+      status: "proved"
+      note: "Formalizes the exact N + K OPT_MAX2SAT objective identity."
+    - source: "Theorem thm:max2sat-identity, satisfiability corollary"
+      lean: "PalomaMax2SAT.satisfiable_iff_target"
+      module: "Challenge"
+      status: "proved"
+      note: "Formalizes the N + Kq threshold for positive K."
+    - source: "Theorem thm:max2sat-test, item 3"
+      lean: "PalomaMax2SAT.conditionalUnsatOfRatioGap"
+      module: "Challenge"
+      status: "proved"
+      note: "Uses the exact powered integer inequality from the implementation."
+    - source: "Section sec:max2sat, exhaustive composition audit"
+      lean: "PalomaMax2SAT.exhaustiveAuditCount"
+      module: "Challenge"
+      status: "proved"
+      note: "Proves that the specified formula/multiplicity domain has 2222 cases."
+    - source: "Section sec:max2sat, exhaustive local gadget audit"
+      lean: "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
+      module: "Challenge"
+      status: "proved"
+      note: "Exhausts all internal-edge and terminal-attachment masks through arity three."
+
+acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar starter project."

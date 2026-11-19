@@ -1,0 +1,16 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "PalomaMax2SAT.exactMax2SATIdentity",
+    "PalomaMax2SAT.satisfiable_iff_optimum_eq_clauseCount",
+    "PalomaMax2SAT.satisfiable_iff_target",
+    "PalomaMax2SAT.conditionalUnsatOfRatioGap",
+    "PalomaMax2SAT.binaryClauseReward_truthTable",
+    "PalomaMax2SAT.exhaustiveAuditCount",
+    "PalomaMax2SAT.exhaustiveSmallGadgetSearch"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

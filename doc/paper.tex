@@ -1,0 +1,208 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{The Exact MAX-2SAT Assignment--Witness Identity\\
+for Maximum Independent Set}
+\shorttitle{Exact MAX-2SAT Assignment--Witness Identity}
+\author{Frank Vega}
+\shortauthors{F. Vega}
+\date{2026}
+
+\begin{document}
+\begin{abstract}
+We prove an exact MAX-2SAT-to-MIS identity and isolate its valid algorithmic
+consequences.  The accompanying Lean~4 development imports only Mathlib and is
+independent of NetworkX and the Python exhaustive checker.  The checker
+supplies separate finite evidence by reconstructing the reduction as integer
+edge masks.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+
+For a finite simple graph $G=(V,E)$, an \emph{independent set} is a set
+$S\subseteq V$ containing no edge of $G$.  The Maximum Independent Set (MIS)
+problem asks for
+\[
+ \alpha(G)=\max\{|S|:S\subseteq V\text{ is independent}\}.
+\]
+Equivalently, an independent set of $G$ is a clique in the complement graph,
+and its complement in $V$ is a vertex cover.  MIS is one of the classical
+NP-hard graph-optimization problems~\cite{Karp1972,GareyJohnson1979}; its
+approximation behavior is correspondingly severe~\cite{Zuckerman2007}.
+
+MAX-2SAT is the optimization version of 2-CNF satisfiability: each clause has
+at most two literals, and the objective is to maximize the number of satisfied
+clauses.  Although deciding satisfiability of a 2-CNF formula is polynomial,
+MAX-2SAT is an NP-hard optimization problem and is a central test case for
+approximation algorithms~\cite{GareyJohnsonStockmeyer1976,GoemansWilliamson1995}.
+It is therefore useful to know exactly what objective value is represented by
+a graph reduction, rather than only whether a one-way implication holds.
+
+This note gives such an exact identity.  It supplies matching lower and upper
+bounds, a decoding theorem, an exact SAT threshold, and a conditional test for
+a claimed MIS approximation ratio.  It also records the limitation of uniform
+clause replication: copies implement integer weights but do not amplify the
+multiplicative gap to a polynomial one.  The Lean development formalizes these
+claims from finite definitions, while a separate exhaustive checker provides
+independent small-instance evidence.
+
+\section{The assignment--witness graph}
+
+Let $\varphi=C_1\wedge\cdots\wedge C_q$ be a 2-CNF formula on $N$
+variables, and let every clause have $K\ge1$ copies.  The graph
+$G_{\varphi,K}$ has two assignment vertices $x_i^T,x_i^F$ joined by an edge,
+and one witness vertex for each literal occurrence in each clause-copy.
+The two witnesses of a binary clause-copy are adjacent.  Every pair of
+witnesses carrying complementary literals is adjacent, and every witness is
+adjacent to the assignment value that falsifies its literal.
+
+\begin{lemma}[Assignment completion]
+Every independent set extends, without deleting a witness, to an independent
+set containing exactly one assignment vertex for every variable.  Every
+selected witness is true under the resulting assignment.
+\end{lemma}
+
+\begin{proof}
+Selected witnesses cannot carry complementary literals, so they define a
+consistent partial assignment.  Extend it arbitrarily to all variables and
+select the corresponding assignment vertex for each variable.  The
+complementary-witness edges guarantee consistency, the assignment edge permits
+only one value per variable, and the witness--assignment compatibility edge
+excludes precisely the value that would falsify a selected witness.
+\end{proof}
+
+Write $\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)$ for the largest number
+of clauses satisfied by one assignment.
+
+\begin{theorem}[Exact identity]
+\[
+ \alpha(G_{\varphi,K})
+ =N+K\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi).
+\]
+Consequently, $\varphi$ is satisfiable if and only if
+$\alpha(G_{\varphi,K})=N+Kq$.
+\end{theorem}
+
+\begin{proof}
+If an assignment satisfies $r$ clauses, select its $N$ assignment vertices and
+one true witness in every copy of each satisfied clause.  The result is
+independent and has size $N+Kr$, proving the lower bound at an optimal
+assignment.
+
+Conversely, complete an arbitrary independent set by the lemma.  A
+clause-copy contributes at most one witness, and every selected witness is
+true under the completed assignment.  If that assignment satisfies $r$
+clauses, the set has at most $N+Kr$, which is at most
+$N+K\operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)$.  The bounds coincide.
+\end{proof}
+
+\section{Applications and significance}
+
+The identity is stronger than a one-way reduction: it is an affine,
+optimum-preserving correspondence.  An exact MIS optimum immediately yields
+the MAX-2SAT optimum by
+\[
+ \operatorname{OPT}_{\mathrm{MAX2SAT}}(\varphi)
+ =\frac{\alpha(G_{\varphi,K})-N}{K}.
+\]
+Conversely, an assignment satisfying $r$ clauses constructs an independent
+set of size $N+Kr$.  Thus exact solvers on either side provide exact numerical
+certificates for the other side.
+
+The threshold $N+Kq$ gives a SAT application.  Reaching it is equivalent to
+satisfiability, but merely selecting $N$ assignment vertices is not a SAT
+certificate: every total assignment does that.  A positive certificate must
+include a decoded assignment and a direct check that all $q$ source clauses
+are true.  The graph proof explains why each selected occurrence witness is
+sound under that decoded assignment.
+
+There is also a sound conditional approximation test.  Suppose an MIS
+algorithm returns a set of size $s$ on a graph of order $n_G$ and is claimed
+to satisfy ratio $n_G^{1-a/b}$, where $0<a<b$.  If $\varphi$ were satisfiable,
+the theorem would give $\alpha=N+Kq$, so the claimed ratio would require
+\[
+ (N+Kq)^b\le s^b n_G^{\,b-a}.
+\]
+Therefore
+\[
+ s^b n_G^{\,b-a}<(N+Kq)^b
+\]
+proves that either $\varphi$ is unsatisfiable or the claimed approximation
+guarantee fails on this graph.  Under the guarantee hypothesis it is a valid
+UNSAT conclusion; without that hypothesis it is not.
+
+The identity also prevents an invalid hardness inference.  Replacing every
+clause by $K$ copies supplies integer weights and an additive gap $K$, but the
+satisfiable/unsatisfiable optimum ratio tends only to $q/(q-1)$.  Uniform
+replication therefore does not create the polynomial gap required for an
+$n^{1-\varepsilon}$ MIS inapproximability reduction.  This distinction is an
+important application of the exact formula: it identifies both what the
+construction certifies and what it cannot certify.
+
+\section{Independent exhaustive evidence}
+
+The Python audit does not call NetworkX.  It enumerates every
+truth assignment to compute $\operatorname{OPT}_{\mathrm{MAX2SAT}}$, builds
+the graph independently as integer edge masks, enumerates every vertex subset
+to compute $\alpha$, and asserts the identity.  On two variables, for every
+ordered formula with zero through three nonempty unary or binary clauses and
+$K\in\{1,2\}$, this gives
+\[
+ 2(10^0+10^1+10^2+10^3)=2222
+\]
+formula--multiplicity instances and zero counterexamples.
+
+The local search independently enumerates every auxiliary graph and terminal
+attachment through arity three.  It proves minimum auxiliary orders $1,2,3$
+and labelled minimum counts $1,2,6$: precisely the clause clique with
+one-to-one falsifying-terminal attachments, up to relabelling.
+
+\section{Lean alignment}
+
+The public exact-identity theorem formalizes this result.  The source
+constructs the completed assignment from the
+complementary-witness and assignment-compatibility invariants, rather than
+assuming witness validity.  The audit-count theorem proves the $2222$ count,
+and the gadget-search theorem evaluates the
+finite local search through arity three.  GitHub Actions and Palomar run the
+pinned Lean, Comparator, and independent-kernel checks on the public commit.
+
+\begin{thebibliography}{9}
+
+\bibitem{GareyJohnson1979}
+M.~R. Garey and D.~S. Johnson,
+\emph{Computers and Intractability: A Guide to the Theory of NP-Completeness},
+W.~H. Freeman, 1979.
+
+\bibitem{GareyJohnsonStockmeyer1976}
+M.~R. Garey, D.~S. Johnson, and L.~Stockmeyer,
+Some simplified NP-complete graph problems,
+\emph{Theoretical Computer Science} \textbf{1} (1976), 237--267.
+
+\bibitem{GoemansWilliamson1995}
+M.~X. Goemans and D.~P. Williamson,
+Improved approximation algorithms for maximum cut and satisfiability problems
+using semidefinite programming,
+\emph{Journal of the ACM} \textbf{42} (1995), 1115--1145.
+
+\bibitem{Karp1972}
+R.~M. Karp,
+Reducibility among combinatorial problems,
+in \emph{Complexity of Computer Computations}, Plenum Press, 1972, pp.~85--103.
+
+\bibitem{Zuckerman2007}
+D.~Zuckerman,
+Linear degree extractors and the inapproximability of Max Clique and Chromatic
+Number,
+\emph{Theory of Computing} \textbf{3} (2007), 103--128.
+
+\end{thebibliography}
+
+\end{document}
