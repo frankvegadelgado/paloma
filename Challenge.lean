@@ -45,10 +45,10 @@ noncomputable def transitionPairs {n : ℕ} (z : Fin n → Fin 4 → Bool) :
   classical
   exact Finset.univ.filter fun pair => transition z pair.1 pair.2
 
-def transitionVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
+noncomputable def transitionVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   (transitionPairs z).image Prod.fst
 
-def cleanVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
+noncomputable def cleanVertices {n : ℕ} (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   selectedVertices z \ transitionVertices z
 
 def falseEdges {n m : ℕ} (G : PortGraph n m)
@@ -57,16 +57,16 @@ def falseEdges {n m : ℕ} (G : PortGraph n m)
     z (G.left e) (edgeClone (G.leftPort e)) = false ∧
       z (G.right e) (edgeClone (G.rightPort e)) = false
 
-def deletionSet {n m : ℕ} (G : PortGraph n m)
+noncomputable def deletionSet {n m : ℕ} (G : PortGraph n m)
     (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   ((Finset.univ.filter fun e =>
       G.left e ∈ cleanVertices z ∧ G.right e ∈ cleanVertices z).image G.left)
 
-def repairedSet {n m : ℕ} (G : PortGraph n m)
+noncomputable def repairedSet {n m : ℕ} (G : PortGraph n m)
     (z : Fin n → Fin 4 → Bool) : Finset (Fin n) :=
   cleanVertices z \ deletionSet G z
 
-def score {n m : ℕ} (G : PortGraph n m) (z : Fin n → Fin 4 → Bool) : ℕ :=
+noncomputable def score {n m : ℕ} (G : PortGraph n m) (z : Fin n → Fin 4 → Bool) : ℕ :=
   (selectedVertices z).card + (m - (falseEdges G z).card) +
     (4 * n - (transitionPairs z).card)
 
