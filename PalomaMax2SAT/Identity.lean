@@ -33,23 +33,19 @@ structure Instance (N q : ℕ) where
   width_two : ∀ j, (clause j).card ≤ 2
 
 /-- Evaluation of one signed literal. -/
-def EvalLiteral (assignment : Fin N → Bool) (literal : Literal N) : Prop :=
+abbrev EvalLiteral (assignment : Fin N → Bool) (literal : Literal N) : Prop :=
   assignment literal.1 = literal.2
 
 instance (assignment : Fin N → Bool) (literal : Literal N) :
-    Decidable (EvalLiteral assignment literal) := by
-  unfold EvalLiteral
-  infer_instance
+    Decidable (EvalLiteral assignment literal) := inferInstance
 
 /-- A clause is satisfied when one of its literals evaluates to true. -/
-def SatisfiesClause {N q : ℕ} (φ : Instance N q)
+abbrev SatisfiesClause {N q : ℕ} (φ : Instance N q)
     (assignment : Fin N → Bool) (j : Fin q) : Prop :=
   ∃ literal ∈ φ.clause j, EvalLiteral assignment literal
 
 instance {N q : ℕ} (φ : Instance N q) (assignment : Fin N → Bool) (j : Fin q) :
-    Decidable (SatisfiesClause φ assignment j) := by
-  unfold SatisfiesClause
-  infer_instance
+    Decidable (SatisfiesClause φ assignment j) := inferInstance
 
 /-- The finite set of clauses satisfied by an assignment. -/
 def satisfiedClauses {N q : ℕ} (φ : Instance N q)
@@ -249,7 +245,8 @@ theorem satisfiable_iff_target_proof {N q K opt : ℕ} (φ : Instance N q)
   · intro h
     simp [h]
   · intro h
-    omega
+    apply Nat.eq_of_mul_eq_mul_left hK
+    exact Nat.add_left_cancel h
 
 /--
 Exact integer form of the conditional approximation test.  If satisfiability
@@ -304,7 +301,7 @@ def gadgetAttached (arity auxiliary encoding vertex terminal : ℕ) : Bool :=
 def subsetCard (order subset : ℕ) : ℕ :=
   ((Finset.range order).filter fun vertex => subset.testBit vertex = true).card
 
-def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) : Prop :=
+abbrev gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) : Prop :=
   (∀ vertex ∈ Finset.range auxiliary,
       subset.testBit vertex = true →
       ∀ terminal ∈ Finset.range arity,
@@ -318,9 +315,7 @@ def gadgetSubsetFeasible (arity auxiliary encoding falseTerminals subset : ℕ) 
 
 instance (arity auxiliary encoding falseTerminals subset : ℕ) :
     Decidable (gadgetSubsetFeasible arity auxiliary encoding falseTerminals subset) :=
-  by
-    unfold gadgetSubsetFeasible
-    infer_instance
+  inferInstance
 
 /-- Maximum available independent auxiliary reward for one false-terminal mask. -/
 def gadgetReward (arity auxiliary encoding falseTerminals : ℕ) : ℕ :=
@@ -330,7 +325,7 @@ def gadgetReward (arity auxiliary encoding falseTerminals : ℕ) : ℕ :=
     else 0
 
 /-- Reward rises by one exactly when at least one clause literal is true. -/
-def RealizesClauseOR (arity auxiliary encoding : ℕ) : Prop :=
+abbrev RealizesClauseOR (arity auxiliary encoding : ℕ) : Prop :=
   let allFalse := 2 ^ arity - 1
   let baseline := gadgetReward arity auxiliary encoding allFalse
   ∀ falseTerminals ∈ Finset.range (2 ^ arity),
@@ -338,9 +333,7 @@ def RealizesClauseOR (arity auxiliary encoding : ℕ) : Prop :=
       baseline + if falseTerminals = allFalse then 0 else 1
 
 instance (arity auxiliary encoding : ℕ) :
-    Decidable (RealizesClauseOR arity auxiliary encoding) := by
-  unfold RealizesClauseOR
-  infer_instance
+    Decidable (RealizesClauseOR arity auxiliary encoding) := inferInstance
 
 /-- Number of labelled internal-graph/attachment encodings realizing clause OR. -/
 def clauseORGadgetCount (arity auxiliary : ℕ) : ℕ :=
