@@ -187,3 +187,16 @@ alignment:
         not claimed as an independent contribution.
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."
+additional_graph_results:
+  module: "PalomaMax2SAT.GraphTransfer"
+  source_status: "Added proof source; pending kernel build."
+  hard_family: "Unit vertex rewards and edge-clause weight one or four, hard four-port cycles."
+  declarations:
+    - "fourScore_repair"
+    - "canonical_fourScore"
+    - "exact_fourScore"
+    - "hardFour_transfer"
+    - "exact_unitScore"
+    - "hardUnit_transfer"
+    - "unit_endpoint_arithmetic"
+  scope: "External MIS algorithm and simple cubic graph counting bounds are inputs to the transfer. General rational edge weights and the signed MWIS gadget are proved in the manuscript."

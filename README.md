@@ -9,7 +9,7 @@ The Lean development contains two groups of results:
 
 1. the main contribution: the cubic construction — the four-clone score, the
    constructive repair, the exact optimum identity `4*|V| + |E| + alpha(H)`,
-   and the arithmetic transfer of the Berman--Fujito `7/6` guarantee to
+   and the arithmetic transfer of a `7/6` MIS guarantee to
    `83/84`; and
 2. a supporting formalization of the standard forced-equality occurrence
    split: propagation of hard implications around a directed cycle, abstract
@@ -34,20 +34,14 @@ A - (4*|V| + |E|).
 
 ## The 83/84 guarantee
 
-Berman and Fujito's `7/6` approximation for independent set on cubic graphs
-returns `|I| >= 6*alpha/7`. For a cubic graph, `m=3n/2` and `alpha<=n/2`, so
+For the original soft class the endpoint proof in the revised paper combines a fixed-parameter Berman–Fujito run with Trevisan’s near-bipartite cut guarantee. The older arithmetic lemma takes a 6/7 independent set as input.
 
-```text
-(4n + m + |I|)/(4n + m + alpha)
-    >= (11 + 6/7)/12
-    = 83/84.
-```
+With the original unit weights the hard cubic-source family has optimum `m + alpha`. A single cubic MIS run yields `77/80`; adding the near-bipartite branch gives `27/28`. Both exceed 0.94615981. The new unit-score declarations are included in the public comparison.
 
-Thus the exact cubic image class has a polynomial-time `83/84` approximation.
-The repair also gives an L-reduction with constants 23 and 1, proving
-APX-completeness.
+For the hard split of a cubic graph source with weight-one negative units and positive edge clauses of weight four, the feasible optimum is exactly `4m + alpha`. The lift of a 17/20 independent set attains at least 257/260 of this optimum. The new `GraphTransfer.lean` contains the concrete hard score, its repair, the optimum identity, and the division-free transfer. External graph algorithms are used through their published guarantees. The unrestricted signed graph result is a paper proof with a Python audit.
 
-`83/84` is the solution/optimum ratio.
+Run `python3 experiments/graph_transfer.py` for the exhaustive graph, unary-gadget, weighted-formula and cube checks. Run `lake build` for the Lean source. The new module is included by the default library target.
+
 
 ## Lean formalization
 
@@ -131,7 +125,7 @@ Conjecture (UGC). Since
 ```
 
 the cubic `83/84` result is nominally above the UGC-hard threshold. The
-`83/84` algorithm proved here, however, is only established for the cubic
+`83/84` algorithm proved here, however, is established for the original cubic
 subfamily `{T_H}`; it is **not** an algorithm for the entire hard-split image
 `{P(F)}`. The hard-split construction itself is a routine forced-equality
 gadget, not a novel reduction, and does not by itself provide any algorithmic
@@ -160,7 +154,7 @@ is accepted, the first premise in the chain above becomes a theorem rather
 than a conjectural assumption. The rest of the chain is unaffected by that
 acceptance; it still requires the algorithmic extension described above.
 
-The present repository proves the `83/84` algorithm for the cubic subfamily
+The revised paper attains the target on the four-weight hard image as well as the cubic subfamily
 `{T_H}` and proves exact ratio preservation for the full hard-consistency
 image `{P(F)}`. The mathematical content of the hard-split material is a
 standard consistency argument; the contribution of the repository is the cubic

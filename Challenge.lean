@@ -449,3 +449,119 @@ theorem concrete_feasible_solution_ratio_preserved
   exact (decodeScore F next base horb hz).symm
 
 end PalomaMax2SAT.ConcreteHardSplit
+
+namespace PalomaMax2SAT.GraphTransfer
+open PalomaMax2SAT.HardOccurrenceSplit
+
+theorem hardImage_ratio (W a s : ℕ) (hw : 12*a ≤ W) (hs : 17*a ≤ 20*s) :
+    260*(W+s) ≥ 257*(W+a) := by omega
+
+open PalomaMax2SAT.CubicThreeOccurrence
+
+/-- The hard cycle is a feasibility condition. Only units and edges earn weight. -/
+noncomputable def fourScore {n m : ℕ} (G : PortGraph n m)
+    (z : Fin n → Fin 4 → Bool) : ℕ :=
+  (selectedVertices z).card + 4 * (m - (falseEdges G z).card)
+
+theorem fourScore_repair {n m : ℕ} (G : PortGraph n m) (z : Fin n → Fin 4 → Bool)
+    (hz : transitionPairs z = ∅) :
+    fourScore G z ≤ 4*m + (repairedSet G z).card := by
+  have h := PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound G z
+  simp only [score, hz, Finset.card_empty, Nat.sub_zero] at h
+  unfold fourScore
+  omega
+
+theorem canonical_fourScore {n m : ℕ} (G : PortGraph n m)
+    (I : Finset (Fin n)) (hI : Independent G I) :
+    transitionPairs (assignmentOfIndependent I) = ∅ ∧
+    fourScore G (assignmentOfIndependent I) = 4*m + I.card := by
+  classical
+  have hselected : selectedVertices (assignmentOfIndependent I) = I := by
+    ext v
+    simp [selectedVertices, assignmentOfIndependent]
+  have hfalse : falseEdges G (assignmentOfIndependent I) = ∅ := by
+    ext e
+    simp [falseEdges, assignmentOfIndependent, hI e]
+  constructor
+  · ext pair
+    simp [transitionPairs, transition, assignmentOfIndependent]
+  · simp [fourScore, hselected, hfalse, Nat.add_comm]
+
+theorem exact_fourScore {n m a : ℕ} (G : PortGraph n m)
+    (ha : IsIndependenceNumber G a) :
+    IsHardOptimum (fun z => transitionPairs z = ∅) (fourScore G) (4*m+a) := by
+  constructor
+  · intro z hz
+    have hu := fourScore_repair G z hz
+    have hi := ha.1 _ (PalomaMax2SAT.CubicPublic.repairedSet_independent G z)
+    omega
+  · obtain ⟨I, hi, hc⟩ := ha.2
+    exact ⟨assignmentOfIndependent I, (canonical_fourScore G I hi).1,
+      by rw [(canonical_fourScore G I hi).2, hc]⟩
+
+theorem hardFour_transfer {n m a : ℕ} (G : PortGraph n m)
+    (ha : IsIndependenceNumber G a) (hm : 2*m = 3*n) (hn : 2*a ≤ n)
+    (I : Finset (Fin n)) (hi : Independent G I) (hs : 17*a ≤ 20*I.card) :
+    IsHardOptimum (fun z => transitionPairs z = ∅) (fourScore G) (4*m+a) ∧
+    transitionPairs (assignmentOfIndependent I) = ∅ ∧
+    260*fourScore G (assignmentOfIndependent I) ≥ 257*(4*m+a) := by
+  obtain ⟨hz, hval⟩ := canonical_fourScore G I hi
+  refine ⟨exact_fourScore G ha, hz, ?_⟩
+  rw [hval]
+  exact hardImage_ratio (4*m) a I.card (by omega) hs
+
+
+private theorem unitCanonicalSoft {n m : ℕ} (G : PortGraph n m)
+    (I : Finset (Fin n)) (hi : Independent G I) :
+    score G (assignmentOfIndependent I) = 4*n+m+I.card := by
+  have hz := (canonical_fourScore G I hi).1
+  have hselected : selectedVertices (assignmentOfIndependent I) = I := by
+    ext v
+    simp [selectedVertices, assignmentOfIndependent]
+  have hfalse : falseEdges G (assignmentOfIndependent I) = ∅ := by
+    ext e
+    simp [falseEdges, assignmentOfIndependent, hi e]
+  simp only [score, hselected, hfalse, hz, Finset.card_empty, Nat.sub_zero]
+  omega
+
+/-- Original unit weights, with all implications mandatory and unscored. -/
+noncomputable def unitScore {n m : ℕ} (G : PortGraph n m)
+    (z : Fin n → Fin 4 → Bool) : ℕ :=
+  (selectedVertices z).card + (m - (falseEdges G z).card)
+
+theorem exact_unitScore {n m a : ℕ} (G : PortGraph n m)
+    (ha : IsIndependenceNumber G a) :
+    IsHardOptimum (fun z => transitionPairs z = ∅) (unitScore G) (m+a) := by
+  constructor
+  · intro z hz
+    have hu := PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound G z
+    have hi := ha.1 _ (PalomaMax2SAT.CubicPublic.repairedSet_independent G z)
+    simp only [score, hz, Finset.card_empty, Nat.sub_zero] at hu
+    unfold unitScore
+    omega
+  · obtain ⟨I, hi, hc⟩ := ha.2
+    have hz := (canonical_fourScore G I hi).1
+    have hv := unitCanonicalSoft G I hi
+    simp only [score, hz, Finset.card_empty, Nat.sub_zero] at hv
+    exact ⟨assignmentOfIndependent I, hz, by unfold unitScore; omega⟩
+
+theorem hardUnit_transfer {n m a : ℕ} (G : PortGraph n m)
+    (ha : IsIndependenceNumber G a) (hm : 2*m = 3*n) (hn : 2*a ≤ n)
+    (I : Finset (Fin n)) (hi : Independent G I) (hs : 17*a ≤ 20*I.card) :
+    IsHardOptimum (fun z => transitionPairs z = ∅) (unitScore G) (m+a) ∧
+    transitionPairs (assignmentOfIndependent I) = ∅ ∧
+    80*unitScore G (assignmentOfIndependent I) ≥ 77*(m+a) := by
+  have hz := (canonical_fourScore G I hi).1
+  have hv := unitCanonicalSoft G I hi
+  simp only [score, hz, Finset.card_empty, Nat.sub_zero] at hv
+  refine ⟨exact_unitScore G ha, hz, ?_⟩
+  unfold unitScore
+  omega
+
+theorem unit_endpoint_arithmetic (n m a s : ℕ)
+    (hm : 2*m = 3*n) (hn : 2*a ≤ n)
+    (h : 6*a ≤ 7*s ∨ (20000*a ≤ 9999*n ∧ 5999993*a ≤ 7000000*s)) :
+    28*(m+s) ≥ 27*(m+a) := by
+  rcases h with h | ⟨h₁,h₂⟩ <;> omega
+
+end PalomaMax2SAT.GraphTransfer

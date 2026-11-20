@@ -1,8 +1,8 @@
 \documentclass[11pt]{amsart}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\IfFileExists{lmodern.sty}{\usepackage[T1]{fontenc}\usepackage{lmodern}}{}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{1.5em}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -27,9 +27,11 @@ $T_H$ associated with a cubic graph $H=(V,E)$, we prove the exact identity
 \]
 The upper bound is constructive: every assignment of value $A$ is repaired in
 polynomial time to an independent set of size at least
-$A-(4|V|+|E|)$. Combining this identity with the Berman--Fujito $7/6$
-approximation for independent set on cubic graphs yields a polynomial-time
-$83/84$ approximation for the exact clause pattern. The repair also gives an
+$A-(4|V|+|E|)$. A cubic independent-set approximation combined with a near-bipartite
+cut algorithm gives a polynomial-time $83/84$ approximation for this pattern.
+For a restricted hard-split family with unit vertex rewards and edge-clause
+weights at least one, we obtain $27/28$, including when all weights are
+one. With edge weights four the guarantee improves to $257/260$. The repair also gives an
 $L$-reduction from cubic MIS and proves APX-completeness. The accompanying
 Lean~4 development formalizes the score decomposition, repair, exact optimum
 identity, and the arithmetic transfer to $83/84$. As a supporting
@@ -168,32 +170,37 @@ $4n+m+|I|$. Taking $I$ maximum proves equality.
 
 \section{The $83/84$ approximation}
 
-Berman and Fujito give a polynomial-time $7/6$ approximation for MIS on cubic
-graphs~\cite{BermanFujito1999}. In solution-ratio notation their algorithm
-returns an independent set $I$ satisfying $|I|\ge6\alpha(H)/7$.
+For a simple cubic graph put $B=4n+m=11n/2$.
+Every independent set sends all its incident edges to its complement,
+so $\alpha\le n/2$. If $|I|\ge6\alpha/7$, the ratio
+$(B+|I|)/(B+\alpha)$ is at least $(11+6/7)/12=83/84$.
+We give an endpoint argument that only requires the published cubic MIS
+factor arbitrarily close to $7/6$~\cite{BermanFujito1999}.
 
-We also use the elementary inequality $\alpha(H)\le n/2$. Indeed, every
-vertex in an independent set has three edges to its complement; the complement
-has total incident capacity at most three times its cardinality, so
-$3\alpha(H)\le3(n-\alpha(H))$.
-
-\begin{theorem}[Cubic Horn approximation]\label{thm:ratio}
-The three-occurrence class $\{T_H:H\text{ is simple and cubic}\}$ admits a
+\begin{theorem}\label{thm:ratio}
+On the class $\{T_H:H\text{ is simple and cubic}\}$ there is a
 polynomial-time $83/84$ approximation.
 \end{theorem}
-
 \begin{proof}
-Run Berman--Fujito and lift its independent set $I$ using
-Theorem~\ref{thm:identity}. Put $B=4n+m$. Since $m=3n/2$ and
-$\alpha(H)\le n/2$, we have $B/\alpha(H)\ge11$. Therefore
-\[
- \frac{B+|I|}{B+\alpha(H)}
- \ge
- \frac{B+6\alpha(H)/7}{B+\alpha(H)}
- \ge
- \frac{11+6/7}{12}
- =\frac{83}{84}.
-\]
+Return the better lift of two independent sets. First use
+Berman--Fujito with fixed parameters giving solution fraction
+$r=6/7-10^{-6}$. If $2\alpha/n\le9999/10000$, then
+$(83-84r)\alpha\le(11+84\cdot10^{-6})(9999/20000)n
+\le 11n/2=B$, which gives the required ratio.
+
+For the second set, apply the near-satisfiable Max Cut guarantee of
+Trevisan~\cite{Trevisan}. For fixed $\epsilon=10^{-4}$, a graph having
+a cut of fraction at least $1-\epsilon$ admits a polynomially computable
+cut of fraction at least $0.95$ for all sufficiently large $n$:
+the stated bound is $1-4\sqrt\epsilon+8\epsilon-o(1)>0.95$.
+Fixed small orders may be solved exhaustively, including the empty graph.
+The independent set of size $\alpha$ and its complement cut $3\alpha$
+edges, a fraction $2\alpha/n$. Thus the cut guarantee applies in the
+remaining case. From each side delete one endpoint of each internal edge,
+taking the union of the deletions on that side. The larger remaining
+independent set has size at least $(n-0.05m)/2=37n/80>3n/7
+\ge6\alpha/7$. The endpoint calculation above now applies.
+The algorithm runs both branches without knowing $\alpha$.
 \end{proof}
 
 \section{APX-completeness}
@@ -301,10 +308,121 @@ reduction. It makes the occurrence-level encoding of a variable explicit and
 uses the same ``all clones agree'' argument as any cycle of hard implications.
 It is recorded for verification and reuse. In particular,
 Corollary~\ref{cor:ratio-preservation} is an observation about the split, not
-an algorithmic contribution of this paper; the algorithmic content of the
-paper is Theorem~\ref{thm:ratio}, which is proved only for the cubic
-subfamily $\{T_H\}$.
+an algorithmic contribution of this paper; the algorithmic bounds for the two restricted families are proved in
+Theorems~\ref{thm:ratio} and~\ref{thm:hard-family}.
 \end{remark}
+
+\section{A hard-split family attaining the target ratio}
+
+Let $H$ be simple cubic. In the source $F_H(w)$ put a unit clause
+$(\neg x_v)$ of weight one at each vertex and a clause $(x_u\vee x_v)$
+of rational weight $w_e\ge1$ on each edge. Write $W=\sum_e w_e$.
+Apply the ordinary occurrence split to this source, with zero-score hard
+cycles. The four ports identify the three edge occurrences and the unit.
+The source graph can also be recovered by contracting each hard cycle and
+reading the binary source clauses.
+
+\begin{theorem}\label{thm:hard-family}
+The feasible optimum of $P(F_H(w))$ is $W+\alpha(H)$. For all $w_e\ge1$ there is a polynomial-time
+$27/28$ approximation. If $W\ge 6n$,
+this class admits a polynomial-time $257/260>83/84$ approximation.
+In particular this holds if every edge clause weighs four.
+\end{theorem}
+\begin{proof}
+For the set $S$ of false source variables the score is
+$W+|S|-\sum_{e\in E(H[S])} w_e$. Delete from $S$ one endpoint of each
+internal edge, counting repeated deletions only once. The independent set
+left has size at least $|S|-|E(H[S])|$, which bounds the excess over $W$
+from above since $w_e\ge1$. Conversely every independent set realizes
+$W+|I|$ by setting its variables false and copying this choice to all
+ports. This proves the identity and the constructive repair.
+For $n>0$ we have $W\ge m=3n/2\ge3\alpha$. Even a single
+cubic MIS run with $20|I|\ge17\alpha$ gives
+$(W+|I|)/(W+\alpha)\ge(3+17/20)/4=77/80>0.94615981$.
+To attain $27/28$, use both candidates from Theorem~\ref{thm:ratio}.
+In its near-bipartite case $|I|\ge6\alpha/7$, giving
+$(3+6/7)/4=27/28$. In its other case $|I|\ge r\alpha$ and
+$(27-28r)\alpha\le(3+28\cdot10^{-6})(9999/20000)n
+\le 3n/2\le W$, which is exactly the sufficient inequality.
+Since $20/17>7/6$, a fixed-parameter Berman--Fujito run gives
+$20|I|\ge17\alpha$. Here $W\ge6n\ge12\alpha$, so
+$260(W+|I|)-257(W+\alpha)\ge 3W-36\alpha\ge0$.
+The empty instance satisfies the division-free bound as well.
+\end{proof}
+
+\paragraph{Why hardening can change the ratio.}
+In the unit-weight version, take four disjoint copies of the cube $Q_3$.
+Each has independence number four by its parity classes and a perfect
+matching. Take a parity class in each of three copies and an antipodal
+pair in the fourth. The pair is maximal because every other vertex
+neighbors an endpoint. Thus $|I|=14$, $\alpha=16$, $n=32$, and $m=48$.
+The same feasible lift meets $7|I|\ge6\alpha$ and scores $190/192$
+relative to optimum on $T_H$, but only $62/64$ on $P(F_H(1))$.
+The $128$ satisfied implications have ceased to earn points. This
+refutes a transfer based solely on the MIS guarantee and this decoding,
+even for maximal sets with perfectly consistent ports.
+
+\section{A signed graph for general weighted inputs}
+
+The unsigned construction can fail even on $K_4$. Start with two indexed
+copies of $(x\vee x)$, assign their occurrences the opposite pairs of
+a four-cycle, and join each source pair. The resulting graph is simple
+cubic. Each singleton is a maximum independent set and gives a nonconstant
+cyclic word. For an example with distinct variables within each clause,
+three indexed copies of $(x\vee y)$ give two triangles joined by a matching.
+An independent set taking a vertex in each triangle at different indices
+is maximum and violates both cycles under membership decoding.
+In the unsigned graph a pair edge forbids only simultaneous membership.
+Complementation reverses a directed implication but does not turn it into
+a prohibition on simultaneous membership. The paper uses the at-most-one-negative
+convention; the supporting Lean clause predicate uses the globally
+complementary at-most-one-positive convention.
+
+\paragraph{Unary terminals.}
+For the path $a$--$w$--$b$, the terminal states $00$, $01$, $10$, and $11$
+give maximum total cardinalities $1,1,1,2$. It realizes a one-unit bonus
+for $11$ when another constraint synchronizes the ends. Both mixed states
+extend to independent sets. The following signed construction instead gives
+a unit clause one reward vertex attached to its falsifying port.
+
+\begin{theorem}\label{thm:signed}
+For any weighted source $F$ of width at most two, let $D$ be its number
+of literal occurrences, $W$ its total nonnegative clause weight, and $M=W+1$.
+One can construct a simple vertex-weighted graph $J$ of maximum degree three
+such that $\alpha_w(J)=DM+\operatorname{OPT}(F)$. Every independent set of
+weight $A$ decodes in polynomial time to a feasible split assignment of
+score at least $A-DM$.
+\end{theorem}
+\begin{proof}
+At occurrence $i$ create adjacent ports $T_i,F_i$ of weight $M$.
+Join $T_i$ to $F_{i+1}$ around each variable cycle. For a singleton
+cycle the pair edge already supplies this conflict; insert it just once.
+Discard variables with no occurrences. For each literal occurrence create
+a reward vertex of weight equal to its clause weight and join it to the
+port that falsifies that literal. Join the two reward vertices of each
+binary clause. Every port has at most two ring neighbors and one reward
+neighbor. Distinct literal occurrences have distinct vertices even for
+repeated literals. The graph has $3D$ vertices, linear combinatorial
+size and polynomial bit complexity with binary rational weights.
+
+At most one port per pair and one reward per clause can be selected.
+If fewer than $D$ ports are selected, the weight is at most
+$(D-1)M+W<DM$. Any constant-per-variable encoding already reaches $DM$.
+Otherwise each pair has exactly one selected port. Choosing $T_i$
+forces $T_{i+1}$, so all pairs of a variable choose the same side.
+Each selected reward then witnesses a true literal. Reading the ports gives
+score at least $A-DM$. Conversely encode any assignment and select one true
+witness per satisfied clause. The weight is exactly $DM$ plus its score.
+These operations prove both claims, including for empty clauses.
+\end{proof}
+
+This construction preserves multiplicative guarantees on the excess
+$A-DM$. A guarantee on the total weight alone can be almost perfect when
+the decoded score is zero: for $k$ positive unit clauses on one variable,
+the all-false port selection has fraction $(k+1)/(k+2)$ and decodes to
+zero. Already $k=82$ gives $83/84$. Thus neither the signed repair nor
+a polynomial algorithm for unweighted cubic MIS supplies the unrestricted
+weighted ratio.
 
 \section{Context: the UGC threshold}
 
@@ -327,7 +445,7 @@ approximation for the \emph{entire} hard-consistency image $\{P(F)\}$ would
 yield a polynomial-time algorithm exceeding the UGC-hard Horn threshold
 $0.94615981$ of~\cite{BrakensiekHuangZwick2024}, and hence would imply
 $\mathrm P=\mathrm{NP}$. Theorem~\ref{thm:ratio} proves the $83/84$ ratio only
-for the cubic subfamily $\{T_H\}$; extending the algorithm to all of
+for the cubic subfamily $\{T_H\}$. Theorem~\ref{thm:hard-family} exceeds the general Horn threshold even on the unit-weight hard family. Extending the algorithm to all of
 $\{P(F)\}$ is a separate algorithmic requirement, and the hard-split
 construction itself does not supply it.
 
@@ -379,12 +497,25 @@ formula shapes and verifies equality of the complete sets of attainable source
 and feasible-split objective values. The repository is
 available at~\cite{VegaPalomaRepository}.
 
+The accompanying revision includes a separate graph-transfer module with
+finite counterexamples, the saturated-ring lemma, the four-weight hard-score repair and optimum,
+and the transfer from a $17/20$ independent set to a feasible lift.
+Its additional Python audit checks all independent sets on 258 small
+weighted formulas and enumerates labelled simple subcubic graphs through
+five vertices for the two-terminal path profile. The general signed-graph
+theorem and the use of the external approximation algorithms are proved in
+the text.
+
 \begin{thebibliography}{9}
 \bibitem{AlimontiKann2000}
 P.~Alimonti and V.~Kann,
 \emph{Some APX-completeness results for cubic graphs},
 Theoretical Computer Science 237 (2000), 123--134.
 \url{https://doi.org/10.1016/S0304-3975(98)00158-3}.
+
+\bibitem{Trevisan}
+L.~Trevisan, \emph{Max Cut and the smallest eigenvalue}, STOC 2009.
+\url{https://theory.stanford.edu/~trevisan/pubs/maxcutstoc.pdf}.
 
 \bibitem{BermanFujito1999}
 P.~Berman and T.~Fujito,
