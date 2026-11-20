@@ -32,11 +32,11 @@ For a restricted hard-split family with unit vertex rewards and edge-clause
 weights at least one, we obtain $27/28$, including when all weights are
 one. With edge weights four the guarantee improves to $257/260$. The repair
 also gives an $L$-reduction from cubic MIS and proves APX-completeness. The
-accompanying Lean~4 development formalizes the score decomposition, repair,
-exact optimum identity, the arithmetic transfer to $83/84$, and the exact
+accompanying Lean~4 development formalizes the clause formula $T_H$, its
+score decomposition, repair, exact optimum identity, the arithmetic transfer to $83/84$, and the exact
 hard-score optima $4m+\alpha$ and $m+\alpha$ with their $257/260$ and $77/80$
-transfers; the $27/28$ statement in Lean is the arithmetic consequence of a
-numerical independent-set hypothesis.
+transfers; the $27/28$ statement in Lean is the arithmetic consequence of
+numerical independent-set guarantees stated as hypotheses.
 \end{abstract}
 \maketitle
 
@@ -464,8 +464,11 @@ the vertices (unit clauses), the edges (edge clauses) and the pairs $(v,i)$
 (consistency implications). It proves that the number of clauses of $T_H$
 satisfied by $z$ equals $U(z)+(m-F(z))+(4n-T(z))$, that the maximum of this
 number over all assignments is exactly $4n+m+\alpha$, that every clause has at
-most one negative literal, and that $T_H$ has $5n+m$ clauses. The statement
-that every variable occurs exactly three times is not formalized in Lean.
+most one negative literal, that $T_H$ has $5n+m$ clauses, and that every
+variable occurs exactly three times. The Berman--Fujito guarantee, the Trevisan
+near-bipartite branch, the $L$-reduction and APX-completeness argument, the
+general weighted theorems and the discussion of the Unique Games Conjecture are
+proved in the text and are not formalized in Lean.
 
 The module \texttt{PalomaMax2SAT.GraphTransfer} formalizes the hard score of
 the four-port cycle formulation. It proves the exact optima

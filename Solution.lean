@@ -62,4 +62,9 @@ theorem formula_size (n m : ℕ) :
     Fintype.card (ClauseIdx n m) = 5 * n + m := by
   exact formula_size_proof n m
 
+/-- Every variable of `T_H` occurs exactly three times. -/
+theorem three_occurrences {n m : ℕ} (G : PortGraph n m)
+    (x : Fin n × Fin 4) : occurrences G x = 3 := by
+  exact three_occurrences_proof G x
+
 end PalomaMax2SAT.SemanticPublic
