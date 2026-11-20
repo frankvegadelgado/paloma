@@ -165,12 +165,13 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
       rw [Finset.sum_eq_single (w, j - 1)]
       · simp
       · intro p _ hp
-        rw [if_neg]
-        intro h
-        apply hp
-        have h1' : p.1 = w := congrArg Prod.fst h
-        have h2' : p.2 + 1 = j := congrArg Prod.snd h
-        exact Prod.ext h1' (eq_sub_of_add_eq h2')
+        have hne : ¬ ((p.1, p.2 + 1) = (w, j)) := by
+          intro h
+          apply hp
+          have h1' : p.1 = w := congrArg Prod.fst h
+          have h2' : p.2 + 1 = j := congrArg Prod.snd h
+          exact Prod.ext h1' (eq_sub_of_add_eq h2')
+        simp [hne]
       · intro h
         exact absurd (Finset.mem_univ _) h
     omega
@@ -206,7 +207,8 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
         intro a q
         simp [edgeClone]
       simp only [hcond]
-      rw [if_neg (Fin.succ_ne_zero p0)]
+      rw [show ((if p0.succ = 0 then 0 else 1 : ℕ)) = 1 by
+        simp [Fin.succ_ne_zero]]
       rcases G.port_occupied w p0 with ⟨e0, h0l, h0p⟩ | ⟨e0, h0r, h0p⟩
       · rw [Finset.sum_eq_single e0]
         · exact ite_pair_left ⟨h0l, h0p⟩ (fun ⟨hr, hrp⟩ =>
@@ -237,10 +239,7 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
   have h2 := Fintype.sum_sum_type
     (fun s : Fin m ⊕ (Fin n × Fin 4) => Clause.count (w, j) (clauseOf G (Sum.inr s)))
   unfold occurrences
-  by_cases hj : j = 0
-  · rw [if_pos hj] at hU hE
-    omega
-  · rw [if_neg hj] at hU hE
-    omega
+  rw [h1, h2, hU, hE, hC]
+  by_cases hj : j = 0 <;> simp [hj]
 
 end PalomaMax2SAT.SemanticHorn
