@@ -128,15 +128,7 @@ private theorem score_assignmentOfIndependent {n m : ℕ} (G : PortGraph n m)
 
 end PalomaMax2SAT.CubicThreeOccurrence
 
-/-!
-# Supporting formalization: standard forced-equality occurrence split
-
-The results below formalize a routine consistency construction: a connected
-cycle of hard implications forces all occurrence clones of a variable to
-agree, and encoding/decoding then preserve weighted objective values pointwise.
-They are included for verification and reuse; they are **not** claimed as a
-standalone research contribution.
--/
+/-! Hard-implication cycle definitions used by the graph-transfer results. -/
 namespace PalomaMax2SAT.HardOccurrenceSplit
 
 abbrev advance {α : Type*} (next : α → α) (k : ℕ) (i : α) : α :=
@@ -147,9 +139,6 @@ abbrev OrbitConnected {α : Type*} (next : α → α) : Prop :=
 
 abbrev HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
-
-abbrev IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
-  (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
 
 abbrev IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
@@ -246,223 +235,6 @@ theorem ratio_83_84_arithmetic :
   norm_num
 
 end PalomaMax2SAT.CubicPublic
-
-/-!
-# Supporting formalization: abstract transfer lemmas
-
-The lemmas below wrap the standard forced-equality occurrence split into
-optimum- and feasible-solution value-preservation interfaces. They take the
-encode/decode score equalities as hypotheses; they are reusable supporting
-lemmas, not an independent research contribution.
--/
-namespace PalomaMax2SAT.HardSplitPublic
-
-open HardOccurrenceSplit
-
-theorem hard_implication_cycle_consistent {α : Type*} (next : α → α)
-    (z : α → Bool) (horbit : OrbitConnected next)
-    (hhard : HardImplicationsHold next z) :
-    ∀ i j, z i = z j := by
-  intro i j
-  cases hi : z i <;> cases hj : z j
-  · rfl
-  · obtain ⟨k, hk⟩ := horbit j i
-    have htrue := propagate_hard_implications next z hhard k j hj
-    rw [hk, hi] at htrue
-    simp at htrue
-  · obtain ⟨k, hk⟩ := horbit i j
-    have htrue := propagate_hard_implications next z hhard k i hi
-    rw [hk, hj] at htrue
-    simp at htrue
-  · rfl
-
-theorem exact_hard_occurrence_split
-    {Source Split : Type*}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
-    (opt : ℕ)
-    (hsource : IsOptimum sourceScore opt)
-    (hencodeFeasible : ∀ a, feasible (encode a))
-    (hencodeScore : ∀ a, splitScore (encode a) = sourceScore a)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z) :
-    IsHardOptimum feasible splitScore opt := by
-  constructor
-  · intro z hz
-    rw [← hdecodeScore z hz]
-    exact hsource.1 (decode z)
-  · obtain ⟨a, ha⟩ := hsource.2
-    exact ⟨encode a, hencodeFeasible a, (hencodeScore a).trans ha⟩
-
-theorem feasible_solution_ratio_preserved
-    {Source Split : Type*}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (decode : Split → Source)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
-    (z : Split) (hz : feasible z) :
-    splitScore z = sourceScore (decode z) := by
-  exact (hdecodeScore z hz).symm
-
-theorem ratio_83_84_exceeds_general_horn_threshold :
-    (83 : ℚ) / 84 > 94615981 / 100000000 := by
-  norm_num
-
-end PalomaMax2SAT.HardSplitPublic
-
-/-!
-# Supporting formalization: concrete weighted Horn occurrence split
-
-A concrete weighted Horn occurrence-split model is formalized to instantiate
-the abstract transfer lemmas. Feasible split assignments are exactly the
-consistent lifts of source assignments, and encoding/decoding preserve the
-weighted objective pointwise. This is a routine forced-equality gadget
-formalized for verification and reuse; it is **not** claimed as an independent
-research contribution.
--/
-namespace PalomaMax2SAT.ConcreteHardSplit
-
-open PalomaMax2SAT.HardOccurrenceSplit
-
-structure Literal (Var : Type*) (Occ : Var → Type*) where
-  var : Var
-  occ : Occ var
-  pos : Bool
-
-abbrev HornClause {Var : Type*} {Occ : Var → Type*}
-    (c : Finset (Literal Var Occ)) : Prop :=
-  ∀ l₁ ∈ c, ∀ l₂ ∈ c, l₁.pos = true → l₂.pos = true → l₁ = l₂
-
-structure WeightedHornSplit (Var : Type*) (Occ : Var → Type*) (Clause : Type*) where
-  weight : Clause → ℕ
-  lits : Clause → Finset (Literal Var Occ)
-  horn : ∀ c, HornClause (lits c)
-
-noncomputable abbrev sourceScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause) (x : Var → Bool) : ℕ := by
-  classical
-  exact ∑ c : Clause,
-    if ∃ l ∈ F.lits c, x l.var = l.pos then F.weight c else 0
-
-noncomputable abbrev splitScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause)
-    (z : (v : Var) → Occ v → Bool) : ℕ := by
-  classical
-  exact ∑ c : Clause,
-    if ∃ l ∈ F.lits c, z l.var l.occ = l.pos then F.weight c else 0
-
-abbrev Feasible {Var : Type*} {Occ : Var → Type*}
-    (next : ∀ v, Occ v → Occ v)
-    (z : (v : Var) → Occ v → Bool) : Prop :=
-  ∀ v, HardImplicationsHold (next v) (z v)
-
-abbrev encode {Var : Type*} {Occ : Var → Type*} (x : Var → Bool) :
-    (v : Var) → Occ v → Bool :=
-  fun v _ => x v
-
-abbrev decode {Var : Type*} {Occ : Var → Type*} (base : ∀ v, Occ v)
-    (z : (v : Var) → Occ v → Bool) : Var → Bool :=
-  fun v => z v (base v)
-
-theorem encode_feasible {Var : Type*} {Occ : Var → Type*}
-    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
-    Feasible next (encode (Occ := Occ) x) := by
-  intro v o ho
-  simpa [encode] using ho
-
-theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause)
-    (_next : ∀ v, Occ v → Occ v) (x : Var → Bool) :
-    splitScore F (encode (Occ := Occ) x) = sourceScore F x := by
-  classical
-  unfold splitScore sourceScore
-  apply Finset.sum_congr rfl
-  intro c _
-  by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos <;> simp [encode, h]
-
-theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
-    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
-    (horb : ∀ v, OrbitConnected (next v))
-    {z : (v : Var) → Occ v → Bool} (hz : Feasible next z) :
-    ∀ v o, z v (base v) = z v o := by
-  intro v o
-  cases hb : z v (base v) <;> cases ho : z v o
-  · rfl
-  · obtain ⟨k, hk⟩ := horb v o (base v)
-    have htrue :=
-      propagate_hard_implications (next v) (z v) (hz v) k o ho
-    rw [hk, hb] at htrue
-    simp at htrue
-  · obtain ⟨k, hk⟩ := horb v (base v) o
-    have htrue :=
-      propagate_hard_implications (next v) (z v) (hz v) k (base v) hb
-    rw [hk, ho] at htrue
-    simp at htrue
-  · rfl
-
-theorem decodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause)
-    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
-    (horb : ∀ v, OrbitConnected (next v))
-    {z : (v : Var) → Occ v → Bool} (hz : Feasible next z) :
-    sourceScore F (decode base z) = splitScore F z := by
-  classical
-  have hconst : ∀ v o, z v (base v) = z v o :=
-    feasible_constant next base horb hz
-  unfold sourceScore splitScore decode
-  apply Finset.sum_congr rfl
-  intro c _
-  have hsat : (∃ l ∈ F.lits c, z l.var (base l.var) = l.pos) ↔
-      (∃ l ∈ F.lits c, z l.var l.occ = l.pos) := by
-    constructor
-    · rintro ⟨l, hl, h⟩
-      exact ⟨l, hl, by rw [← hconst l.var l.occ]; exact h⟩
-    · rintro ⟨l, hl, h⟩
-      exact ⟨l, hl, by rw [hconst l.var l.occ]; exact h⟩
-  by_cases h : ∃ l ∈ F.lits c, z l.var l.occ = l.pos
-  · have h' : ∃ l ∈ F.lits c, z l.var (base l.var) = l.pos := hsat.mpr h
-    simp [h, h']
-  · have h' : ¬ ∃ l ∈ F.lits c, z l.var (base l.var) = l.pos :=
-      fun hp => h (hsat.mp hp)
-    simp [h, h']
-
-theorem concrete_exact_hard_occurrence_split
-    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause)
-    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
-    (horb : ∀ v, OrbitConnected (next v))
-    (opt : ℕ) (hsource : IsOptimum (sourceScore F) opt) :
-    IsHardOptimum (Feasible next) (splitScore F) opt := by
-  constructor
-  · intro z hz
-    rw [← decodeScore F next base horb hz]
-    exact hsource.1 (decode base z)
-  · obtain ⟨x, hx⟩ := hsource.2
-    refine ⟨encode (Occ := Occ) x, encode_feasible next x, ?_⟩
-    rw [encodeScore F next x, hx]
-
-theorem concrete_feasible_solution_ratio_preserved
-    {Var : Type*} {Occ : Var → Type*} {Clause : Type*} [Fintype Clause]
-    (F : WeightedHornSplit Var Occ Clause)
-    (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
-    (horb : ∀ v, OrbitConnected (next v))
-    (z : (v : Var) → Occ v → Bool) (hz : Feasible next z) :
-    splitScore F z = sourceScore F (decode base z) := by
-  exact (decodeScore F next base horb hz).symm
-
-/-- A source-score upper bound certifies a feasible hard split at 19/20.
-The cut construction supplies the pointwise upper bound in the paper. -/
-theorem source_certificate_19_20 {Var : Type*} {Occ : Var → Type*}
-    {Clause : Type*} [Fintype Clause] (F : WeightedHornSplit Var Occ Clause)
-    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) (upper : ℕ)
-    (bound : ∀ y, sourceScore F y ≤ upper)
-    (passes : 19 * upper ≤ 20 * sourceScore F x) :
-    Feasible next (encode (Occ := Occ) x) ∧
-      ∀ y, 19 * sourceScore F y ≤ 20 * splitScore F (encode (Occ := Occ) x) := by
-  refine ⟨encode_feasible next x, ?_⟩
-  intro y
-  rw [encodeScore F next x]
-  exact le_trans (Nat.mul_le_mul_left 19 (bound y)) passes
-
-end PalomaMax2SAT.ConcreteHardSplit
 
 namespace PalomaMax2SAT.GraphTransfer
 open PalomaMax2SAT.HardOccurrenceSplit
@@ -572,10 +344,33 @@ theorem hardUnit_transfer {n m a : ℕ} (G : PortGraph n m)
   unfold unitScore
   omega
 
+/-- Arithmetic only: assuming `s` meets one of the two stated numerical
+guarantees (supplied by an external independent-set algorithm), the unit-weight
+hard-split score satisfies `28*(m+s) ≥ 27*(m+a)`. Lean does not prove that an
+algorithm attains either guarantee. -/
 theorem unit_endpoint_arithmetic (n m a s : ℕ)
     (hm : 2*m = 3*n) (hn : 2*a ≤ n)
     (h : 6*a ≤ 7*s ∨ (20000*a ≤ 9999*n ∧ 5999993*a ≤ 7000000*s)) :
     28*(m+s) ≥ 27*(m+a) := by
   rcases h with h | ⟨h₁,h₂⟩ <;> omega
+
+/-- Two-branch bridge for the conditional `27/28` bound. The hypotheses are
+exactly the guarantees required from the external branches, with `n` the number
+of vertices and `s` the size of the independent set returned: when
+`2*a/n ≤ 9999/10000` the Berman--Fujito branch is assumed to return
+`s ≥ (6/7 - 10^{-6}) * a`, and otherwise the near-bipartite cut branch is
+assumed to return `s ≥ 37*n/80`. Lean proves only that these two guarantees
+imply `28*(m+s) ≥ 27*(m+a)`; it does not prove that either algorithm attains
+its guarantee. -/
+theorem unit_endpoint_two_branch (n m a s : ℕ)
+    (hm : 2*m = 3*n) (hn : 2*a ≤ n)
+    (hBF : 20000*a ≤ 9999*n → 5999993*a ≤ 7000000*s)
+    (hNB : 9999*n < 20000*a → 37*n ≤ 80*s) :
+    28*(m+s) ≥ 27*(m+a) := by
+  by_cases h : 20000*a ≤ 9999*n
+  · have := hBF h
+    omega
+  · have := hNB (by omega)
+    omega
 
 end PalomaMax2SAT.GraphTransfer

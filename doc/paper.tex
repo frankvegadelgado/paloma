@@ -9,8 +9,7 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{remark}[theorem]{Remark}
 
-\title[An $83/84$ approximation for a cubic three-occurrence Horn class]{An $83/84$ approximation for a cubic three-occurrence Horn class,\\
-and a supporting forced-equality occurrence split}
+\title[An $83/84$ approximation for a cubic three-occurrence Horn class]{An $83/84$ approximation for a cubic three-occurrence Horn class}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
@@ -31,19 +30,13 @@ $A-(4|V|+|E|)$. A cubic independent-set approximation combined with a near-bipar
 cut algorithm gives a polynomial-time $83/84$ approximation for this pattern.
 For a restricted hard-split family with unit vertex rewards and edge-clause
 weights at least one, we obtain $27/28$, including when all weights are
-one. For general weighted sources we also give a computable certificate
-for the target $19/20$ and an example where certification fails.
-With edge weights four the guarantee improves to $257/260$. The repair also gives an
-$L$-reduction from cubic MIS and proves APX-completeness. The accompanying
-Lean~4 development formalizes the score decomposition, repair, exact optimum
-identity, and the arithmetic transfer to $83/84$. As a supporting
-formalization---not an independent research contribution---the development
-also records the standard hard-consistency occurrence split: a connected
-cycle of mandatory hard implications forces all occurrence clones of a
-variable to agree, and encoding/decoding then preserve weighted objective
-values pointwise. The encode/decode score equalities, together with their
-optimum- and feasible-solution value-preservation consequences, are
-formalized for verification and reuse.
+one. With edge weights four the guarantee improves to $257/260$. The repair
+also gives an $L$-reduction from cubic MIS and proves APX-completeness. The
+accompanying Lean~4 development formalizes the score decomposition, repair,
+exact optimum identity, the arithmetic transfer to $83/84$, and the exact
+hard-score optima $4m+\alpha$ and $m+\alpha$ with their $257/260$ and $77/80$
+transfers; the $27/28$ statement in Lean is the arithmetic consequence of a
+numerical independent-set hypothesis.
 \end{abstract}
 \maketitle
 
@@ -59,10 +52,10 @@ four clones for every graph vertex, and connects them by a directed cycle of
 implications. One clone participates in a unit clause and the other three in
 the three incident edge clauses. Each clone additionally occurs in its incoming
 and outgoing implication. Consequently every formula variable occurs exactly
-three times. The reduction from cubic MIS to MAX-HORN-2SAT is a standard gadget
-composition of unit, edge, and consistency clauses; the quantitative
-contribution here is the exact optimum identity and the explicit cardinality
-bound of the repair, together with their Lean formalization.
+three times. The reduction from cubic MIS to MAX-HORN-2SAT composes unit, edge, and
+consistency clauses; the quantitative contribution is the exact optimum
+identity and the explicit cardinality bound of the repair, together with their
+Lean formalization.
 
 The contribution is quantitative rather than merely satisfiability preserving.
 We prove an explicit repair of every inconsistent clone assignment, obtain an
@@ -71,12 +64,9 @@ guarantee~\cite{BermanFujito1999} to the Horn class. Cubic MIS is
 APX-complete~\cite{AlimontiKann2000}, and the same repair proves
 APX-completeness of the image class.
 
-Section~\ref{sec:ratio} records a supporting formalization of the standard
-forced-equality occurrence split. We emphasize that this construction is a
-routine gadget---hard implication cycles force every occurrence clone of a
-variable to agree, after which encoding and decoding preserve weighted
-objective values pointwise---and is included here for verification and reuse,
-not as a novel research contribution.
+Section~\ref{sec:ratio} defines the forced-equality occurrence split with
+hard implication cycles, which Sections~\ref{sec:hardfam} and~\ref{sec:ugc}
+use.
 
 \section{The cubic three-occurrence construction}
 
@@ -230,14 +220,8 @@ These are the two $L$-reduction inequalities. Cubic MIS is APX-complete and
 Theorem~\ref{thm:ratio} places the image class in APX.
 \end{proof}
 
-\section{A supporting forced-equality occurrence split}
+\section{The forced-equality occurrence split}
 \label{sec:ratio}
-
-The construction in this section is a standard forced-equality occurrence
-split. It is included for completeness and because the Lean development
-formalizes its encode/decode score equalities and their optimum- and
-feasible-solution value-preservation consequences as a reusable interface.
-It is \emph{not} claimed as an independent research contribution.
 
 Let $F$ be a weighted MAX-HORN-2SAT instance. Its source clauses
 have nonnegative rational weights. Give every literal occurrence a distinct
@@ -304,17 +288,8 @@ Apply the image-class algorithm and decode its feasible assignment. Both its
 value and the optimum are unchanged by Theorem~\ref{thm:hard-split}.
 \end{proof}
 
-\begin{remark}
-The construction above is a standard forced-equality gadget, not a novel
-reduction. It makes the occurrence-level encoding of a variable explicit and
-uses the same ``all clones agree'' argument as any cycle of hard implications.
-It is recorded for verification and reuse. In particular,
-Corollary~\ref{cor:ratio-preservation} is an observation about the split, not
-an algorithmic contribution of this paper; the algorithmic bounds for the two restricted families are proved in
-Theorems~\ref{thm:ratio} and~\ref{thm:hard-family}.
-\end{remark}
-
 \section{A hard-split family attaining the target ratio}
+\label{sec:hardfam}
 
 Let $H$ be simple cubic. In the source $F_H(w)$ put a unit clause
 $(\neg x_v)$ of weight one at each vertex and a clause $(x_u\vee x_v)$
@@ -352,6 +327,18 @@ $260(W+|I|)-257(W+\alpha)\ge 3W-36\alpha\ge0$.
 The empty instance satisfies the division-free bound as well.
 \end{proof}
 
+In Lean, the hard optima $4m+\alpha$ and $m+\alpha$ and the $257/260$ and
+$77/80$ transfers from a $17/20$ independent set are proved. The $27/28$
+statement is the arithmetic implication from the numerical hypothesis
+$6\alpha\le7s$, or from $20000\alpha\le9999n$ together with
+$5999993\alpha\le7000000s$, to $28(m+s)\ge27(m+\alpha)$ for an independent
+set of size $s$. The algorithm that supplies this hypothesis is the
+Berman--Fujito and Trevisan branch proved in the text above and is not
+formalized in Lean. A second Lean statement makes the two branch guarantees
+explicit: if $20000\alpha\le9999n$ implies $5999993\alpha\le7000000s$
+(Berman--Fujito branch) and $20000\alpha>9999n$ implies $37n\le80s$
+(near-bipartite branch), then $28(m+s)\ge27(m+\alpha)$.
+
 \paragraph{Why hardening can change the ratio.}
 In the unit-weight version, take four disjoint copies of the cube $Q_3$.
 Each has independence number four by its parity classes and a perfect
@@ -377,8 +364,7 @@ is maximum and violates both cycles under membership decoding.
 In the unsigned graph a pair edge forbids only simultaneous membership.
 Complementation reverses a directed implication but does not turn it into
 a prohibition on simultaneous membership. The paper uses the at-most-one-negative
-convention; the supporting Lean clause predicate uses the globally
-complementary at-most-one-positive convention.
+convention.
 
 \paragraph{Unary terminals.}
 For the path $a$--$w$--$b$, the terminal states $00$, $01$, $10$, and $11$
@@ -426,65 +412,8 @@ zero. Already $k=82$ gives $83/84$. Thus neither the signed repair nor
 a polynomial algorithm for unweighted cubic MIS supplies the unrestricted
 weighted ratio.
 
-\section{A computable ratio for a general source formula}
-\label{sec:cert}
-
-Fix the target $K=19/20$. For a given weighted source $F$ we construct
-a feasible assignment of value $S$ and a computable upper bound $U$ on
-$\operatorname{OPT}(F)$. Thus $S/U$ certifies a ratio for this particular
-input when $U>0$. At $U=0$ every assignment is optimal.
-
-First simplify repeated literals to units, count tautologies as constants,
-and discard empty clauses, which earn zero. Complement an arbitrary subset
-of variables, applying the same substitution in all their occurrences.
-Keep all units and constants, and retain each binary clause whose two
-transformed signs differ. Let $R$ be the total weight of the omitted clauses.
-The switch is chosen for computational convenience and is undone before
-scoring on $F$. In the implementation a maximum-weight spanning forest of
-the binary-clause multigraph determines the switch: root each tree and
-choose each child's switch so its forest clause has opposite signs.
-Then test every clause, including each nonforest edge. This rule accommodates
-parallel clauses with different signs and weights.
-
-\begin{theorem}[Source certificate]\label{thm:source-cert}
-Let $C$ be the optimum score of the retained formula, including constants.
-In polynomial time one can obtain $C$, an assignment with full score
-$S\ge C$, and $U=C+R$ such that
-\[
- S\le\operatorname{OPT}(F)\le U,\qquad
- 20S\ge19U\ \Longrightarrow\ 20S\ge19\operatorname{OPT}(F).
-\]
-Encoding the assignment in $P(F)$ preserves both its score and the
-certified ratio. If $R=0$ the procedure is exact.
-\end{theorem}
-\begin{proof}
-Use transformed truth values, with true on the source side of a directed
-cut. For a retained clause $(\neg u\vee v)$ add an arc $u\to v$ of its
-weight. For a positive unit $(v)$ add $s\to v$; for a negative unit
-$(\neg v)$ add $v\to t$. The cut pays a clause weight exactly when the
-clause is false. Parallel capacities add. Hence retained total weight
-(including constants) minus the minimum cut equals $C$. This is the
-pairwise graph-cut construction in its implication form~\cite{KZ}.
-Nonnegative binary rational weights can be scaled by the product of
-their denominators, whose bit length is polynomial in the input length.
-Decode a minimum cut and evaluate it on all of $F$. Comparing it with
-the two constant source assignments can only increase its score.
-Every assignment earns at most $C$ from retained clauses and at most $R$
-from omitted clauses. This proves the bounds. The last assertion about
-$P(F)$ follows from Theorem~\ref{thm:hard-split}.
-\end{proof}
-
-\paragraph{A sharp certificate and a failed certificate.}
-With unit weights take $(x_1\vee x_3)$, $(\neg x_2)$ and
-$(\neg x_3\vee x_1)$. The implementation keeps the positive binary clause
-as its forest edge and returns $(0,0,1)$, of score two. The assignment
-$(1,0,0)$ earns three, and $U=3$. Thus the method itself can return less
-than $19/20$ of optimum. Add a fresh positive unit $(x_4)$ of weight $17$.
-The same choices give $S=19$ and $U=\operatorname{OPT}(F)=20$.
-This instance attains the proposed certificate exactly and includes both
-mixed and positive binary source clauses.
-
 \section{What a uniform improvement would imply}
+\label{sec:ugc}
 
 Let $\alpha^*$ denote the constant of Brakensiek, Huang and Zwick for
 weighted MAX~$\{1,2\}$-HORN-SAT, approximately $0.94615981$.
@@ -495,9 +424,25 @@ returning value at least $19\operatorname{OPT}(F)/20$ on \emph{every}
 weighted source $F$ would solve the UG-hard gap problem in polynomial
 time and, assuming UGC, imply $\mathrm P=\mathrm{NP}$. By
 Theorem~\ref{thm:hard-split} the same implication holds for a guarantee
-on the entire hard-split image. Theorem~\ref{thm:source-cert} supplies a
-test on each input. The worst-case bounds in Theorems~\ref{thm:ratio}
-and~\ref{thm:hard-family} concern their specified cubic families.
+on the entire hard-split image. The worst-case bounds in
+Theorems~\ref{thm:ratio} and~\ref{thm:hard-family} concern their specified
+cubic families.
+
+The constant $\beta^\star\approx0.94016567$ of Lewin, Livnat and
+Zwick is the UG-hard threshold for MAX~2-SAT~\cite{BrakensiekHuangZwick2024}.
+Both UG-hardness statements quantify over all instances. They give no
+information about the class in which every variable has exactly three literal
+occurrences. For that class Theorem~\ref{thm:ratio} gives the worst-case ratio
+$83/84$, and
+\[
+  \frac{83}{84}>0.94615981>0.94016567 .
+\]
+Ghoshal, Huang, Lee, Makarychev and Makarychev prove that MAX~2-SAT instances in
+which every variable appears in at most $d$ constraints admit a
+$\beta^\star+\tilde\Omega(1/d^{2})$-approximation~\cite{GHLMM2026}. Thus a
+guarantee above $\beta^\star$ on a bounded-occurrence class is established
+for every fixed $d$ and is consistent with the Unique Games Conjecture. A
+guarantee above $\alpha^*$ or $\beta^\star$ on \emph{all} instances would not be.
 
 \section{Lean and computational verification}
 
@@ -509,43 +454,32 @@ and the exact optimum identity. It also proves the division-free inequality
 \[
  84(4n+m+|I|)\ge83(4n+m+\alpha)
 \]
-from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. GitHub Actions builds the
+from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. It also proves the rational identity
+$11+6/7=(83/84)\cdot12$. GitHub Actions builds the
 module and runs the public theorem comparison.
 
-The supporting modules: 
-\begin{itemize}
-\item \texttt{PalomaMax2SAT.HardOccurrenceSplit} and
-\item \texttt{PalomaMax2SAT.ConcreteHardSplit} 
-\end{itemize}
-formalize the standard forced-equality
-occurrence split: propagation around a strongly connected directed implication
-cycle, abstract transfer lemmas for optimum and feasible-solution-value
-preservation that take the encoding and decoding score equalities as
-hypotheses, and a concrete weighted Horn occurrence model with
-occurrence-indexed literals, weighted Horn clauses, and hard cyclic
-implications. In the concrete model, Lean proves that encoding a source
-assignment is feasible, that encoding preserves score, that decoding any
-feasible split assignment preserves score, and derives the concrete
-optimum-preservation and concrete feasible-solution value-preservation
-theorems. These results are included for verification and reuse; they are
-not claimed as an independent research contribution. The exact rational
-inequality
-\[
-  \frac{83}{84}>0.94615981
-\]
-is also formalized. The independent Python audit checks 16,314 small Horn
-formula shapes and verifies equality of the complete sets of attainable source
-and feasible-split objective values. The repository is
+The module \texttt{PalomaMax2SAT.GraphTransfer} formalizes the hard score of
+the four-port cycle formulation. It proves the exact optima
+$4m+\alpha$ (edge weight four) and $m+\alpha$ (unit weights), the repair of
+every feasible assignment, and the division-free transfers
+$260\,\mathrm{score}\ge257(4m+\alpha)$ and $80\,\mathrm{score}\ge77(m+\alpha)$
+from an independent set of size $s$ with $17\alpha\le20s$. The statement
+$28(m+s)\ge27(m+\alpha)$ is proved from the numerical hypothesis
+$6\alpha\le7s$, or from $20000\alpha\le9999n$ and
+$5999993\alpha\le7000000s$; a bridge statement takes the two branch
+guarantees $20000\alpha\le9999n\Rightarrow5999993\alpha\le7000000s$ and
+$20000\alpha>9999n\Rightarrow37n\le80s$ as hypotheses. Lean does not prove
+that an algorithm attains either guarantee. The module \texttt{PalomaMax2SAT.HardOccurrenceSplit}
+contains the hard-cycle consistency lemma used by this module.
+The independent Python audit checks 16,314 small Horn formula shapes and
+verifies equality of the complete sets of attainable source and
+feasible-split objective values. The repository is
 available at~\cite{VegaPalomaRepository}.
 
-The accompanying revision includes a separate graph-transfer module with
-finite counterexamples, the saturated-ring lemma, the four-weight hard-score repair and optimum,
-and the transfer from a $17/20$ independent set to a feasible lift.
-Its additional Python audit checks all independent sets on 258 small
-weighted formulas and enumerates labelled simple subcubic graphs through
-five vertices for the two-terminal path profile. The general signed-graph
-theorem and the use of the external approximation algorithms are proved in
-the text.
+An additional Python audit checks all independent sets on 258 small weighted
+formulas and enumerates labelled simple subcubic graphs through five vertices
+for the two-terminal path profile. The general signed-graph theorem and the use
+of the external approximation algorithms are proved in the text.
 
 \begin{thebibliography}{9}
 \bibitem{AlimontiKann2000}
@@ -570,10 +504,12 @@ J.~Brakensiek, N.~Huang, and U.~Zwick,
 Proceedings of SODA 2024, 1328--1344.
 \url{https://doi.org/10.1137/1.9781611977912.53}.
 
-\bibitem{KZ}
-V.~Kolmogorov and R.~Zabih,
-\emph{What energy functions can be minimized via graph cuts?}
-IEEE Trans. Pattern Anal. Mach. Intell. 26 (2004), 147--159.
+\bibitem{GHLMM2026}
+S.~Ghoshal, N.~Huang, E.~Lee, K.~Makarychev, and Y.~Makarychev,
+\emph{Threshold rounding and bounded-degree Boolean MAX 2-CSP},
+arXiv:2607.11050, 2026.
+\url{https://arxiv.org/abs/2607.11050}.
+
 \bibitem{VegaPalomaRepository}
 F.~Vega,
 \emph{Paloma MAX-HORN-2SAT formalization and experiments}, GitHub, 2026.

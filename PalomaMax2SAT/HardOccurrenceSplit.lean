@@ -15,9 +15,6 @@ abbrev OrbitConnected {α : Type*} (next : α → α) : Prop :=
 abbrev HardImplicationsHold {α : Type*} (next : α → α) (z : α → Bool) : Prop :=
   ∀ i, z i = true → z (next i) = true
 
-abbrev IsOptimum {Assignment : Type*} (score : Assignment → ℕ) (opt : ℕ) : Prop :=
-  (∀ a, score a ≤ opt) ∧ ∃ a, score a = opt
-
 abbrev IsHardOptimum {Assignment : Type*} (feasible : Assignment → Prop)
     (score : Assignment → ℕ) (opt : ℕ) : Prop :=
   (∀ a, feasible a → score a ≤ opt) ∧ ∃ a, feasible a ∧ score a = opt
@@ -52,39 +49,5 @@ theorem hard_implication_cycle_consistent_proof {α : Type*} (next : α → α)
     rw [hk, hj] at htrue
     simp at htrue
   · rfl
-
-/-- An encoding/decoding pair that preserves objective values on feasible
-split assignments preserves the optimum exactly. -/
-theorem exact_hard_occurrence_split_proof
-    {Source Split : Type*}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (encode : Source → Split) (decode : Split → Source)
-    (opt : ℕ)
-    (hsource : IsOptimum sourceScore opt)
-    (hencodeFeasible : ∀ a, feasible (encode a))
-    (hencodeScore : ∀ a, splitScore (encode a) = sourceScore a)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z) :
-    IsHardOptimum feasible splitScore opt := by
-  constructor
-  · intro z hz
-    rw [← hdecodeScore z hz]
-    exact hsource.1 (decode z)
-  · obtain ⟨a, ha⟩ := hsource.2
-    exact ⟨encode a, hencodeFeasible a, (hencodeScore a).trans ha⟩
-
-/-- Every feasible split solution has exactly its decoded source value. -/
-theorem feasible_solution_ratio_preserved_proof
-    {Source Split : Type*}
-    (sourceScore : Source → ℕ) (splitScore : Split → ℕ)
-    (feasible : Split → Prop) (decode : Split → Source)
-    (hdecodeScore : ∀ z, feasible z → sourceScore (decode z) = splitScore z)
-    (z : Split) (hz : feasible z) :
-    splitScore z = sourceScore (decode z) := by
-  exact (hdecodeScore z hz).symm
-
-/-- The cubic `83/84` ratio is strictly above the general Horn threshold. -/
-theorem ratio_83_84_exceeds_general_horn_threshold_proof :
-    (83 : ℚ) / 84 > 94615981 / 100000000 := by
-  norm_num
 
 end PalomaMax2SAT.HardOccurrenceSplit

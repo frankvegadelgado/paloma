@@ -8,15 +8,16 @@ project:
     assignment repair, the exact 4n+m+alpha optimum identity, and the
     arithmetic transfer of the Berman--Fujito 7/6 guarantee to an 83/84
     approximation. The cubic class is formalized as port-labelled graphs in
-    which all three ports of every vertex are occupied.  A supporting family of
-    formalized results covers the standard hard-consistency occurrence split:
-    propagation of hard implications around a directed cycle, abstract
-    transfer lemmas, and a concrete weighted Horn occurrence-split model.
-    These results formalize a routine forced-equality gadget for verification
-    and reuse; they are not claimed as an independent research contribution.
-    The exact comparison 83/84 > 0.94615981 is also formalized.  The main
-    mathematical content is the cubic repair, the exact optimum identity, and
-    the arithmetic transfer to 83/84.
+    which all three ports of every vertex are occupied. A second result family
+    (module GraphTransfer) formalizes the hard-score graph transfers: the exact
+    hard optima 4m+alpha for edge weight four and m+alpha for unit weights,
+    the 257/260 and 77/80 transfers from a 17/20 independent set, and the
+    conditional 27/28 bound. The 27/28 theorems are conditional: they take as
+    hypotheses a Berman--Fujito guarantee 5999993*alpha <= 7000000*s when
+    20000*alpha <= 9999*n, and a near-bipartite cut guarantee 37*n <= 80*s
+    when 20000*alpha > 9999*n, and prove only that these imply
+    28*(m+s) >= 27*(m+alpha); Lean does not prove that an algorithm attains
+    either guarantee.
   authors: ["Frank Vega"]
   license: "MIT"
   responsible_maintainers: ["Frank Vega"]
@@ -45,7 +46,8 @@ sources:
     id: "https://doi.org/10.1137/1.9781611977912.53"
     type: "informal"
     relationship: "background"
-    note: "Source of the 0.94615981 approximation threshold for weighted MAX {1,2}-HORN-SAT, which is tight under the Unique Games Conjecture; compared against 83/84 in ratio_83_84_exceeds_general_horn_threshold. The Lean development does not formalize their result."
+    note: "Source of the 0.94615981 approximation threshold for weighted MAX {1,2}-HORN-SAT, which is tight under the Unique Games Conjecture; compared against 83/84 in the manuscript. The Lean development does not formalize their result."
+
 
 related_formalizations: []
 
@@ -57,19 +59,14 @@ status:
     port graphs in which every port of every vertex is occupied; the matching
     assignment from an independent set; the exact 4n+m+alpha optimum identity;
     and the exact division-free implication from cubic identities and a 7/6
-    MIS solution to the 83/84 Horn guarantee.  Supporting formalization
-    (standard hard-consistency occurrence split): consistency forced by a
-    strongly connected directed cycle of hard Horn implications; abstract
-    transfer lemmas for arbitrary assignment types; and a concrete weighted
-    Horn occurrence-split model with occurrence-indexed literals, weighted
-    Horn clauses, and hard cyclic implications.  The split is a routine
-    forced-equality gadget formalized for verification and reuse, not claimed
-    as a standalone research contribution; for the concrete split, Lean proves
-    that encoded source assignments are feasible, that encoding preserves
-    score, that decoding any feasible split assignment preserves score, and
-    therefore proves concrete optimum preservation and concrete feasible-
-    solution value preservation.  The exact inequality 83/84 > 0.94615981 is
-    also formalized.  The full weighted MAX {1,2}-HORN-SAT syntax and the UGC
+    MIS solution to the 83/84 Horn guarantee. The hard-score graph transfers
+    formalize the exact hard optima 4m+alpha and m+alpha and the 257/260 and
+    77/80 lifts of a 17/20 independent set. The theorem
+    unit_endpoint_arithmetic is conditional: it proves the 27/28 arithmetic
+    from a numerical hypothesis on the independent-set size and does not prove
+    that an algorithm attains it. The UGC comparisons of 83/84 with the
+    constants 0.94615981 and 0.94016567 are in the manuscript and are not part
+    of the selected Lean statements. The full weighted MAX {1,2}-HORN-SAT syntax and the UGC
     hardness result are not formalized in Lean.
   sorry_count: 0
   sorry_in_definitions: 0
@@ -81,12 +78,13 @@ status:
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic"
   supporting_results:
-    - "PalomaMax2SAT.HardSplitPublic.hard_implication_cycle_consistent"
-    - "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
-    - "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
-    - "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold"
-    - "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split"
-    - "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
+    - "PalomaMax2SAT.GraphTransfer.fourScore_repair"
+    - "PalomaMax2SAT.GraphTransfer.exact_fourScore"
+    - "PalomaMax2SAT.GraphTransfer.hardFour_transfer"
+    - "PalomaMax2SAT.GraphTransfer.exact_unitScore"
+    - "PalomaMax2SAT.GraphTransfer.hardUnit_transfer"
+    - "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic"
+    - "PalomaMax2SAT.GraphTransfer.unit_endpoint_two_branch"
 
 automation:
   methods:
@@ -102,40 +100,32 @@ automation:
         hardware: "Local Windows workstation and API service"
       prompting_notes: >-
         The user directed the formalization of the cubic three-occurrence
-        construction, its Berman--Fujito 83/84 consequence, and (as a
-        supporting formalization) the standard hard-consistency occurrence
-        split.
+        construction, its Berman--Fujito 83/84 consequence, and the hard-score
+        graph transfers.
   spend_usd: "Not tracked"
   notes: "Human-directed, AI-assisted formalization with remote verification."
 
 fidelity:
   divergences: >-
     The Lean theorem assuming the numerical 7*found >= 6*alpha guarantee is
-    used instead of formalizing the Berman--Fujito algorithm internally.  It
+    used instead of formalizing the Berman--Fujito algorithm internally. It
     proves the complete cubic reduction, repair, optimum identity, and ratio
-    arithmetic.  The hard-split family includes both abstract transfer lemmas
-    and a concrete weighted Horn occurrence-split model.  The concrete model
-    represents weighted Horn clauses over occurrence-indexed literals and
-    represents hard cyclic implications through the feasibility predicate; it
-    proves the encode/decode score equalities and derives concrete optimum
-    preservation and concrete feasible-solution value preservation.  The
-    hard-split construction is a routine forced-equality gadget; it is
-    formalized for verification and reuse and is not claimed as an independent
-    research contribution.  It does not formalize the paper's full weighted
-    MAX {1,2}-HORN-SAT parser or the experimental checker, and it does not
-    formalize the UGC hardness result.  The port-graph interface requires every
-    port of every vertex to be used by exactly one edge endpoint; it does not
-    exclude parallel edges.
+    arithmetic. The graph-transfer theorems take the independent-set
+    guarantee as a hypothesis, and unit_endpoint_arithmetic additionally
+    takes the near-bipartite branch guarantee as a hypothesis. It does not
+    formalize the paper's full weighted MAX {1,2}-HORN-SAT parser or the
+    experimental checker, and it does not formalize the UGC hardness result.
+    The port-graph interface requires every port of every vertex to be used by
+    exactly one edge endpoint; it does not exclude parallel edges.
 
 review:
   status: "self-assessed; not peer reviewed"
   reviewers: ["none"]
   notes: >-
     GitHub Actions builds with the pinned toolchain, applies source-policy
-    checks, and runs Comparator with independent kernels.  An earlier version
-    of this file listed the hard-split results among the main results; the
-    current version moves them to supporting_results in response to review
-    feedback.
+    checks, and runs Comparator with independent kernels. The comparison of the
+    selected declarations, including the graph-transfer results, completed
+    successfully with kernel checking. No verification step is pending.
 
 alignment:
   namespace: "PalomaMax2SAT.CubicPublic"
@@ -152,44 +142,41 @@ alignment:
       lean: "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
       module: "Challenge"
       status: "proved"
-    - source: "Hard-consistency weighted occurrence split (abstract transfer)"
-      lean: "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split"
+    - source: "Hard four-weight optimum"
+      lean: "PalomaMax2SAT.GraphTransfer.exact_fourScore"
+      module: "Challenge"
+      status: "proved"
+    - source: "Hard four-weight 257/260 transfer"
+      lean: "PalomaMax2SAT.GraphTransfer.hardFour_transfer"
+      module: "Challenge"
+      status: "proved"
+    - source: "Hard unit-weight 77/80 transfer"
+      lean: "PalomaMax2SAT.GraphTransfer.hardUnit_transfer"
+      module: "Challenge"
+      status: "proved"
+    - source: "Conditional 27/28 arithmetic"
+      lean: "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic"
       module: "Challenge"
       status: "proved"
       note: >-
-        Supporting formalization of the standard forced-equality occurrence
-        split.  Abstract conditional lemma retained as a reusable interface
-        lemma; not claimed as an independent contribution.
-    - source: "Feasible-solution approximation transfer (abstract)"
-      lean: "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved"
+        Conditional: proves the arithmetic from a numerical hypothesis on the
+        independent-set size. The branch supplying the hypothesis is proved in
+        the paper, not in Lean.
+    - source: "Conditional 27/28 two-branch bridge"
+      lean: "PalomaMax2SAT.GraphTransfer.unit_endpoint_two_branch"
       module: "Challenge"
       status: "proved"
       note: >-
-        Supporting formalization of the standard forced-equality occurrence
-        split.  Abstract conditional lemma retained as a reusable interface
-        lemma; not claimed as an independent contribution.
-    - source: "Hard-consistency weighted occurrence split (concrete)"
-      lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split"
-      module: "ConcreteHardSplit"
-      status: "proved"
-      note: >-
-        Proves concrete optimum preservation for the weighted Horn occurrence
-        split.  The encode/decode score equalities are proved, not assumed.
-        The construction is a routine forced-equality gadget and is not
-        claimed as an independent research contribution.
-    - source: "Feasible-solution value preservation (concrete)"
-      lean: "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved"
-      module: "ConcreteHardSplit"
-      status: "proved"
-      note: >-
-        Proves that every feasible split assignment has exactly the objective
-        value of its decoded source assignment.  Supporting formalization;
-        not claimed as an independent contribution.
+        Conditional: the hypotheses are the Berman--Fujito guarantee
+        5999993*alpha <= 7000000*s (when 20000*alpha <= 9999*n) and the
+        near-bipartite cut guarantee 37*n <= 80*s (when 20000*alpha > 9999*n).
+        Lean proves that they imply 28*(m+s) >= 27*(m+alpha); the algorithms
+        attaining them are proved in the paper, not in Lean.
 
 acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."
 additional_graph_results:
   module: "PalomaMax2SAT.GraphTransfer"
-  source_status: "Added proof source; pending kernel build."
+  source_status: "Compared and kernel-checked by the project comparator."
   hard_family: "Unit vertex rewards and edge-clause weight one or four, hard four-port cycles."
   declarations:
     - "fourScore_repair"
@@ -199,9 +186,5 @@ additional_graph_results:
     - "exact_unitScore"
     - "hardUnit_transfer"
     - "unit_endpoint_arithmetic"
+    - "unit_endpoint_two_branch"
   scope: "External MIS algorithm and simple cubic graph counting bounds are inputs to the transfer. General rational edge weights and the signed MWIS gadget are proved in the manuscript."
-
-source_certificate:
-  theorem: "PalomaMax2SAT.ConcreteHardSplit.source_certificate_19_20"
-  status: "Proof source provided; kernel build pending."
-  scope: "Uses a pointwise upper bound. Min-cut correctness is proved in the manuscript."

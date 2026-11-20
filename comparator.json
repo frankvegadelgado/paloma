@@ -7,19 +7,13 @@
     "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity",
     "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis",
     "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic",
-    "PalomaMax2SAT.HardSplitPublic.hard_implication_cycle_consistent",
-    "PalomaMax2SAT.HardSplitPublic.exact_hard_occurrence_split",
-    "PalomaMax2SAT.HardSplitPublic.feasible_solution_ratio_preserved",
-    "PalomaMax2SAT.HardSplitPublic.ratio_83_84_exceeds_general_horn_threshold",
-    "PalomaMax2SAT.ConcreteHardSplit.concrete_exact_hard_occurrence_split",
-    "PalomaMax2SAT.ConcreteHardSplit.concrete_feasible_solution_ratio_preserved",
     "PalomaMax2SAT.GraphTransfer.fourScore_repair",
     "PalomaMax2SAT.GraphTransfer.exact_fourScore",
     "PalomaMax2SAT.GraphTransfer.hardFour_transfer",
     "PalomaMax2SAT.GraphTransfer.exact_unitScore",
     "PalomaMax2SAT.GraphTransfer.hardUnit_transfer",
     "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic",
-    "PalomaMax2SAT.ConcreteHardSplit.source_certificate_19_20"
+    "PalomaMax2SAT.GraphTransfer.unit_endpoint_two_branch"
   ],
   "definition_names": [],
   "permitted_axioms": [

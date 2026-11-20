@@ -2,5 +2,4 @@ module
 
 public import PalomaMax2SAT.CubicThreeOccurrence
 public import PalomaMax2SAT.HardOccurrenceSplit
-public import PalomaMax2SAT.ConcreteHardSplit
 public import PalomaMax2SAT.GraphTransfer

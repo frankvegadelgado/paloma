@@ -137,10 +137,33 @@ theorem hardUnit_transfer {n m a : ℕ} (G : PortGraph n m)
   unfold unitScore
   omega
 
+/-- Arithmetic only: assuming `s` meets one of the two stated numerical
+guarantees (supplied by an external independent-set algorithm), the unit-weight
+hard-split score satisfies `28*(m+s) ≥ 27*(m+a)`. Lean does not prove that an
+algorithm attains either guarantee. -/
 theorem unit_endpoint_arithmetic (n m a s : ℕ)
     (hm : 2*m = 3*n) (hn : 2*a ≤ n)
     (h : 6*a ≤ 7*s ∨ (20000*a ≤ 9999*n ∧ 5999993*a ≤ 7000000*s)) :
     28*(m+s) ≥ 27*(m+a) := by
   rcases h with h | ⟨h₁,h₂⟩ <;> omega
+
+/-- Two-branch bridge for the conditional `27/28` bound. The hypotheses are
+exactly the guarantees required from the external branches, with `n` the number
+of vertices and `s` the size of the independent set returned: when
+`2*a/n ≤ 9999/10000` the Berman--Fujito branch is assumed to return
+`s ≥ (6/7 - 10^{-6}) * a`, and otherwise the near-bipartite cut branch is
+assumed to return `s ≥ 37*n/80`. Lean proves only that these two guarantees
+imply `28*(m+s) ≥ 27*(m+a)`; it does not prove that either algorithm attains
+its guarantee. -/
+theorem unit_endpoint_two_branch (n m a s : ℕ)
+    (hm : 2*m = 3*n) (hn : 2*a ≤ n)
+    (hBF : 20000*a ≤ 9999*n → 5999993*a ≤ 7000000*s)
+    (hNB : 9999*n < 20000*a → 37*n ≤ 80*s) :
+    28*(m+s) ≥ 27*(m+a) := by
+  by_cases h : 20000*a ≤ 9999*n
+  · have := hBF h
+    omega
+  · have := hNB (by omega)
+    omega
 
 end PalomaMax2SAT.GraphTransfer
