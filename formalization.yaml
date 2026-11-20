@@ -8,7 +8,11 @@ project:
     assignment repair, the exact 4n+m+alpha optimum identity, and the
     arithmetic transfer of the Berman--Fujito 7/6 guarantee to an 83/84
     approximation. The cubic class is formalized as port-labelled graphs in
-    which all three ports of every vertex are occupied. A second result family
+    which all three ports of every vertex are occupied. The formula T_H is
+    formalized explicitly as a list of Horn clauses (module SemanticHorn): the
+    number of satisfied clauses equals the score, the maximum over assignments
+    is exactly 4n+m+alpha, every clause has at most one negative literal, and
+    there are 5n+m clauses. A second result family
     (module GraphTransfer) formalizes the hard-score graph transfers: the exact
     hard optima 4m+alpha for edge weight four and m+alpha for unit weights,
     the 257/260 and 77/80 transfers from a 17/20 independent set, and the
@@ -64,7 +68,9 @@ status:
     77/80 lifts of a 17/20 independent set. The theorem
     unit_endpoint_arithmetic is conditional: it proves the 27/28 arithmetic
     from a numerical hypothesis on the independent-set size and does not prove
-    that an algorithm attains it. The UGC comparisons of 83/84 with the
+    that an algorithm attains it. The statement that every variable of T_H
+    occurs exactly three times is proved in the manuscript and is not
+    formalized in Lean. The UGC comparisons of 83/84 with the
     constants 0.94615981 and 0.94016567 are in the manuscript and are not part
     of the selected Lean statements. The full weighted MAX {1,2}-HORN-SAT syntax and the UGC
     hardness result are not formalized in Lean.
@@ -77,6 +83,10 @@ status:
     - "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
     - "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic"
+    - "PalomaMax2SAT.SemanticPublic.satCount_eq_score"
+    - "PalomaMax2SAT.SemanticPublic.optimum_identity"
+    - "PalomaMax2SAT.SemanticPublic.formula_horn"
+    - "PalomaMax2SAT.SemanticPublic.formula_size"
   supporting_results:
     - "PalomaMax2SAT.GraphTransfer.fourScore_repair"
     - "PalomaMax2SAT.GraphTransfer.exact_fourScore"
@@ -136,6 +146,18 @@ alignment:
       status: "proved"
     - source: "Theorem 3 (Exact identity)"
       lean: "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
+      module: "Challenge"
+      status: "proved"
+    - source: "Formula T_H and eq. (score)"
+      lean: "PalomaMax2SAT.SemanticPublic.satCount_eq_score"
+      module: "Challenge"
+      status: "proved"
+    - source: "Theorem 3 (Exact identity), clause semantics"
+      lean: "PalomaMax2SAT.SemanticPublic.optimum_identity"
+      module: "Challenge"
+      status: "proved"
+    - source: "Horn property and clause count of T_H"
+      lean: "PalomaMax2SAT.SemanticPublic.formula_horn"
       module: "Challenge"
       status: "proved"
     - source: "Theorem 4 (Cubic Horn approximation)"

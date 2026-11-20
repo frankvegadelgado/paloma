@@ -36,3 +36,30 @@ theorem ratio_83_84_arithmetic :
   exact ratio_83_84_arithmetic_proof
 
 end PalomaMax2SAT.CubicPublic
+
+namespace PalomaMax2SAT.SemanticPublic
+
+open PalomaMax2SAT.CubicThreeOccurrence PalomaMax2SAT.SemanticHorn
+
+/-- The number of satisfied clauses of the formula `T_H` equals the score. -/
+theorem satCount_eq_score {n m : ℕ} (G : PortGraph n m)
+    (z : Fin n → Fin 4 → Bool) : satCount G z = score G z := by
+  exact satCount_eq_score_proof G z
+
+/-- `OPT(T_H) = 4n + m + alpha(H)`, stated for the clause semantics. -/
+theorem optimum_identity {n m alpha : ℕ} (G : PortGraph n m)
+    (halpha : IsIndependenceNumber G alpha) :
+    IsGreatest (Set.range (satCount G)) (4 * n + m + alpha) := by
+  exact optimum_identity_proof G halpha
+
+/-- Every clause of `T_H` is Horn. -/
+theorem formula_horn {n m : ℕ} (G : PortGraph n m) (c : ClauseIdx n m) :
+    IsHorn (clauseOf G c) := by
+  exact formula_horn_proof G c
+
+/-- `T_H` has `5n + m` clauses. -/
+theorem formula_size (n m : ℕ) :
+    Fintype.card (ClauseIdx n m) = 5 * n + m := by
+  exact formula_size_proof n m
+
+end PalomaMax2SAT.SemanticPublic

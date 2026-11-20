@@ -458,6 +458,15 @@ from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$. It also proves the rational 
 $11+6/7=(83/84)\cdot12$. GitHub Actions builds the
 module and runs the public theorem comparison.
 
+The module \texttt{PalomaMax2SAT.SemanticHorn} defines $T_H$ explicitly as a
+family of clauses, each a list of literals over the clone variables, indexed by
+the vertices (unit clauses), the edges (edge clauses) and the pairs $(v,i)$
+(consistency implications). It proves that the number of clauses of $T_H$
+satisfied by $z$ equals $U(z)+(m-F(z))+(4n-T(z))$, that the maximum of this
+number over all assignments is exactly $4n+m+\alpha$, that every clause has at
+most one negative literal, and that $T_H$ has $5n+m$ clauses. The statement
+that every variable occurs exactly three times is not formalized in Lean.
+
 The module \texttt{PalomaMax2SAT.GraphTransfer} formalizes the hard score of
 the four-port cycle formulation. It proves the exact optima
 $4m+\alpha$ (edge weight four) and $m+\alpha$ (unit weights), the repair of
