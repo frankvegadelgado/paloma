@@ -2,7 +2,7 @@ module
 
 public import Mathlib
 
-public section
+@[expose] public section
 
 /-!
 # A cubic three-occurrence MAX-HORN-2SAT class

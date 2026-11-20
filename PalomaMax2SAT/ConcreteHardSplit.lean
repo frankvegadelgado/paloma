@@ -61,13 +61,7 @@ theorem encodeScore {Var : Type*} {Occ : Var → Type*} {Clause : Type*}
   unfold splitScore sourceScore
   apply Finset.sum_congr rfl
   intro c _
-  by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos
-  · have h' : ∃ l ∈ F.lits c, encode (Occ := Occ) x l.var l.occ = l.pos := by
-      simpa [encode] using h
-    simp [h, h']
-  · have h' : ¬ ∃ l ∈ F.lits c, encode (Occ := Occ) x l.var l.occ = l.pos := by
-      simpa [encode] using h
-    simp [h, h']
+  by_cases h : ∃ l ∈ F.lits c, x l.var = l.pos <;> simp [encode, h]
 
 theorem feasible_constant {Var : Type*} {Occ : Var → Type*}
     (next : ∀ v, Occ v → Occ v) (base : ∀ v, Occ v)
@@ -139,5 +133,19 @@ theorem concrete_feasible_solution_ratio_preserved_proof
     (z : (v : Var) → Occ v → Bool) (hz : Feasible next z) :
     splitScore F z = sourceScore F (decode base z) := by
   exact (decodeScore F next base horb hz).symm
+
+/-- A source-score upper bound certifies a feasible hard split at 19/20.
+The cut construction supplies the pointwise upper bound in the paper. -/
+theorem source_certificate_19_20 {Var : Type*} {Occ : Var → Type*}
+    {Clause : Type*} [Fintype Clause] (F : WeightedHornSplit Var Occ Clause)
+    (next : ∀ v, Occ v → Occ v) (x : Var → Bool) (upper : ℕ)
+    (bound : ∀ y, sourceScore F y ≤ upper)
+    (passes : 19 * upper ≤ 20 * sourceScore F x) :
+    Feasible next (encode (Occ := Occ) x) ∧
+      ∀ y, 19 * sourceScore F y ≤ 20 * splitScore F (encode (Occ := Occ) x) := by
+  refine ⟨encode_feasible next x, ?_⟩
+  intro y
+  rw [encodeScore F next x]
+  exact le_trans (Nat.mul_le_mul_left 19 (bound y)) passes
 
 end PalomaMax2SAT.ConcreteHardSplit

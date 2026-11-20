@@ -18,7 +18,8 @@
     "PalomaMax2SAT.GraphTransfer.hardFour_transfer",
     "PalomaMax2SAT.GraphTransfer.exact_unitScore",
     "PalomaMax2SAT.GraphTransfer.hardUnit_transfer",
-    "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic"
+    "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic",
+    "PalomaMax2SAT.ConcreteHardSplit.source_certificate_19_20"
   ],
   "definition_names": [],
   "permitted_axioms": [

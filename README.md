@@ -146,20 +146,10 @@ an algorithmic extension of the `83/84` guarantee from the cubic subfamily to
 every instance of the full hard-split image. We do not claim that step here,
 and the present repository does not supply it.
 
-OpenAI's 2026 preprint *The Unique Games Theorem* claims a deterministic
-polynomial-time reduction from 3SAT to Unique Games with the completeness and
-soundness gap required by UGC. The preprint is public and includes associated
-formal artifacts, but it has not yet been peer reviewed. If that claimed proof
-is accepted, the first premise in the chain above becomes a theorem rather
-than a conjectural assumption. The rest of the chain is unaffected by that
-acceptance; it still requires the algorithmic extension described above.
+### A certificate for the original weighted source
 
-The revised paper attains the target on the four-weight hard image as well as the cubic subfamily
-`{T_H}` and proves exact ratio preservation for the full hard-consistency
-image `{P(F)}`. The mathematical content of the hard-split material is a
-standard consistency argument; the contribution of the repository is the cubic
-repair, the exact `4n+m+α(H)` identity, and the arithmetic transfer to
-`83/84`.
+Run `python3 experiments/check_source_certificate.py` for the exhaustive audit. The function `certify` in `experiments/source_certificate.py` takes pairs of exact weights and signed DIMACS clauses. It returns an assignment, achieved score S, upper bound U and omitted weight R. A positive U gives a certified ratio S/U. Check 20S ≥ 19U for 19/20. The manuscript gives a three-clause counterexample to a uniform guarantee and an example attaining the certificate exactly. The new Lean declaration proves the source-to-split certificate given a valid upper bound. The minimum-cut construction is justified in the paper and tested in Python.
+
 
 ## Paper
 
@@ -179,11 +169,3 @@ Repository: [frankvegadelgado/paloma](https://github.com/frankvegadelgado/paloma
   and Relatives, under UGC,” *SODA 2024*, 1328–1344.
   [DOI](https://doi.org/10.1137/1.9781611977912.53) ·
   [arXiv](https://arxiv.org/abs/2310.12911)
-- OpenAI, *The Unique Games Theorem*, OpenAI Math Release preprint,
-  September 23, 2026. This manuscript claims a proof of UGC and is not yet
-  peer reviewed.
-  [Preprint and source](https://github.com/openai/math/tree/main/preprints/The-Unique-Games-Theorem-September-23-2026)
-
-## License
-
-MIT License. See `LICENSE`.

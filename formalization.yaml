@@ -200,3 +200,8 @@ additional_graph_results:
     - "hardUnit_transfer"
     - "unit_endpoint_arithmetic"
   scope: "External MIS algorithm and simple cubic graph counting bounds are inputs to the transfer. General rational edge weights and the signed MWIS gadget are proved in the manuscript."
+
+source_certificate:
+  theorem: "PalomaMax2SAT.ConcreteHardSplit.source_certificate_19_20"
+  status: "Proof source provided; kernel build pending."
+  scope: "Uses a pointwise upper bound. Min-cut correctness is proved in the manuscript."

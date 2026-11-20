@@ -31,7 +31,9 @@ $A-(4|V|+|E|)$. A cubic independent-set approximation combined with a near-bipar
 cut algorithm gives a polynomial-time $83/84$ approximation for this pattern.
 For a restricted hard-split family with unit vertex rewards and edge-clause
 weights at least one, we obtain $27/28$, including when all weights are
-one. With edge weights four the guarantee improves to $257/260$. The repair also gives an
+one. For general weighted sources we also give a computable certificate
+for the target $19/20$ and an example where certification fails.
+With edge weights four the guarantee improves to $257/260$. The repair also gives an
 $L$-reduction from cubic MIS and proves APX-completeness. The accompanying
 Lean~4 development formalizes the score decomposition, repair, exact optimum
 identity, and the arithmetic transfer to $83/84$. As a supporting
@@ -424,39 +426,78 @@ zero. Already $k=82$ gives $83/84$. Thus neither the signed repair nor
 a polynomial algorithm for unweighted cubic MIS supplies the unrestricted
 weighted ratio.
 
-\section{Context: the UGC threshold}
+\section{A computable ratio for a general source formula}
+\label{sec:cert}
 
-Brakensiek, Huang, and Zwick obtain the ratio $0.94615981$ for the unrestricted
-weighted MAX~$\{1,2\}$-HORN-SAT language and show conditional optimality under
-UGC~\cite{BrakensiekHuangZwick2024}. The present ratio satisfies
-$83/84\simeq0.988095>0.94615981$. Corollary~\ref{cor:ratio-preservation}
-places the full weighted problem inside the hard-consistency three-occurrence
-image without ratio loss.
+Fix the target $K=19/20$. For a given weighted source $F$ we construct
+a feasible assignment of value $S$ and a computable upper bound $U$ on
+$\operatorname{OPT}(F)$. Thus $S/U$ certifies a ratio for this particular
+input when $U>0$. At $U=0$ every assignment is optimal.
 
-We stress that the split construction underlying
-Corollary~\ref{cor:ratio-preservation} is a routine forced-equality gadget,
-not a novel reduction: it makes the occurrence-level encoding of a variable
-explicit and uses the same ``all clones agree'' argument as any cycle of
-hard implications. It is recorded here for verification and reuse, not as an
-independent contribution.
+First simplify repeated literals to units, count tautologies as constants,
+and discard empty clauses, which earn zero. Complement an arbitrary subset
+of variables, applying the same substitution in all their occurrences.
+Keep all units and constants, and retain each binary clause whose two
+transformed signs differ. Let $R$ be the total weight of the omitted clauses.
+The switch is chosen for computational convenience and is undone before
+scoring on $F$. In the implementation a maximum-weight spanning forest of
+the binary-clause multigraph determines the switch: root each tree and
+choose each child's switch so its forest clause has opposite signs.
+Then test every clause, including each nonforest edge. This rule accommodates
+parallel clauses with different signs and weights.
 
-Therefore, assuming the Unique Games Conjecture, a polynomial-time $83/84$
-approximation for the \emph{entire} hard-consistency image $\{P(F)\}$ would
-yield a polynomial-time algorithm exceeding the UGC-hard Horn threshold
-$0.94615981$ of~\cite{BrakensiekHuangZwick2024}, and hence would imply
-$\mathrm P=\mathrm{NP}$. Theorem~\ref{thm:ratio} proves the $83/84$ ratio only
-for the cubic subfamily $\{T_H\}$. Theorem~\ref{thm:hard-family} exceeds the general Horn threshold even on the unit-weight hard family. Extending the algorithm to all of
-$\{P(F)\}$ is a separate algorithmic requirement, and the hard-split
-construction itself does not supply it.
+\begin{theorem}[Source certificate]\label{thm:source-cert}
+Let $C$ be the optimum score of the retained formula, including constants.
+In polynomial time one can obtain $C$, an assignment with full score
+$S\ge C$, and $U=C+R$ such that
+\[
+ S\le\operatorname{OPT}(F)\le U,\qquad
+ 20S\ge19U\ \Longrightarrow\ 20S\ge19\operatorname{OPT}(F).
+\]
+Encoding the assignment in $P(F)$ preserves both its score and the
+certified ratio. If $R=0$ the procedure is exact.
+\end{theorem}
+\begin{proof}
+Use transformed truth values, with true on the source side of a directed
+cut. For a retained clause $(\neg u\vee v)$ add an arc $u\to v$ of its
+weight. For a positive unit $(v)$ add $s\to v$; for a negative unit
+$(\neg v)$ add $v\to t$. The cut pays a clause weight exactly when the
+clause is false. Parallel capacities add. Hence retained total weight
+(including constants) minus the minimum cut equals $C$. This is the
+pairwise graph-cut construction in its implication form~\cite{KZ}.
+Nonnegative binary rational weights can be scaled by the product of
+their denominators, whose bit length is polynomial in the input length.
+Decode a minimum cut and evaluate it on all of $F$. Comparing it with
+the two constant source assignments can only increase its score.
+Every assignment earns at most $C$ from retained clauses and at most $R$
+from omitted clauses. This proves the bounds. The last assertion about
+$P(F)$ follows from Theorem~\ref{thm:hard-split}.
+\end{proof}
 
-OpenAI's 2026 preprint \emph{The Unique Games Theorem}~\cite{OpenAI2026UGC}
-claims a deterministic polynomial-time reduction from 3SAT to Unique Games
-with the completeness and soundness gap required by UGC. The preprint is
-public and includes associated formal artifacts, but it has not yet been peer
-reviewed. If that claimed proof is accepted, UGC becomes a theorem rather than
-a conjecture, and the implication above becomes unconditional on UGC: a
-polynomial-time $83/84$ approximation for the entire hard-split image
-$\{P(F)\}$ would then imply $\mathrm P=\mathrm{NP}$. Note that UGC being false would not by itself imply $\mathrm P=\mathrm{NP}$.
+\paragraph{A sharp certificate and a failed certificate.}
+With unit weights take $(x_1\vee x_3)$, $(\neg x_2)$ and
+$(\neg x_3\vee x_1)$. The implementation keeps the positive binary clause
+as its forest edge and returns $(0,0,1)$, of score two. The assignment
+$(1,0,0)$ earns three, and $U=3$. Thus the method itself can return less
+than $19/20$ of optimum. Add a fresh positive unit $(x_4)$ of weight $17$.
+The same choices give $S=19$ and $U=\operatorname{OPT}(F)=20$.
+This instance attains the proposed certificate exactly and includes both
+mixed and positive binary source clauses.
+
+\section{What a uniform improvement would imply}
+
+Let $\alpha^*$ denote the constant of Brakensiek, Huang and Zwick for
+weighted MAX~$\{1,2\}$-HORN-SAT, approximately $0.94615981$.
+Their Theorem~5.12 gives UG-hardness at $\alpha^*+\varepsilon$ for
+every $\varepsilon>0$~\cite{BrakensiekHuangZwick2024}. In particular,
+$19/20=0.95>\alpha^*$. A deterministic polynomial-time algorithm
+returning value at least $19\operatorname{OPT}(F)/20$ on \emph{every}
+weighted source $F$ would solve the UG-hard gap problem in polynomial
+time and, assuming UGC, imply $\mathrm P=\mathrm{NP}$. By
+Theorem~\ref{thm:hard-split} the same implication holds for a guarantee
+on the entire hard-split image. Theorem~\ref{thm:source-cert} supplies a
+test on each input. The worst-case bounds in Theorems~\ref{thm:ratio}
+and~\ref{thm:hard-family} concern their specified cubic families.
 
 \section{Lean and computational verification}
 
@@ -529,12 +570,10 @@ J.~Brakensiek, N.~Huang, and U.~Zwick,
 Proceedings of SODA 2024, 1328--1344.
 \url{https://doi.org/10.1137/1.9781611977912.53}.
 
-\bibitem{OpenAI2026UGC}
-{OpenAI},
-\emph{The Unique Games Theorem},
-OpenAI Math Release preprint, September 23, 2026.
-\url{https://github.com/openai/math/tree/main/preprints/The-Unique-Games-Theorem-September-23-2026}.
-
+\bibitem{KZ}
+V.~Kolmogorov and R.~Zabih,
+\emph{What energy functions can be minimized via graph cuts?}
+IEEE Trans. Pattern Anal. Mach. Intell. 26 (2004), 147--159.
 \bibitem{VegaPalomaRepository}
 F.~Vega,
 \emph{Paloma MAX-HORN-2SAT formalization and experiments}, GitHub, 2026.
