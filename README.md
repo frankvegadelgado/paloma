@@ -124,3 +124,9 @@ Repository: [frankvegadelgado/paloma](https://github.com/frankvegadelgado/paloma
   and Relatives, under UGC,” *SODA 2024*, 1328–1344.
   [DOI](https://doi.org/10.1137/1.9781611977912.53) ·
   [arXiv](https://arxiv.org/abs/2310.12911)
+- S. Ghoshal, N. Huang, E. Lee, K. Makarychev, and Y. Makarychev,
+  “Threshold rounding and bounded-degree Boolean MAX 2-CSP,” arXiv:2607.11050,
+  2026. [arXiv](https://arxiv.org/abs/2607.11050)
+- OpenAI, “Proof of Khot's Unique Games Conjecture” (entry 102 of the OpenAI
+  mathematics release, 6 October 2026), GitHub repository
+  [openai/math](https://github.com/openai/math). Not peer reviewed.
