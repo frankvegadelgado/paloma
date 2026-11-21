@@ -236,7 +236,7 @@ theorem ratio_step {B alpha s : ℕ} (hB : 8 * alpha ≤ B)
 
 /-- A lifted independent set of size `s` attains ratio `0.9932` against the optimum. -/
 theorem lift_ratio_general {alpha : ℕ} (G : Graph n m deg)
-    (halpha : IsIndependenceNumber G alpha) (I : Finset (Fin n)) (hI : Independent G I)
+    (_halpha : IsIndependenceNumber G alpha) (I : Finset (Fin n)) (hI : Independent G I)
     (hB : 8 * alpha ≤ base deg m) (hs : 18785 * alpha ≤ 20000 * I.card) :
     9932 * (base deg m + alpha) ≤ 10000 * score G (assignmentOfIndependent I) := by
   have := ratio_step hB hs
@@ -246,7 +246,7 @@ theorem lift_ratio_general {alpha : ℕ} (G : Graph n m deg)
 /-- Conflict-graph arithmetic of Theorem `thm:nonreg-cutclass`: `Σ d_v ≤ Σ d_v²`. -/
 theorem sum_le_sum_mul_self {ι : Type*} [Fintype ι] (deg : ι → ℕ) :
     ∑ v, deg v ≤ ∑ v, deg v * deg v :=
-  Finset.sum_le_sum fun v _ => Nat.le_mul_self _
+  Finset.sum_le_sum fun _ _ => Nat.le_mul_self _
 
 /-- `M = 2m + Σ d_v²` and `Σ d_v = 2m` give `4m ≤ M`. -/
 theorem conflict_edges_ge {ι : Type*} [Fintype ι] (deg : ι → ℕ) (m M : ℕ)

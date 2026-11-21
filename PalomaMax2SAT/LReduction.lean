@@ -41,7 +41,7 @@ theorem exists_large_independent (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] 
   have hcover : ∀ v, v ∈ I ∨ ∃ u ∈ I, G.Adj u v := by
     intro v
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     obtain ⟨hvI, hnadj⟩ := hcon
     have hins : insert v I ∈ S := by
       simp only [S, Finset.mem_filter, Finset.mem_univ, true_and]

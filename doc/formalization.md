@@ -3,6 +3,10 @@
 This document states what the Lean development proves, what it takes from the
 literature as explicit hypotheses, and what it does not touch.
 
+## Main result: ratio above the Unique Games thresholds
+
+Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances, the polynomial-time factor `83/84` exceeds the Unique Games thresholds `0.94615981` (Brakensiek, Huang, Zwick) and `0.94016567` (Lewin, Livnat, Zwick), which hold for all instances. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`, `CitedResults`); the Goemans-Williamson cut guarantee and the thresholds are the cited hypotheses listed below.
+
 ## Proved in Lean
 
 * `CubicThreeOccurrence`, `SemanticHorn` (degree 3) and `DegreeFormula` (every degree `d`):
@@ -37,6 +41,12 @@ literature as explicit hypotheses, and what it does not touch.
 
 * `DegreeTransfer.bf_loss_bound`: `63 d <= 4 (d+1)(d+3) + 126`, the inequality behind the statement that the Berman-Fujito ratio exceeds `0.97` for every `d >= 4` (and so every regular class with `d >= 3` has a factor above the Brakensiek-Huang-Zwick constant). These are statements about three-occurrence classes, not about all instances.
 
+* `CutTransfer.lifted_ratio_gt_gw`: for `K > 0` and `8785 maxcut <= 10000 cut`, `8785 (K + maxcut) < 10000 (K + cut)`, that is the lift of a Goemans-Williamson cut has ratio strictly above `0.8785` on `T_H` (Remark `rem:gamma-linear`).
+
+* `Solution.ratio_at_least_83_84_general` and `Solution.general_endpoint_ratio`: the transfer `84((d+1)n + m + |I|) >= 83((d+1)n + m + alpha)` for every `d >= 3` and the monotone endpoint ratio `(beta + 3/7)/(beta + 1/2) >= 83/84`, proved directly in `Solution.lean`.
+
+* `PaperArithmetic`: the comparison `83/84 > 0.94615981 > 0.94016567` (Theorem `thm:ugc-class`), `(3d+2)/(3d+3) > 0.95` for `d >= 6`, strict monotonicity of `(21d+20)/(21d+21)`, the two-branch arithmetic `84(4n+m+s) >= 83(4n+m+alpha)` of Theorem `thm:ratio` from the two branch guarantees as hypotheses, the constants of Theorems `thm:cutclass` and `thm:nonreg-cutclass` and of Proposition `prop:bounded-cut` (`0.9977`), the bound `gamma/(K+gamma) <= 1/(K+1)` of Remark `rem:gamma-linear`, the cube example of the hard-split section, and the tabulated values.
+
 ## Taken from the literature (hypotheses, not proved)
 
 | Result | Reference | Lean form |
@@ -59,8 +69,8 @@ stated ratio on `T_H`.
 
 * The Unique Games Conjecture and the hardness thresholds `0.94615981`
   (Brakensiek, Huang, Zwick) and `0.94016567` (Lewin, Livnat, Zwick). They are statements
-  about all instances of MAX-HORN-SAT and MAX 2-SAT. No Lean statement uses them, and no
-  claim about them is made.
+  about all instances of MAX-HORN-SAT and MAX 2-SAT. No Lean statement uses them; the
+  comparison `83/84 > 0.94615981 > 0.94016567` of Theorem `thm:ugc-class` is in the paper.
 * The bounded-occurrence approximation of Ghoshal, Huang, Lee, Makarychev and Makarychev,
   and the Raman, Ravikumar and Rao classification of two- and three-occurrence MAX 2-SAT.
 * Conditional statements: the threshold results for `4 <= d <= 20` hold only for an

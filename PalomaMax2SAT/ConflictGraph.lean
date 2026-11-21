@@ -173,9 +173,7 @@ theorem edge_bound (G : EdgeGraph n m) (I : Finset (Occ m)) (hI : Ind G I) (e : 
 theorem card_le_edgeValues (G : EdgeGraph n m) (I : Finset (Occ m)) (hI : Ind G I) :
     I.card ≤ ∑ e : Fin m, edgeValue G (cutOf G I) e := by
   have hc : I.card = ∑ p : Occ m, if p ∈ I then 1 else 0 := by
-    first
-      | (rw [← Finset.card_filter]; congr 1; ext p; simp)
-      | simp
+    rw [← Finset.card_filter]; congr 1; ext p; simp
   rw [hc]
   simp only [Fintype.sum_prod_type, Fintype.sum_bool]
   exact Finset.sum_le_sum fun e _ => edge_bound G I hI e

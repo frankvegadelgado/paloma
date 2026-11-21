@@ -93,4 +93,12 @@ theorem gap_ratio (d m c k : ℕ) (hc : m ≤ 2 * c) (hgap : 10000 * c ≤ 10000
       (60000 * d + 115000) * ((6 * d + 11) * m + k) := by
   nlinarith [Nat.mul_le_mul_left (12 * d + 23) hgap, hc]
 
+/-- Remark `rem:gamma-linear`, division-free: the lift of a cut with `8785 · maxcut ≤ 10000 · cut`
+has instance ratio strictly above `0.8785`. Here `K = (6d + 11) m > 0` is the constant `B + m`,
+`c = maxcut` and `k = cut`: `8785 (K + c) < 10000 (K + k)`, that is
+`(K + k)/(K + c) > 0.8785`. -/
+theorem lifted_ratio_gt_gw (K c k : ℕ) (hK : 0 < K) (hcut : 8785 * c ≤ 10000 * k) :
+    8785 * (K + c) < 10000 * (K + k) := by
+  omega
+
 end PalomaMax2SAT.CutTransfer

@@ -37,7 +37,7 @@ theorem independent_iff (G : PortGraph n m) (I : Finset (Fin n)) :
   · intro h u hu v hv hadj
     obtain ⟨_, ⟨e, h1, h2⟩ | ⟨e, h1, h2⟩⟩ := (SimpleGraph.fromRel_adj _ _ _).mp hadj
     · exact h e ⟨by rw [h1]; exact hu, by rw [h2]; exact hv⟩
-    · exact h e ⟨by rw [h2]; exact hv, by rw [h1]; exact hu⟩
+    · exact h e ⟨by rw [h1]; exact hv, by rw [h2]; exact hu⟩
   · intro h e he
     exact h _ he.1 _ he.2
       ((SimpleGraph.fromRel_adj _ _ _).mpr ⟨G.left_ne_right e, Or.inl ⟨e, rfl, rfl⟩⟩)

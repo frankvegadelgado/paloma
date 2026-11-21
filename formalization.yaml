@@ -2,6 +2,13 @@ project: PalomaMax2SAT
 paper: paper.tex
 lean_toolchain_file: lean-toolchain
 
+main_result:
+  name: ugc_barrier
+  paper_theorem: thm:ugc-class
+  statement: On the class {T_H(G)} of three-occurrence Horn formulas from MAX-CUT instances the polynomial-time factor 83/84 exceeds the Unique Games thresholds 0.94616 (Brakensiek-Huang-Zwick) and 0.94017 (Lewin-Livnat-Zwick) that hold for all instances.
+  lean_modules: [PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.CitedResults]
+  cited_not_formalized: [Goemans-Williamson/Mahajan-Ramesh cut guarantee, Unique Games thresholds]
+
 modules:
   - name: PalomaMax2SAT.CubicThreeOccurrence
     path: PalomaMax2SAT/CubicThreeOccurrence.lean
@@ -41,7 +48,12 @@ modules:
   - name: PalomaMax2SAT.CutTransfer
     path: PalomaMax2SAT/CutTransfer.lean
     status: formalized
-    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic.
+    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic and the strict inequality rho_d(gamma) > 0.8785 of Remark rem:gamma-linear (lifted_ratio_gt_gw).
+
+  - name: PalomaMax2SAT.PaperArithmetic
+    path: PalomaMax2SAT/PaperArithmetic.lean
+    status: formalized
+    notes: Numerical statements of the paper: 83/84 above the UG thresholds (thm:ugc-class), two-branch arithmetic of thm:ratio, constants of thm:cutclass, thm:nonreg-cutclass and prop:bounded-cut, the supremum of rem:gamma-linear, the cube example, and the value tables.
 
   - name: PalomaMax2SAT.CutLift
     path: PalomaMax2SAT/CutLift.lean

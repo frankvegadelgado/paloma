@@ -37,7 +37,9 @@ def slots (G : EdgeGraph n m) (v : Fin n) : Finset (Fin m × Bool) :=
 theorem card_slots (G : EdgeGraph n m) (v : Fin n) : (slots G v).card = occ G v := by
   unfold slots occ
   rw [Finset.card_filter]
-  simp [Fintype.sum_prod_type, Fintype.sum_bool, ov]
+  simp only [Fintype.sum_prod_type, Fintype.sum_bool, ov]
+  refine Finset.sum_congr rfl fun e _ => ?_
+  by_cases h1 : G.left e = v <;> by_cases h2 : G.right e = v <;> simp [h1, h2]
 
 /-- The neighbours of an occurrence in the conflict graph. -/
 def nbrs (G : EdgeGraph n m) (p : Occ m) : Finset (Occ m) :=
@@ -116,7 +118,8 @@ theorem ordered_edges_eq (G : EdgeGraph n m) :
 
 /-- The conflict graph has `4 m` vertices. -/
 theorem card_occ (m : ℕ) : Fintype.card (Occ m) = 4 * m := by
-  simp [Occ, Fintype.card_prod] <;> ring
+  simp [Occ, Fintype.card_prod]
+  ring
 
 /-- `2 M ≥ 8 m`, that is `M ≥ 4 m`. -/
 theorem ordered_edges_ge (G : EdgeGraph n m) :
@@ -142,6 +145,6 @@ theorem occurrences_eq (G : EdgeGraph n m) (v : Fin n) :
   unfold occ
   rw [Finset.mul_sum]
   refine Finset.sum_congr rfl fun e _ => ?_
-  split_ifs <;> omega
+  by_cases h1 : G.left e = v <;> by_cases h2 : G.right e = v <;> simp [h1, h2]
 
 end PalomaMax2SAT.ConflictDegree

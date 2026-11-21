@@ -61,6 +61,7 @@ structure Indep (S : Source ι V C) (P : Finset (ι × Bool)) (R : Finset ι) : 
 def weight (S : Source ι V C) (P : Finset (ι × Bool)) (R : Finset ι) : ℕ :=
   M S * P.card + ∑ j ∈ R, S.w (S.cl j)
 
+omit [Fintype ι] [LinearOrder ι] [Fintype C] [DecidableEq C] in
 theorem fst_injOn {S : Source ι V C} {P : Finset (ι × Bool)} {R : Finset ι}
     (hI : Indep S P R) : Set.InjOn Prod.fst (P : Set (ι × Bool)) := by
   intro p hp q hq h
@@ -74,11 +75,13 @@ theorem fst_injOn {S : Source ι V C} {P : Finset (ι × Bool)} {R : Finset ι}
   · exact absurd ⟨hp, hq⟩ (hI.pair i)
   · rfl
 
+omit [Fintype C] [DecidableEq C] in
 theorem ports_le {S : Source ι V C} {P : Finset (ι × Bool)} {R : Finset ι}
     (hI : Indep S P R) : P.card ≤ Fintype.card ι := by
   calc P.card = (P.image Prod.fst).card := (Finset.card_image_of_injOn (fst_injOn hI)).symm
     _ ≤ Fintype.card ι := Finset.card_le_univ _
 
+omit [Fintype ι] [LinearOrder ι] [Fintype C] in
 theorem reward_sum_le (S : Source ι V C) (R : Finset ι)
     (hrr : ∀ i ∈ R, ∀ j ∈ R, S.cl i = S.cl j → i = j) (T : Finset C)
     (hT : ∀ j ∈ R, S.cl j ∈ T) : ∑ j ∈ R, S.w (S.cl j) ≤ ∑ c ∈ T, S.w c := by

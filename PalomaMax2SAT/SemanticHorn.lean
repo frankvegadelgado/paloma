@@ -90,7 +90,7 @@ theorem satCount_eq_score_proof {n m : ℕ} (G : PortGraph n m)
         (selectedVertices z).card := by
     apply congrArg Finset.card
     ext v
-    cases ha : z v 0 <;> simp [selectedVertices, clauseOf, unitClause, edgeClause, consClause, Clause.satisfied, Lit.eval, ha]
+    cases ha : z v 0 <;> simp [selectedVertices, clauseOf, unitClause, Clause.satisfied, Lit.eval, ha]
   have hE : (Finset.univ.filter fun e : Fin m =>
       Clause.satisfied z (clauseOf G (Sum.inr (Sum.inl e))) = true).card =
         m - (falseEdges G z).card := by
@@ -100,7 +100,7 @@ theorem satCount_eq_score_proof {n m : ℕ} (G : PortGraph n m)
       ext e
       cases ha : z (G.left e) (edgeClone (G.leftPort e)) <;>
         cases hb : z (G.right e) (edgeClone (G.rightPort e)) <;>
-          simp [falseEdges, clauseOf, unitClause, edgeClause, consClause, Clause.satisfied, Lit.eval, ha, hb]
+          simp [falseEdges, clauseOf, edgeClause, Clause.satisfied, Lit.eval, ha, hb]
     rw [hset, Finset.card_compl]
     simp
   have hC : (Finset.univ.filter fun p : Fin n × Fin 4 =>
@@ -111,7 +111,7 @@ theorem satCount_eq_score_proof {n m : ℕ} (G : PortGraph n m)
           (transitionPairs z)ᶜ := by
       ext ⟨v, i⟩
       cases ha : z v i <;> cases hb : z v (i + 1) <;>
-        simp [transitionPairs, transition, clauseOf, unitClause, edgeClause, consClause, Clause.satisfied, Lit.eval, ha, hb]
+        simp [transitionPairs, transition, clauseOf, consClause, Clause.satisfied, Lit.eval, ha, hb]
     rw [hset, Finset.card_compl, Fintype.card_prod]
     simp [Nat.mul_comm]
   unfold satCount score
@@ -164,7 +164,7 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
             (if (p.1, p.2 + 1) = (w, j) then 1 else 0)) := by
       apply Finset.sum_congr rfl
       intro p _
-      simp [clauseOf, unitClause, edgeClause, consClause, Clause.count]
+      simp [clauseOf, consClause, Clause.count]
     rw [h1, Finset.sum_add_distrib]
     have h2 : ∑ p : Fin n × Fin 4, (if p = (w, j) then 1 else 0) = 1 := by
       simp
@@ -189,7 +189,7 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
         ∑ v : Fin n, (if (v, (0 : Fin 4)) = (w, j) then 1 else 0) := by
       apply Finset.sum_congr rfl
       intro v _
-      simp [clauseOf, unitClause, edgeClause, consClause, Clause.count]
+      simp [clauseOf, unitClause, Clause.count]
     rw [h1]
     by_cases hj : j = 0
     · subst hj
@@ -204,7 +204,7 @@ theorem three_occurrences_proof {n m : ℕ} (G : PortGraph n m)
           (if (G.left e, edgeClone (G.leftPort e)) = (w, j) then 1 else 0) +
             (if (G.right e, edgeClone (G.rightPort e)) = (w, j) then 1 else 0) := by
       intro e
-      simp [clauseOf, unitClause, edgeClause, consClause, Clause.count]
+      simp [clauseOf, edgeClause, Clause.count]
     rw [Finset.sum_congr rfl (fun e _ => hterm e)]
     rcases Fin.eq_zero_or_eq_succ j with hj | ⟨p0, hj⟩
     · subst hj

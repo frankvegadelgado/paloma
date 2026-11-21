@@ -42,12 +42,19 @@ theorem ratio_at_least_83_84_general
     (halpha : 2 * alpha ≤ n)
     (happrox : 7 * found ≥ 6 * alpha) :
     84 * ((d + 1) * n + m + found) ≥ 83 * ((d + 1) * n + m + alpha) := by
-  exact CubicThreeOccurrence.ratio_at_least_83_84_general d n m alpha found hd hreg halpha happrox
+  have h1 : 3 * n ≤ d * n := Nat.mul_le_mul_right n hd
+  have h2 : (d + 1) * n = d * n + n := by ring
+  omega
 
 theorem general_endpoint_ratio (d : ℕ) (hd : 3 ≤ d) :
     let β : ℚ := (3 * d + 2) / 2
     (β + 3 / 7) / (β + 1 / 2) ≥ (83 : ℚ) / 84 := by
-  exact CubicThreeOccurrence.general_endpoint_ratio d hd
+  intro β
+  have hd' : (3 : ℚ) ≤ d := by exact_mod_cast hd
+  have hβ : β = (3 * (d : ℚ) + 2) / 2 := rfl
+  have hpos : (0 : ℚ) < β + 1 / 2 := by rw [hβ]; linarith
+  rw [ge_iff_le, le_div_iff₀ hpos, hβ]
+  linarith
 
 end PalomaMax2SAT.CubicPublic
 

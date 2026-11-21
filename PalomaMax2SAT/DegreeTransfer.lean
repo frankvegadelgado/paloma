@@ -95,7 +95,7 @@ theorem bf_branch_numeric_21 : (15803 : ℚ) / 241 * (99 / 200) < 65 / 2 := by
 /-- Degree `21`, cut branch: if `α > 99n/200` and `3n ≤ 25|I|`, the lift has ratio
 `83/84`. Lean does not prove that an algorithm attains the guarantee. -/
 theorem cut_branch_degree_21 (n m a s : ℕ) (hm : 2 * m = 21 * n) (hn : 2 * a ≤ n)
-    (hgt : 99 * n < 200 * a) (hcut : 3 * n ≤ 25 * s) :
+    (_hgt : 99 * n < 200 * a) (hcut : 3 * n ≤ 25 * s) :
     83 * (22 * n + m + a) ≤ 84 * (22 * n + m + s) := by
   omega
 

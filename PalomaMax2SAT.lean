@@ -16,3 +16,4 @@ public import PalomaMax2SAT.ConflictGraph
 public import PalomaMax2SAT.ConflictDegree
 public import PalomaMax2SAT.OnesBridge
 public import PalomaMax2SAT.SignedGraph
+public import PalomaMax2SAT.PaperArithmetic
