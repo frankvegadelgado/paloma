@@ -1,3 +1,4 @@
+version: v0.4
 project:
   name: "PalomaMax2SAT: an 83/84 approximation for a cubic three-occurrence Horn class"
   description: "Lean 4 formalization of the paper 'An 83/84 approximation for a cubic three-occurrence Horn class'. It builds the three-occurrence MAX-HORN-2SAT formula T_H from a cubic signed graph, proves the exact identity OPT(T_H) = B + alpha(H) and the repair lemma, and derives the 83/84 approximation ratio together with the degree-d ratio arithmetic, the lift of a MAX-CUT guarantee (ratio strictly above the Goemans-Williamson constant) and the comparison with the Unique Games thresholds. The Goemans-Williamson, Berman-Fujito and Unique Games results are cited as hypotheses and not reproved."
@@ -13,7 +14,8 @@ project:
       email: "vega.frank@gmail.com"
 
 classification:
-  arxiv: ["cs.CC", "cs.DS", "math.CO"]
+  arxiv: ["cs.CC", "cs.DS"]
+  msc: ["68Q25", "68W25", "90C27"]
 
 paper: paper.tex
 lean_toolchain_file: lean-toolchain
@@ -34,12 +36,10 @@ sources:
 
 automation:
   methods:
-    - name: "AI-assisted Lean 4 proof writing"
-      description: "Lean 4 proofs written and iterated with an AI assistant (Claude); every proof is checked by the Lean kernel via lake build."
-    - name: "Comparator verification"
-      description: "lake comparator checks Solution.lean against Challenge.lean in GitHub Actions (scripts/verify-comparator.sh)."
-    - name: "Computational cross-checks"
-      description: "Python scripts in experiments/ test the constructions on small instances; they are not part of the formal proof."
+    - method: manual
+      notes: "The author states the theorems, writes the paper, and reviews the formal statements in Challenge.lean."
+    - method: other
+      notes: "Lean 4 proofs written and iterated with an AI assistant (Claude, Anthropic) and checked by the Lean kernel via lake build; lake comparator verifies Solution.lean against Challenge.lean in GitHub Actions."
 
 review:
   status: "unreviewed"
