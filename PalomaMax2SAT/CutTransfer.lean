@@ -85,4 +85,12 @@ theorem threshold_from_cut (D a s : ℕ) (hD : 1 ≤ D) (hs : 18785 * a ≤ 2000
   have h : 1 * a ≤ D * a := Nat.mul_le_mul_right a hD
   omega
 
+/-- Division-free form of the first bound of Proposition `prop:gamma-ratio`: if
+`m ≤ 2 c` (`maxcut ≥ m/2`) and `maxcut - cut ≤ 0.1053 m`, then the lift of a cut of `k` edges
+has ratio at least `1 - 0.1053/(6d + 11.5)`, where `B + m = (6d + 11) m`. -/
+theorem gap_ratio (d m c k : ℕ) (hc : m ≤ 2 * c) (hgap : 10000 * c ≤ 10000 * k + 1053 * m) :
+    (60000 * d + 113947) * ((6 * d + 11) * m + c) ≤
+      (60000 * d + 115000) * ((6 * d + 11) * m + k) := by
+  nlinarith [Nat.mul_le_mul_left (12 * d + 23) hgap, hc]
+
 end PalomaMax2SAT.CutTransfer

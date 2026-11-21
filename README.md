@@ -26,6 +26,12 @@ Lean 4 formalization and computational checks for *An 83/84 approximation for a 
 | `GraphTransfer` | formalized with hypotheses | Hard optima `4m + α` and `m + α`, `257/260` and `77/80` transfers, `27/28` branch arithmetic from numerical hypotheses. |
 | `CutTransfer` | formalized | MAX-CUT as MAX 2-SAT: satisfied clauses of `F_G` equal `m + cut(S)`; arithmetic of the ratio transfer to the cut. |
 | `CutLift` | formalized | Lifting step of Theorem `thm:cutclass`: `18785α(H) ≤ 20000|I|` gives `83/84` on `T_H`. |
+| `OnesOptimal` | formalized | Max-Ones for negative (Horn) 2-CNF is the independence number; Min-Ones for positive 2-CNF is `|F|` plus the minimum vertex cover outside `F`; Gallai's identity. |
+| `LReduction` | formalized | Greedy independent set `n ≤ (Δ+1)|I|`, `L`-reduction constants of Theorem `thm:apx` (`OPT ≤ 23α` for `d = 3`, second constant `1`). |
+| `ConflictGraph` | formalized | Conflict graph of `F_G` and `α(H(G)) = m + maxcut(G)` (Proposition `prop:cutconflict`). |
+| `ConflictDegree` | formalized | `(d+1)`-regularity of the conflict graph, `2 deg(v)` occurrences of `x_v`, and `M ≥ 4m` (Theorem `thm:nonreg-cutclass`). |
+| `OnesBridge` | formalized | `OPT(T_H) = 4n + m + α`, `MaxOnes(N_H) = α` and `MinOnes` of the positive formula `= n - α` for cubic `H`. |
+| `SignedGraph` | formalized | Theorem `thm:signed`: weight `D·M + OPT(F)` of the signed graph for weighted width-two inputs. |
 | `CitedResults` | hypotheses | Explicit hypotheses for the Goemans–Williamson/Mahajan–Ramesh cut bound and the Berman–Fujito independent-set bound, and the end-to-end degree-21 statement. |
 
 ## Cited, not proved

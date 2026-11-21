@@ -243,4 +243,20 @@ theorem lift_ratio_general {alpha : ℕ} (G : Graph n m deg)
   rw [score_assignmentOfIndependent G I hI]
   exact this
 
+/-- Conflict-graph arithmetic of Theorem `thm:nonreg-cutclass`: `Σ d_v ≤ Σ d_v²`. -/
+theorem sum_le_sum_mul_self {ι : Type*} [Fintype ι] (deg : ι → ℕ) :
+    ∑ v, deg v ≤ ∑ v, deg v * deg v :=
+  Finset.sum_le_sum fun v _ => Nat.le_mul_self _
+
+/-- `M = 2m + Σ d_v²` and `Σ d_v = 2m` give `4m ≤ M`. -/
+theorem conflict_edges_ge {ι : Type*} [Fintype ι] (deg : ι → ℕ) (m M : ℕ)
+    (hsum : ∑ v, deg v = 2 * m) (hM : M = 2 * m + ∑ v, deg v * deg v) : 4 * m ≤ M := by
+  have := sum_le_sum_mul_self deg
+  omega
+
+/-- `N = 4m`, `4m ≤ M` and `α ≤ 2m` give `8 α ≤ B = N + 3M`. -/
+theorem conflict_base_ge {m N M alpha : ℕ} (hN : N = 4 * m) (hM : 4 * m ≤ M)
+    (halpha : alpha ≤ 2 * m) : 8 * alpha ≤ N + 3 * M := by
+  omega
+
 end PalomaMax2SAT.GeneralDegreeFormula

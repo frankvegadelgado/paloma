@@ -53,10 +53,42 @@ modules:
     status: axiomatized_as_hypotheses
     notes: Explicit hypotheses for Goemans-Williamson/Mahajan-Ramesh cut bound and Berman-Fujito independent set bound.
 
+  - name: PalomaMax2SAT.OnesOptimal
+    path: PalomaMax2SAT/OnesOptimal.lean
+    status: formalized
+    notes: Max-Ones for negative (Horn) 2-CNF equals the independence number, Min-Ones for positive 2-CNF equals |F| plus the minimum vertex cover outside F, and Gallai's identity.
+
+  - name: PalomaMax2SAT.LReduction
+    path: PalomaMax2SAT/LReduction.lean
+    status: formalized
+    notes: Greedy independent set of size at least n/(Delta+1), first L-reduction constant 2 OPT <= ((3d+2)(d+1)+2) alpha (23 for d = 3), and second constant 1.
+
+  - name: PalomaMax2SAT.ConflictGraph
+    path: PalomaMax2SAT/ConflictGraph.lean
+    status: formalized
+    notes: Conflict graph of F_G on literal occurrences and the identity alpha(H(G)) = m + maxcut(G) (Proposition prop:cutconflict).
+
+  - name: PalomaMax2SAT.ConflictDegree
+    path: PalomaMax2SAT/ConflictDegree.lean
+    status: formalized
+    notes: Degrees of the conflict graph, (d+1)-regularity, 2 deg(v) occurrences of x_v, and M >= 4m for arbitrary graphs.
+
+  - name: PalomaMax2SAT.OnesBridge
+    path: PalomaMax2SAT/OnesBridge.lean
+    status: formalized
+    notes: For the cubic port graph, OPT(T_H) = 4n + m + alpha and MaxOnes(N_H) = alpha with the same alpha; MinOnes of the positive formula is n - alpha.
+
+  - name: PalomaMax2SAT.SignedGraph
+    path: PalomaMax2SAT/SignedGraph.lean
+    status: formalized
+    notes: Theorem thm:signed. Independent sets of the signed graph J have weight at most D M + OPT(F), decode to assignments, and the bound is attained.
+
 unformalized_in_lean:
   - Semidefinite programming rounding and derandomization (Goemans-Williamson, Mahajan-Ramesh, Trevisan)
   - Berman-Fujito approximation algorithm proofs
-  - L-reductions and APX-completeness proofs
-  - General signed-graph construction (Theorem thm:signed)
+  - APX-completeness of cubic Maximum Independent Set (Alimonti-Kann), used to conclude APX-completeness of the image class
+  - Hardness of Maximum Independent Set and Minimum Vertex Cover (Hastad, Zuckerman, Khot-Regev, Austrin-Khot-Safra, Chan, Halperin) used for Max-Ones and Min-Ones
   - Unique Games Conjecture hardness thresholds (Brakensiek-Huang-Zwick, Lewin-Livnat-Zwick, Ghoshal et al., Khot-Kindler-Mossel-O'Donnell for MAX-CUT)
-  - Non-regular conflict-graph degree/edge bound M ≥ 4m and ratio > 0.9932 (Theorem thm:nonreg-cutclass)
+  - Analytic part of Proposition prop:gamma-ratio (convex envelope of arccos(1-2x)/pi and the maximum 0.10526 of gamma - h(gamma))
+  - Vertex count 3D and maximum degree three of the signed graph J (Theorem thm:signed)
+  - Polynomial running time of every constructive statement (the repair, the lifts and the decodings are defined as functions, their running time is not modelled)
