@@ -1,6 +1,52 @@
-project: PalomaMax2SAT
+project:
+  name: "PalomaMax2SAT: an 83/84 approximation for a cubic three-occurrence Horn class"
+  description: "Lean 4 formalization of the paper 'An 83/84 approximation for a cubic three-occurrence Horn class'. It builds the three-occurrence MAX-HORN-2SAT formula T_H from a cubic signed graph, proves the exact identity OPT(T_H) = B + alpha(H) and the repair lemma, and derives the 83/84 approximation ratio together with the degree-d ratio arithmetic, the lift of a MAX-CUT guarantee (ratio strictly above the Goemans-Williamson constant) and the comparison with the Unique Games thresholds. The Goemans-Williamson, Berman-Fujito and Unique Games results are cited as hypotheses and not reproved."
+  authors:
+    - name: "Frank Vega"
+      orcid: "0000-0001-8210-4126"
+      email: "vega.frank@gmail.com"
+      affiliation: "Information Physics Institute"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - name: "Frank Vega"
+      github: "frankvegadelgado"
+      email: "vega.frank@gmail.com"
+
+classification:
+  msc: ["68Q25", "68W25", "90C27"]
+  keywords: ["MAX-HORN-2SAT", "approximation algorithm", "MAX-CUT", "Unique Games Conjecture"]
+  hexagon: "hexagon:2611.00827"
+
 paper: paper.tex
 lean_toolchain_file: lean-toolchain
+
+sources:
+  - title: "An 83/84 approximation for a cubic three-occurrence Horn class"
+    type: original-proof
+    relationship: other
+    authors: ["Frank Vega"]
+    identifier: "hexagon:2611.00827"
+    location: "https://hexagonmath.org/2611.00827v1"
+  - title: "Improved approximation algorithms for maximum cut and satisfiability problems using semidefinite programming"
+    relationship: background
+    authors: ["Michel X. Goemans", "David P. Williamson"]
+  - title: "Approximating vertex cover / independent set in bounded-degree graphs (Berman-Fujito)"
+    relationship: background
+    authors: ["Piotr Berman", "Toshihide Fujito"]
+
+automation:
+  methods:
+    - "Lean 4 proofs written and iterated with AI assistance (Claude), checked by the Lean kernel via lake build."
+    - "lake comparator against Challenge.lean and Solution.lean, run in GitHub Actions (scripts/verify-comparator.sh)."
+    - "Python scripts in experiments/ cross-check the constructions on small instances; they are not part of the formal proof."
+
+review:
+  status: "unreviewed"
+
+repository:
+  role: substantive-development
+
+related_formalizations: []
 
 main_result:
   name: ugc_barrier
