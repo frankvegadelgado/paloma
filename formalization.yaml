@@ -13,9 +13,7 @@ project:
       email: "vega.frank@gmail.com"
 
 classification:
-  msc: ["68Q25", "68W25", "90C27"]
-  keywords: ["MAX-HORN-2SAT", "approximation algorithm", "MAX-CUT", "Unique Games Conjecture"]
-  hexagon: "hexagon:2611.00827"
+  arxiv: ["cs.CC", "cs.DS", "math.CO"]
 
 paper: paper.tex
 lean_toolchain_file: lean-toolchain
@@ -36,9 +34,12 @@ sources:
 
 automation:
   methods:
-    - "Lean 4 proofs written and iterated with AI assistance (Claude), checked by the Lean kernel via lake build."
-    - "lake comparator against Challenge.lean and Solution.lean, run in GitHub Actions (scripts/verify-comparator.sh)."
-    - "Python scripts in experiments/ cross-check the constructions on small instances; they are not part of the formal proof."
+    - name: "AI-assisted Lean 4 proof writing"
+      description: "Lean 4 proofs written and iterated with an AI assistant (Claude); every proof is checked by the Lean kernel via lake build."
+    - name: "Comparator verification"
+      description: "lake comparator checks Solution.lean against Challenge.lean in GitHub Actions (scripts/verify-comparator.sh)."
+    - name: "Computational cross-checks"
+      description: "Python scripts in experiments/ test the constructions on small instances; they are not part of the formal proof."
 
 review:
   status: "unreviewed"
