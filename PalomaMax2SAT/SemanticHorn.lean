@@ -16,6 +16,10 @@ namespace PalomaMax2SAT.SemanticHorn
 
 open PalomaMax2SAT.CubicThreeOccurrence
 
+/-- A named `NeZero 4` instance. Numerals of `Fin 4` in this namespace then carry this constant
+instead of a nested proof term, whose auxiliary lemma name depends on the position in the file. -/
+local instance (priority := high) neZeroFour : NeZero (4 : ℕ) := ⟨by decide⟩
+
 /-- A literal over the clone variables `(v, i)`; `positive = false` is a negated
 literal. -/
 structure Lit (n : ℕ) where
