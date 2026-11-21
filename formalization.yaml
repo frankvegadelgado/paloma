@@ -53,7 +53,7 @@ modules:
   - name: PalomaMax2SAT.PaperArithmetic
     path: PalomaMax2SAT/PaperArithmetic.lean
     status: formalized
-    notes: Numerical statements of the paper: 83/84 above the UG thresholds (thm:ugc-class), two-branch arithmetic of thm:ratio, constants of thm:cutclass, thm:nonreg-cutclass and prop:bounded-cut, the supremum of rem:gamma-linear, the cube example, and the value tables.
+    notes: "Numerical statements of the paper: 83/84 above the UG thresholds (thm:ugc-class), two-branch arithmetic of thm:ratio, constants of thm:cutclass, thm:nonreg-cutclass and prop:bounded-cut, the supremum of rem:gamma-linear, the cube example, and the value tables."
 
   - name: PalomaMax2SAT.CutLift
     path: PalomaMax2SAT/CutLift.lean
