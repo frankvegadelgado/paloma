@@ -3,13 +3,11 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[hidelinks]{hyperref}
 \setlength{\emergencystretch}{1.5em}
-
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{remark}[theorem]{Remark}
-
 \title[An $83/84$ approximation for a cubic three-occurrence Horn class]{An $83/84$ approximation for a cubic three-occurrence Horn class}
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
@@ -21,122 +19,96 @@
 \begin{abstract}
 We define an unweighted MAX-HORN-2SAT class, which is also a class of MAX 2-SAT instances, from simple cubic graphs in which every Boolean variable has exactly three literal occurrences. For the formula $T_H$ of a cubic graph $H=(V,E)$ we prove the exact identity
 \[
-  \operatorname{OPT}(T_H)=4|V|+|E|+\alpha(H),
+\operatorname{OPT}(T_H)=4|V|+|E|+\alpha(H),
 \]
-and every assignment of value $A$ is repaired in polynomial time to an independent set of size at least $A-(4|V|+|E|)$. A cubic independent-set approximation combined with a near-bipartite cut algorithm gives a polynomial-time $83/84$ approximation. For simple $d$-regular graphs the all-true assignment gives $(3d+2)/(3d+3)$, which is at least $83/84$ for $d\ge27$; the Berman--Fujito guarantee gives $83/84$ for $d\ge22$, a Berman--Fujito run with a semidefinite cut rounding gives it for $d=21$, and a $6/7$-approximate independent set gives $(21d+20)/(21d+21)$. MAX-CUT on a $d$-regular graph $G$ reduces to MAX 2-SAT by the clauses $(x_u\vee x_v)$ and $(\neg x_u\vee\neg x_v)$ of each edge, with value $m+\operatorname{cut}(S)$. The conflict graph $H(G)$ of this formula is $(d+1)$-regular with $\alpha(H(G))=m+\operatorname{maxcut}(G)$, and a Goemans--Williamson cut yields on $T_{H(G)}$ the factor $1-\frac{0.0608}{3d+6}\ge83/84$ for every $d\ge1$; for arbitrary simple graphs $G$ without isolated vertices the factor exceeds $0.9932$. This does not improve the MAX-CUT guarantee: the cut obtained from a ratio on $T_{H(G)}$ is below the Goemans--Williamson constant. For a restricted hard-split family with unit vertex rewards and edge-clause weights at least one we obtain $27/28$, and $257/260$ with edge weights four. The repair gives an $L$-reduction from cubic MIS and proves APX-completeness. Regarding the Unique Games Conjecture, the hardness thresholds of Brakensiek--Huang--Zwick ($\approx0.94616$), Lewin--Livnat--Zwick ($\approx0.94017$) for MAX 2-SAT, and Khot--Kindler--Mossel--O'Donnell ($\approx0.87856$) for MAX-CUT quantify over all instances. The guarantees above concern classes with three literal occurrences per variable, exceed the first two thresholds, and are consistent with the conjecture. The accompanying Lean~4 development formalizes the clause formula $T_H$ for every degree and for arbitrary degree sequences, its score decomposition, repair and exact optimum identity, the arithmetic transfers, the MAX-CUT clause count and lifting step, and the hard-score optima $4m+\alpha$ and $m+\alpha$; the Goemans--Williamson, Berman--Fujito and Unique Games statements are taken from the literature as explicit hypotheses.
+and every assignment of value $A$ is repaired in polynomial time to an independent set of size at least $A-(4|V|+|E|)$. A cubic independent-set approximation combined with a near-bipartite cut algorithm gives a polynomial-time $83/84$ approximation. For simple $d$-regular graphs the all-true assignment gives $(3d+2)/(3d+3)$, which is at least $83/84$ for $d\ge27$; the Berman--Fujito guarantee gives $83/84$ for $d\ge22$, a Berman--Fujito run with a semidefinite cut rounding gives it for $d=21$, and a $6/7$-approximate independent set gives $(21d+20)/(21d+21)$. MAX-CUT on a $d$-regular graph $G$ reduces to MAX 2-SAT by the clauses $(x_u\vee x_v)$ and $(\neg x_u\vee \neg x_v)$ of each edge, with value $m+\operatorname{cut}(S)$. The conflict graph $H(G)$ of this formula is $(d+1)$-regular with $\alpha(H(G))=m+\operatorname{maxcut}(G)$, and a Goemans--Williamson cut yields on $T_{H(G)}$ the factor $1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\ge83/84$ for every $d\ge1$; for arbitrary simple graphs $G$ without isolated vertices the factor exceeds $0.9932$. This does not improve the MAX-CUT guarantee: the cut obtained from a ratio on $T_{H(G)}$ is exactly the Goemans--Williamson constant. For a restricted hard-split family with unit vertex rewards and edge-clause weights at least one we obtain $27/28$, and $257/260$ with edge weights four. The repair gives an $L$-reduction from cubic MIS and proves APX-completeness. Regarding the Unique Games Conjecture, the hardness thresholds of Brakensiek--Huang--Zwick ($\approx0.94616$), Lewin--Livnat--Zwick ($\approx0.94017$) for MAX 2-SAT, and Khot--Kindler--Mossel--O'Donnell ($\approx0.87856$) for MAX-CUT quantify over all instances. The guarantees above concern classes with three literal occurrences per variable, exceed the first two thresholds, and are consistent with the conjecture. The accompanying Lean~4 development formalizes the clause formula $T_H$ for every degree and for arbitrary degree sequences, its score decomposition, repair and exact optimum identity, the arithmetic transfers, the MAX-CUT clause count and lifting step, and the hard-score optima $4m+\alpha$ and $m+\alpha$; the Goemans--Williamson, Berman--Fujito and Unique Games statements are taken from the literature as explicit hypotheses.
 \end{abstract}
 \maketitle
-
 \section{Introduction}
-
 MAX-HORN-2SAT maximizes the number of satisfied unary and binary Horn clauses. We use the polarity convention of MAX~$\{1,2\}$-HORN-SAT in which a clause does not contain two negative literals. A global complementation converts this to the conventional logical definition without changing objective values.
-
-Every clause has at most two literals, so each formula is also an instance of MAX~2-SAT, and every guarantee proved below for the Horn class is a guarantee for this class of MAX~2-SAT instances, for cubic graphs, $d$-regular graphs, and non-regular conflict graphs alike. On the class $\{T_{H(G)}\}$ of formulas obtained from the conflict graphs of $d$-regular MAX-CUT instances, Theorem~\ref{thm:cutclass} gives the factor $1-\frac{0.0608}{3d+6}\ge83/84$ for every $d\ge1$, and Theorem~\ref{thm:nonreg-cutclass} extends this conflict-graph guarantee beyond regular base graphs $G$. The construction below starts from cubic Maximum Independent Set (MIS), uses four clones for every graph vertex, and connects them by a directed cycle of implications. One clone participates in a unit clause and the other three in the three incident edge clauses. Each clone additionally occurs in its incoming and outgoing implication. Consequently every formula variable occurs exactly three times. The reduction from cubic MIS to MAX-HORN-2SAT composes unit, edge, and consistency clauses; the quantitative contribution is the exact optimum identity and the explicit cardinality bound of the repair, together with their Lean formalization.
-
+Every clause has at most two literals, so each formula is also an instance of MAX~2-SAT, and every guarantee proved below for the Horn class is a guarantee for this class of MAX~2-SAT instances, for cubic graphs, $d$-regular graphs, and non-regular conflict graphs alike. On the class $\{T_{H(G)}\}$ of formulas obtained from the conflict graphs of $d$-regular MAX-CUT instances, Theorem~\ref{thm:cutclass} gives the factor $1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\ge83/84$ for every $d\ge1$, and Theorem~\ref{thm:nonreg-cutclass} extends this conflict-graph guarantee beyond regular base graphs $G$. The construction below starts from cubic Maximum Independent Set (MIS), uses four clones for every graph vertex, and connects them by a directed cycle of implications. One clone participates in a unit clause and the other three in the three incident edge clauses. Each clone additionally occurs in its incoming and outgoing implication. Consequently every formula variable occurs exactly three times. The reduction from cubic MIS to MAX-HORN-2SAT composes unit, edge, and consistency clauses; the quantitative contribution is the exact optimum identity and the explicit cardinality bound of the repair, together with their Lean formalization.
 The contribution is quantitative rather than merely satisfiability preserving. We prove an explicit repair of every inconsistent clone assignment, obtain an exact affine optimum identity, and transfer the Berman--Fujito cubic-MIS guarantee~\cite{BermanFujito1999} to the Horn class. Cubic MIS is APX-complete~\cite{AlimontiKann2000}, and the same repair proves APX-completeness of the image class.
-
 Section~\ref{sec:ratio} defines the forced-equality occurrence split with hard implication cycles, which Sections~\ref{sec:hardfam} and~\ref{sec:ugc} use.
-
 \section{The cubic three-occurrence construction}
-
 Let $H=(V,E)$ be a finite simple cubic graph, with $n=|V|$ and $m=|E|$. Thus $m=3n/2$. At each vertex $v$, label its incident edges with the three ports $1,2,3$. Introduce four Boolean variables
 \[
-  z_{v,0},z_{v,1},z_{v,2},z_{v,3}.
+z_{v,0},z_{v,1},z_{v,2},z_{v,3}.
 \]
 The formula $T_H$ contains the following clauses.
-
 \begin{enumerate}
 \item For every vertex $v$, one unit clause $(\neg z_{v,0})$.
 \item For every edge $e=uv$, whose endpoint ports are $p$ at $u$ and $q$ at $v$, one edge clause $(z_{u,p}\vee z_{v,q})$.
 \item For every vertex $v$ and $i\in\mathbb Z/4\mathbb Z$, one consistency implication $(\neg z_{v,i}\vee z_{v,i+1})$.
 \end{enumerate}
-
 Every clause has at most one negative literal. Every clone occurs in exactly one source clause, one outgoing implication, and one incoming implication; hence it occurs exactly three times. There are $4n$ variables and $n+m+4n=5n+m$ clauses.
-
 For an assignment $z$, let
 \begin{align*}
- U(z)&=|\{v:z_{v,0}=0\}|,\\
- F(z)&=|\{uv\in E:z_{u,p}=z_{v,q}=0\}|,\\
- T(z)&=|\{(v,i):z_{v,i}=1,\ z_{v,i+1}=0\}|.
+U(z)&=|\{v:z_{v,0}=0\}|,\\
+F(z)&=|\{uv\in E:z_{u,p}=z_{v,q}=0\}|,\\
+T(z)&=|\{(v,i):z_{v,i}=1,\ z_{v,i+1}=0\}|.
 \end{align*}
 These are respectively the satisfied unit clauses, falsified edge clauses, and falsified consistency implications. Therefore
 \begin{equation}\label{eq:score}
-  \operatorname{val}_{T_H}(z)=U(z)+(m-F(z))+(4n-T(z)).
+\operatorname{val}_{T_H}(z)=U(z)+(m-F(z))+(4n-T(z)).
 \end{equation}
-
 \section{Constructive repair and exact optimum}
-
 Call a vertex selected when $z_{v,0}=0$, and clean when it is selected and its four-bit cycle has no $1$-to-$0$ transition.
-
 \begin{lemma}[Cycle lemma]\label{lem:cycle}
 If $z_{v,0}=0$ and the cycle at $v$ has no $1$-to-$0$ transition, then $z_{v,i}=0$ for all $i$.
 \end{lemma}
-
 \begin{proof}
 A nonconstant cyclic binary word has both a $0$-to-$1$ and a $1$-to-$0$ transition. Since the word begins with zero, absence of a $1$-to-$0$ transition forces it to be constantly zero.
 \end{proof}
-
 Let $C(z)$ be the clean selected vertices. Delete the left endpoint of every edge induced by $C(z)$, ignoring repetitions, and call the remaining set $R(z)$.
-
 \begin{lemma}[Quantitative repair]\label{lem:repair}
 $R(z)$ is independent and
 \[
-  |R(z)|\ge \operatorname{val}_{T_H}(z)-(4n+m).
+|R(z)|\ge \operatorname{val}_{T_H}(z)-(4n+m).
 \]
 The set is computable in polynomial time.
 \end{lemma}
-
 \begin{proof}
 Every edge induced by $C(z)$ loses an endpoint, so $R(z)$ is independent. At most $T(z)$ selected vertices are nonclean, because each such vertex contributes at least one transition. By Lemma~\ref{lem:cycle}, both endpoint clones of every edge induced by $C(z)$ are zero; hence every such edge is counted by $F(z)$. The number of distinct removed endpoints is at most the number of edges induced by $C(z)$, which is at most $F(z)$. Thus
 \[
- |R(z)|\ge U(z)-T(z)-F(z).
+|R(z)|\ge U(z)-T(z)-F(z).
 \]
 Substituting \eqref{eq:score} gives the claimed inequality.
 \end{proof}
-
 \begin{theorem}[Exact identity]\label{thm:identity}
 For every simple cubic graph $H$,
 \[
-  \operatorname{OPT}(T_H)=4n+m+\alpha(H).
+\operatorname{OPT}(T_H)=4n+m+\alpha(H).
 \]
 Moreover, an assignment of value $A$ decodes in polynomial time to an independent set of size at least $A-(4n+m)$.
 \end{theorem}
-
 \begin{proof}
 The upper bound follows from Lemma~\ref{lem:repair}. For the lower bound, let $I$ be an independent set and set all four clones of $v$ to zero exactly when $v\in I$. Every consistency implication and every edge clause is satisfied, while precisely $|I|$ unit clauses are satisfied. The value is $4n+m+|I|$. Taking $I$ maximum proves equality.
 \end{proof}
-
 \section{The $83/84$ approximation}
-
 For a simple cubic graph put $B=4n+m=11n/2$. Every independent set sends all its incident edges to its complement, so $\alpha\le n/2$. If $|I|\ge6\alpha/7$, the ratio $(B+|I|)/(B+\alpha)$ is at least $(11+6/7)/12=83/84$. We give an endpoint argument that only requires the published cubic MIS factor arbitrarily close to $7/6$~\cite{BermanFujito1999}.
-
 \begin{theorem}\label{thm:ratio}
 On the class $\{T_H:H\text{ is simple and cubic}\}$ there is a polynomial-time $83/84$ approximation.
 \end{theorem}
 \begin{proof}
 Return the better lift of two independent sets. First use Berman--Fujito with fixed parameters giving solution fraction $r=6/7-10^{-6}$. If $2\alpha/n\le9999/10000$, then $(83-84r)\alpha\le(11+84\cdot10^{-6})(9999/20000)n \le 11n/2=B$, which gives the required ratio.
-
 For the second set, apply the near-satisfiable Max Cut guarantee of Trevisan~\cite{Trevisan}. For fixed $\epsilon=10^{-4}$, a graph having a cut of fraction at least $1-\epsilon$ admits a polynomially computable cut of fraction at least $0.95$ for all sufficiently large $n$: the stated bound is $1-4\sqrt\epsilon+8\epsilon-o(1)>0.95$. Fixed small orders may be solved exhaustively, including the empty graph. The independent set of size $\alpha$ and its complement cut $3\alpha$ edges, a fraction $2\alpha/n$. Thus the cut guarantee applies in the remaining case. From each side delete one endpoint of each internal edge, taking the union of the deletions on that side. The larger remaining independent set has size at least $(n-0.05m)/2=37n/80>3n/7 \ge6\alpha/7$. The endpoint calculation above now applies. The algorithm runs both branches without knowing $\alpha$.
 \end{proof}
-
 \subsection{Generalization to degree $d\ge 3$}
-
 The same construction and ratio transfer extend to every fixed degree $d\ge 3$. Let $H=(V,E)$ be simple and $d$-regular, so $m=dn/2$. At each vertex introduce $d+1$ Boolean clones together with one unit clause, $d$ edge clauses (via a port labelling of the incident edges), and a directed cycle of $d+1$ consistency implications. Every clone still occurs in exactly three places. The score identity becomes
 \[
-  \operatorname{OPT}(T_H)=(d+1)n+m+\alpha(H).
+\operatorname{OPT}(T_H)=(d+1)n+m+\alpha(H).
 \]
 The quantitative repair of Lemma~\ref{lem:repair} is independent of the cycle length, and the same deletion argument yields an independent set of size at least $A-((d+1)n+m)$. Write
 \[
-  B=(d+1)n+m=n\Bigl(\tfrac{3d}{2}+1\Bigr),\qquad
-  \beta=\tfrac{3d}{2}+1.
+B=(d+1)n+m=n\Bigl(\tfrac{3d}{2}+1\Bigr),\qquad
+\beta=\tfrac{3d}{2}+1.
 \]
 Any independent set cuts exactly $d\alpha$ edges, hence $\alpha\le n/2$. Consequently any independent set of size at least $6\alpha/7$ already produces the ratio
 \[
-  \frac{B+|I|}{B+\alpha}
-  \ge\frac{\beta+3/7}{\beta+1/2}.
+\frac{B+|I|}{B+\alpha}
+\ge\frac{\beta+3/7}{\beta+1/2}.
 \]
 The right-hand side is strictly increasing in $\beta$ for $\beta>0$ and equals $83/84$ when $d=3$. Therefore the ratio is at least $83/84$ for every $d\ge 3$.
-
 \begin{proposition}\label{prop:degd}
 Let $H$ be simple and $d$-regular, $d\ge3$, and $B=(d+1)n+m$.
 \begin{enumerate}
@@ -151,18 +123,15 @@ Let $H$ be simple and $d$-regular, $d\ge3$, and $B=(d+1)n+m$.
 \end{proposition}
 \begin{proof}
 With every clone true, the $n$ unit clauses fail and the $m$ edge clauses and all $(d+1)n$ consistency implications hold, so the value is $B$. Since $\alpha\le n/2$ and $2B=(3d+2)n$, we get $B\ge(3d+2)\alpha$, which gives the first claim. For the second, $3d+2\ge83$. For the Berman--Fujito claim, multiply the required inequality $B+84|I|\ge83\alpha$ by $d+3$ and use $(d+3)|I|\ge5\alpha$, $(d+3)B\ge(d+3)(3d+2)\alpha$ and $3d^2-72d+177\ge0$ for $d\ge22$. The fourth claim is the endpoint computation above: using $7|I|\ge6\alpha$, $(21d+21)(B+|I|)-(21d+20)(B+\alpha)\ge B-(3d+2)\alpha\ge0$.
-
 For $d=21$ put $a=\alpha/n$, so $B=32.5\,n$ and $m=10.5\,n$. The algorithm returns the better lift of two independent sets, without knowing $a$. The first is a Berman--Fujito set with $\varepsilon=1/50$, which has size at least $50\alpha/241$ since the guarantee for degree $21$ is $24/5+\varepsilon=241/50$. The second is obtained from a cut: solve the Goemans--Williamson semidefinite relaxation of Max Cut on $H$ to additive error $10^{-3}$, round it, and derandomize the rounding by the method of Mahajan and Ramesh~\cite{GoemansWilliamson1995,MahajanRamesh1999}; then delete one endpoint of every edge inside each side, and keep the larger side. If $a\le 99/200$, the first set suffices, because
 \[
-  84\cdot\frac{50}{241}\alpha\ge 83\alpha-B
-  \quad\Longleftrightarrow\quad
-  \frac{15803}{241}\,a\le 32.5,
+84\cdot\frac{50}{241}\alpha\ge 83\alpha-B
+\quad\Longleftrightarrow\quad
+\frac{15803}{241}\,a\le 32.5,
 \]
 and $\frac{15803}{241}\cdot\frac{99}{200}=\frac{1564497}{48200}<32.5$. If $a>99/200$, the independent set of size $\alpha$ cuts $21\alpha$ of the $m$ edges, a fraction $2a>0.99$, so the relaxation has value at least $c=0.989$. By the analysis of Goemans and Williamson, rounding yields expected cut fraction at least $\arccos(1-2c)/\pi$ whenever $c\ge0.845$; this holds because $\arccos(1-2x)/\pi$ is convex on $[1/2,1]$ and its convex minorant coincides with it for $x\ge0.845$. Here $\arccos(-0.978)/\pi>0.93$. Deleting one endpoint of each uncut edge leaves an independent set of size at least $(n-0.07m)/2=(1-0.735)n/2>0.12\,n$ on the larger side. Then $B+84|I|\ge32.5\,n+10.08\,n>41.5\,n\ge83\alpha$, using $\alpha\le n/2$. In both cases $B+84|I|\ge83\alpha$, which is the required ratio.
-
 For the sixth claim, $B\ge(3d+2)\alpha$ by the argument of the first claim, and the hypothesis gives $84|I|\ge3(27-d)\alpha$. Adding the two gives $B+84|I|\ge83\alpha$. For the seventh claim, the Berman--Fujito set $I$ with $5\alpha\le(d+3+\varepsilon)|I|$ satisfies $\alpha-|I|\le\frac{d-2+\varepsilon}{d+3+\varepsilon}\alpha$, and $B+\alpha\ge(3d+3)\alpha$, so $\frac{B+|I|}{B+\alpha}=1-\frac{\alpha-|I|}{B+\alpha}\ge1-\frac{d-2+\varepsilon}{(3d+3)(d+3+\varepsilon)}$; the loss is below $\frac1{3d+3}$ because $d-2+\varepsilon<d+3+\varepsilon$.
 \end{proof}
-
 The threshold $\rho(d)=(27-d)/28$ equals $6/7$ for $d=3$. Selected values:
 \begin{center}
 \begin{tabular}{c|cccccccc}
@@ -171,9 +140,7 @@ $d$ & 3 & 4 & 5 & 6 & 8 & 10 & 12 & 16 \\
 $\rho(d)$ & $6/7$ & $23/28$ & $11/14$ & $3/4$ & $19/28$ & $17/28$ & $15/28$ & $11/28$
 \end{tabular}
 \end{center}
-
 The value $83/84$ for $d=3$ uses the Berman--Fujito branch and the near-bipartite branch of Theorem~\ref{thm:ratio}. The $6/7$ hypothesis in the fourth claim is the hypothesis whose cubic instance is supplied by that theorem.
-
 For $\varepsilon\to0$ the ratio of the seventh claim is $1-\frac{d-2}{3(d+1)(d+3)}$. Selected values:
 \begin{center}
 \begin{tabular}{c|cccc}
@@ -183,10 +150,9 @@ $1-\frac{d-2}{3(d+1)(d+3)}$ & $\frac{103}{105}$ & $\frac{47}{48}$ & $\frac{185}{
 $\frac{3d+2}{3d+3}$ & $\frac{14}{15}$ & $\frac{17}{18}$ & $\frac{20}{21}$ & $\frac{62}{63}$
 \end{tabular}
 \end{center}
-
 Explicitly, the endpoint ratio obtained from a $6/7$-approximate independent set is
 \[
-  \frac{21d+20}{21d+21}.
+\frac{21d+20}{21d+21}.
 \]
 Selected values:
 \begin{center}
@@ -198,145 +164,110 @@ ratio & $83/84$ & $104/105$ & $125/126$ & $146/147$ & $188/189$ & $230/231$ & $2
 \end{tabular}
 \end{center}
 As $d\to\infty$ both $\frac{3d+2}{3d+3}$ and $\frac{21d+20}{21d+21}$ tend to $1$.
-
 \section{APX-completeness}
-
 \begin{theorem}\label{thm:apx}
 The cubic three-occurrence Horn class is APX-complete under $L$-reductions. The reduction from cubic MIS has constants $23$ and $1$.
 \end{theorem}
-
 \begin{proof}
 A greedy maximal independent set in a graph of maximum degree three has size at least $n/4$, so $n\le4\alpha(H)$. Since $m=3n/2$,
 \[
- \operatorname{OPT}(T_H)=\frac{11n}{2}+\alpha(H)
- \le22\alpha(H)+\alpha(H)=23\alpha(H).
+\operatorname{OPT}(T_H)=\frac{11n}{2}+\alpha(H)
+\le22\alpha(H)+\alpha(H)=23\alpha(H).
 \]
 For an assignment of value $A$, Lemma~\ref{lem:repair} returns $R$ with $|R|\ge A-(4n+m)$. Hence
 \[
- \alpha(H)-|R|
- \le (4n+m+\alpha(H))-A
- =\operatorname{OPT}(T_H)-A.
+\alpha(H)-|R|
+\le (4n+m+\alpha(H))-A
+=\operatorname{OPT}(T_H)-A.
 \]
 These are the two $L$-reduction inequalities. Cubic MIS is APX-complete and Theorem~\ref{thm:ratio} places the image class in APX.
 \end{proof}
-
 \subsection{Hardness for larger degree}
-
 The same argument yields APX-completeness for every fixed $d\ge 3$. Maximum Independent Set remains APX-complete on simple $d$-regular graphs (and on graphs of maximum degree $d$) for each fixed $d\ge 3$ \cite{AlimontiKann2000,BermanFujito1999}. The construction of $T_H$ from a $d$-regular graph is an $L$-reduction whose constants depend only on $d$.
-
 A greedy maximal independent set in a degree-$d$ graph has size at least $n/(d+1)$, so $n\le(d+1)\alpha$. With $m=dn/2$ one obtains
 \[
-  \operatorname{OPT}(T_H)=(d+1)n+m+\alpha
-  \le(d+1)^2\Bigl(\tfrac{3d}{2}+1\Bigr)\alpha+\alpha.
+\operatorname{OPT}(T_H)=(d+1)n+m+\alpha
+\le(d+1)^2\Bigl(\tfrac{3d}{2}+1\Bigr)\alpha+\alpha.
 \]
 Thus the first $L$-reduction constant is $O(d^2)$. The second constant remains exactly $1$ by the quantitative repair: every assignment of value $A$ produces an independent set $R$ satisfying $\alpha-|R|\le\operatorname{OPT}(T_H)-A$. Consequently the image class
 \[
-  \{T_H:H\text{ is simple and $d$-regular}\}
+\{T_H:H\text{ is simple and $d$-regular}\}
 \]
 is APX-complete for every fixed $d\ge 3$.
-
 By Proposition~\ref{prop:degd}(1) the image class is approximable to the factor $1-\frac1{3d+3}$ for every $d$, so it lies in APX and is APX-complete.
-
 Under the Unique Games Conjecture the unrestricted weighted MAX-HORN-2SAT problem is hard to approximate above the constant $\alpha^*\approx0.94616$ of Brakensiek--Huang--Zwick. The factor $\frac{3d+2}{3d+3}$ exceeds $\alpha^*$ for every $d\ge6$, and Theorem~\ref{thm:ratio} gives $83/84>\alpha^*$ for $d=3$. Both statements concern bounded-occurrence classes and are consistent with the bounded-occurrence improvements of Ghoshal et al.~\cite{GHLMM2026} and with the Unique Games Conjecture.
-
 \section{The forced-equality occurrence split}
 \label{sec:ratio}
-
 Let $F$ be a weighted MAX-HORN-2SAT instance. Its source clauses have nonnegative rational weights. Give every literal occurrence a distinct clone, and replace that occurrence in its source clause by the clone without changing the clause weight. If the occurrences of an original variable $x$ receive clones $x_0,\ldots,x_{d-1}$, add the directed cycle
 \[
-  (\neg x_i\vee x_{i+1})\qquad(i\bmod d).
+(\neg x_i\vee x_{i+1})\qquad(i\bmod d).
 \]
 These implications are \emph{hard}: every feasible assignment must satisfy them. They contribute zero to the maximized objective. This is a partial weighted MAX-HORN-2SAT instance, denoted by $P(F)$.
-
 Note that the construction remains faithful even when a source clause contains several occurrences of the same underlying variable, or both polarities of a variable: by Lemma~\ref{lem:hard-cycle}, feasibility forces all clones of a variable to take the same value, so the split clause is satisfied exactly when the source clause is.
-
 Every clone appears once in a weighted source clause, once negatively in its outgoing hard implication, and once positively in its incoming hard implication. Thus every clone, viewed as a variable of the split formula $P(F)$, has exactly three occurrences.
-
 \begin{lemma}[Hard-cycle consistency]\label{lem:hard-cycle}
 A clone assignment satisfies every hard implication on one directed cycle if and only if all clones on that cycle have the same value.
 \end{lemma}
-
 \begin{proof}
 A constant cycle satisfies every implication. Conversely, a nonconstant cyclic binary word has a $1$-to-$0$ transition, and the implication at that transition is false.
 \end{proof}
-
 \begin{theorem}[Exact hard-split identity]\label{thm:hard-split}
 The transformation $F\mapsto P(F)$ is polynomial, and
 \[
-  \operatorname{OPT}_{\mathrm{partial}}(P(F))=
-  \operatorname{OPT}_{\mathrm{weighted}}(F).
+\operatorname{OPT}_{\mathrm{partial}}(P(F))=
+\operatorname{OPT}_{\mathrm{weighted}}(F).
 \]
 More strongly, feasible split assignments and source assignments have exactly the same attainable objective values under encoding and decoding.
 \end{theorem}
-
 \begin{proof}
 Lift a source assignment by giving every occurrence clone the value of its original variable. The result satisfies all hard cycles and preserves every source clause's truth value and weight. Conversely, by Lemma~\ref{lem:hard-cycle}, every feasible split assignment is constant on each original-variable cycle. Decode that common value. Again every weighted source clause has the same truth value. Encoding and decoding therefore preserve the objective pointwise, proving both claims.
 \end{proof}
-
 \begin{corollary}[Ratio preservation]\label{cor:ratio-preservation}
 For every $0\le\rho\le1$, a polynomial-time $\rho$-approximation for the hard three-occurrence image $\{P(F)\}$ yields a polynomial-time $\rho$-approximation for weighted MAX-HORN-2SAT.
 \end{corollary}
-
 \begin{proof}
 Apply the image-class algorithm and decode its feasible assignment. Both its value and the optimum are unchanged by Theorem~\ref{thm:hard-split}.
 \end{proof}
-
 \section{A hard-split family attaining the target ratio}
 \label{sec:hardfam}
-
 Let $H$ be simple cubic. In the source $F_H(w)$ put a unit clause $(\neg x_v)$ of weight one at each vertex and a clause $(x_u\vee x_v)$ of rational weight $w_e\ge1$ on each edge. Write $W=\sum_e w_e$. Apply the ordinary occurrence split to this source, with zero-score hard cycles. The four ports identify the three edge occurrences and the unit. The source graph can also be recovered by contracting each hard cycle and reading the binary source clauses.
-
 \begin{theorem}\label{thm:hard-family}
 The feasible optimum of $P(F_H(w))$ is $W+\alpha(H)$. For all $w_e\ge1$ there is a polynomial-time $27/28$ approximation. If $W\ge 6n$, this class admits a polynomial-time $257/260>83/84$ approximation. In particular this holds if every edge clause weighs four.
 \end{theorem}
 \begin{proof}
 For the set $S$ of false source variables the score is $W+|S|-\sum_{e\in E(H[S])} w_e$. Delete from $S$ one endpoint of each internal edge, counting repeated deletions only once. The independent set left has size at least $|S|-|E(H[S])|$, which bounds the excess over $W$ from above since $w_e\ge1$. Conversely every independent set realizes $W+|I|$ by setting its variables false and copying this choice to all ports. This proves the identity and the constructive repair. For $n>0$ we have $W\ge m=3n/2\ge3\alpha$. Even a single cubic MIS run with $20|I|\ge17\alpha$ gives $(W+|I|)/(W+\alpha)\ge(3+17/20)/4=77/80>0.94615981$. To attain $27/28$, use both candidates from Theorem~\ref{thm:ratio}. In its near-bipartite case $|I|\ge6\alpha/7$, giving $(3+6/7)/4=27/28$. In its other case $|I|\ge r\alpha$ and $(27-28r)\alpha\le(3+28\cdot10^{-6})(9999/20000)n \le 3n/2\le W$, which is exactly the sufficient inequality. Since $20/17>7/6$, a fixed-parameter Berman--Fujito run gives $20|I|\ge17\alpha$. Here $W\ge6n\ge12\alpha$, so $260(W+|I|)-257(W+\alpha)\ge 3W-36\alpha\ge0$. The empty instance satisfies the division-free bound as well.
 \end{proof}
-
 In Lean, the hard optima $4m+\alpha$ and $m+\alpha$ and the $257/260$ and $77/80$ transfers from a $17/20$ independent set are proved. The $27/28$ statement is the arithmetic implication from the numerical hypothesis $6\alpha\le7s$, or from $20000\alpha\le9999n$ together with $5999993\alpha\le7000000s$, to $28(m+s)\ge27(m+\alpha)$ for an independent set of size $s$. The algorithm that supplies this hypothesis is the Berman--Fujito and Trevisan branch proved in the text above and is not formalized in Lean. A second Lean statement makes the two branch guarantees explicit: if $20000\alpha\le9999n$ implies $5999993\alpha\le7000000s$ (Berman--Fujito branch) and $20000\alpha>9999n$ implies $37n\le80s$ (near-bipartite branch), then $28(m+s)\ge27(m+\alpha)$.
-
 \paragraph{Why hardening can change the ratio.} In the unit-weight version, take four disjoint copies of the cube $Q_3$. Each has independence number four by its parity classes and a perfect matching. Take a parity class in each of three copies and an antipodal pair in the fourth. The pair is maximal because every other vertex neighbors an endpoint. Thus $|I|=14$, $\alpha=16$, $n=32$, and $m=48$. The same feasible lift meets $7|I|\ge6\alpha$ and scores $190/192$ relative to optimum on $T_H$, but only $62/64$ on $P(F_H(1))$. The $128$ satisfied implications have ceased to earn points. This refutes a transfer based solely on the MIS guarantee and this decoding, even for maximal sets with perfectly consistent ports.
-
 \section{A signed graph for general weighted inputs}
-
 The unsigned construction can fail even on $K_4$. Start with two indexed copies of $(x\vee x)$, assign their occurrences the opposite pairs of a four-cycle, and join each source pair. The resulting graph is simple cubic. Each singleton is a maximum independent set and gives a nonconstant cyclic word. For an example with distinct variables within each clause, three indexed copies of $(x\vee y)$ give two triangles joined by a matching. An independent set taking a vertex in each triangle at different indices is maximum and violates both cycles under membership decoding. In the unsigned graph a pair edge forbids only simultaneous membership. Complementation reverses a directed implication but does not turn it into a prohibition on simultaneous membership. The paper uses the at-most-one-negative convention.
-
 \paragraph{Unary terminals.} For the path $a$--$w$--$b$, the terminal states $00$, $01$, $10$, and $11$ give maximum total cardinalities $1,1,1,2$. It realizes a one-unit bonus for $11$ when another constraint synchronizes the ends. Both mixed states extend to independent sets. The following signed construction instead gives a unit clause one reward vertex attached to its falsifying port.
-
 \begin{theorem}\label{thm:signed}
 For any weighted source $F$ of width at most two, let $D$ be its number of literal occurrences, $W$ its total nonnegative clause weight, and $M=W+1$. One can construct a simple vertex-weighted graph $J$ of maximum degree three such that $\alpha_w(J)=DM+\operatorname{OPT}(F)$. Every independent set of weight $A$ decodes in polynomial time to a feasible split assignment of score at least $A-DM$.
 \end{theorem}
 \begin{proof}
 At occurrence $i$ create adjacent ports $T_i,F_i$ of weight $M$. Join $T_i$ to $F_{i+1}$ around each variable cycle. For a singleton cycle the pair edge already supplies this conflict; insert it just once. Discard variables with no occurrences. For each literal occurrence create a reward vertex of weight equal to its clause weight and join it to the port that falsifies that literal. Join the two reward vertices of each binary clause. Every port has at most two ring neighbors and one reward neighbor. Distinct literal occurrences have distinct vertices even for repeated literals. The graph has $3D$ vertices, linear combinatorial size and polynomial bit complexity with binary rational weights.
-
 At most one port per pair and one reward per clause can be selected. If fewer than $D$ ports are selected, the weight is at most $(D-1)M+W<DM$. Any constant-per-variable encoding already reaches $DM$. Otherwise each pair has exactly one selected port. Choosing $T_i$ forces $T_{i+1}$, so all pairs of a variable choose the same side. Each selected reward then witnesses a true literal. Reading the ports gives score at least $A-DM$. Conversely encode any assignment and select one true witness per satisfied clause. The weight is exactly $DM$ plus its score. These operations prove both claims, including for empty clauses.
 \end{proof}
-
 This construction preserves multiplicative guarantees on the excess $A-DM$. A guarantee on the total weight alone can be almost perfect when the decoded score is zero: for $k$ positive unit clauses on one variable, the all-false port selection has fraction $(k+1)/(k+2)$ and decodes to zero. Already $k=82$ gives $83/84$. Thus neither the signed repair nor a polynomial algorithm for unweighted cubic MIS supplies the unrestricted weighted ratio.
-
 \section{Unique Games thresholds, MAX~2-SAT and MAX-CUT}
 \label{sec:ugc}
-
 Let $\alpha^*$ denote the constant of Brakensiek, Huang and Zwick for weighted MAX~$\{1,2\}$-HORN-SAT, approximately $0.94615981$. Their Theorem~5.12 gives UG-hardness at $\alpha^*+\varepsilon$ for every $\varepsilon>0$~\cite{BrakensiekHuangZwick2024}. In particular, $19/20=0.95>\alpha^*$. A deterministic polynomial-time algorithm returning value at least $19\operatorname{OPT}(F)/20$ on \emph{every} weighted source $F$ would solve the UG-hard gap problem in polynomial time and, assuming UGC, imply $\mathrm P=\mathrm{NP}$. By Theorem~\ref{thm:hard-split} the same implication holds for a guarantee on the entire hard-split image. The worst-case bounds in Theorems~\ref{thm:ratio} and~\ref{thm:hard-family} concern their specified cubic families.
-
 The constant $\beta^\star\approx0.94016567$ of Lewin, Livnat and Zwick is the UG-hard threshold for MAX~2-SAT~\cite{BrakensiekHuangZwick2024}. Both UG-hardness statements quantify over all instances. They give no information about the class in which every variable has exactly three literal occurrences. For that class Theorem~\ref{thm:ratio} gives the worst-case ratio $83/84$, and
 \[
-  \frac{83}{84}>0.94615981>0.94016567 .
+\frac{83}{84}>0.94615981>0.94016567 .
 \]
 Ghoshal, Huang, Lee, Makarychev and Makarychev prove that MAX~2-SAT instances in which every variable appears in at most $d$ constraints admit a $\beta^\star+\tilde\Omega(1/d^{2})$-approximation~\cite{GHLMM2026}. Thus a guarantee above $\beta^\star$ on a bounded-occurrence class is established for every fixed $d$ and is consistent with the Unique Games Conjecture. A guarantee above $\alpha^*$ or $\beta^\star$ on \emph{all} instances would not be. For MAX~2-SAT instances in which every variable appears in at most two clauses, the problem can be solved exactly in linear time, while already three occurrences per variable give an NP-complete problem~\cite{RamanRavikumarRao1998}. Thus the occurrence bound $d=3$ is the first at which the problem is NP-hard, and for every fixed $d$ the guarantee of~\cite{GHLMM2026} exceeds $\beta^\star$.
-
 The endpoint guarantee obtained from a $6/7$-approximate independent set on a $d$-regular graph is
 \[
-  r(d)=\frac{21d+20}{21d+21},
+r(d)=\frac{21d+20}{21d+21},
 \]
 which is strictly increasing for $d\ge3$ since
 \[
-  r(d+1)-r(d)=\frac{21}{(21d+21)(21d+42)}>0 .
+r(d+1)-r(d)=\frac{21}{(21d+21)(21d+42)}>0 .
 \]
 For $d=3$ the independent-set hypothesis is supplied by Theorem~\ref{thm:ratio}, and $r(3)=83/84$ exceeds $\beta^\star$ by $\approx0.04793$. For every $d\ge6$ Proposition~\ref{prop:degd}(1) gives the unconditional factor $\frac{3d+2}{3d+3}>0.95>\alpha^*>\beta^\star$ on the $d$-regular family. For $d\ge3$ one has $\frac{d-2}{3(d+1)(d+3)}\le\frac4{189}<0.022$, because $63(d-2)\le4(d+1)(d+3)$ is equivalent to $(4d-23)(d-6)\ge0$, which holds for every integer $d$. Hence for every $d\ge4$ and every sufficiently small $\varepsilon>0$ the factor of Proposition~\ref{prop:degd}(7) exceeds $0.97>\alpha^*>\beta^\star$ on the $d$-regular family, and together with $r(3)=83/84$ every class $\{T_H:H\text{ is simple and $d$-regular}\}$ with $d\ge3$ has a polynomial-time factor above $\alpha^*$. These are statements about three-occurrence classes and do not concern all instances. The additive gain $\tilde\Omega(1/d^{2})$ of~\cite{GHLMM2026} is $o(1)$ in $d$. For the hard-split family with $d=3$ the proved ratios are those of Theorems~\ref{thm:hard-split} and~\ref{thm:hard-family}. By Proposition~\ref{prop:degd}(6), for each $d$ with $4\le d\le20$ an independent-set algorithm of ratio $\rho(d)=(27-d)/28$ on $d$-regular graphs would give $83/84$ on the $d$-regular family, and $83/84>\alpha^*>\beta^\star$. The thresholds of Brakensiek, Huang and Zwick quantify over all instances. OpenAI released on 6~October 2026 a manuscript claiming a proof of the Unique Games Conjecture, together with a Lean formalization; this claim has not been peer reviewed~\cite{OpenAIMath2026}. If it is confirmed, the UG-hardness statements above become NP-hardness statements.
-
 \subsection{MAX-CUT as MAX 2-SAT}
-
 \begin{proposition}\label{prop:cut2sat}
 Let $G=(V,E)$ be a graph with $n$ vertices and $m$ edges. Let $F_G$ be the formula with one variable $x_v$ for every vertex and, for every edge $uv$, the two clauses $(x_u\lor x_v)$ and $(\lnot x_u\lor\lnot x_v)$. Then:
 \begin{enumerate}
@@ -347,20 +278,17 @@ Let $G=(V,E)$ be a graph with $n$ vertices and $m$ edges. Let $F_G$ be the formu
 \end{proposition}
 \begin{proof}
 For an edge $uv$ whose endpoints receive different values both clauses hold. If both endpoints are true only $(x_u\lor x_v)$ holds, and if both are false only $(\lnot x_u\lor\lnot x_v)$ holds. Summing over the edges gives the first claim, and the second and third follow. \end{proof}
-
 The clause $(\lnot x_u\lor\lnot x_v)$ has two negative literals, so $F_G$ is an instance of MAX~2-SAT that does not belong to the Horn class; no guarantee of this paper is claimed for it.
-
 \begin{proposition}\label{prop:cutconflict}
 Let $G$ be a simple $d$-regular graph with $n$ vertices and $m=dn/2$ edges. Let $H$ be the conflict graph of $F_G$: its $N=4m$ vertices are the literal occurrences of $F_G$, and two vertices are adjacent if they lie in the same clause or are complementary literals. Then $H$ is simple and $(d+1)$-regular, and
 \[
-  \alpha(H)=\operatorname{OPT}(F_G)=m+\operatorname{maxcut}(G).
+\alpha(H)=\operatorname{OPT}(F_G)=m+\operatorname{maxcut}(G).
 \]
 Consequently, with $D=d+1$, $M=DN/2$ and $B=(D+1)N+M=2m(3d+5)$, the formula $T_H$ satisfies $\operatorname{OPT}(T_H)=B+m+\operatorname{maxcut}(G)$, and an assignment of $T_H$ of value $A$ yields in polynomial time a cut of $G$ with at least $A-B-m$ edges.
 \end{proposition}
 \begin{proof}
 Every literal occurrence has exactly one neighbour in its clause. A positive occurrence of $x_u$ is adjacent to the $d$ negative occurrences of $x_u$, and symmetrically; an in-clause neighbour is a literal of another variable, so no edge is repeated. Hence $H$ is simple and $(d+1)$-regular. An independent set contains at most one literal of each clause and no two complementary literals, so it is a consistent partial assignment satisfying as many clauses as the set has vertices; conversely, an assignment and one satisfied literal per satisfied clause give an independent set. Thus $\alpha(H)=\operatorname{OPT}(F_G)$, which equals $m+\operatorname{maxcut}(G)$ by Proposition~\ref{prop:cut2sat}. The identity for $T_H$ is the degree-$D$ exact identity. By the quantitative repair, an assignment of value $A$ gives an independent set of size at least $A-B$, hence an assignment of $F_G$ satisfying at least $A-B$ clauses, hence a cut with at least $A-B-m$ edges by Proposition~\ref{prop:cut2sat}.
 \end{proof}
-
 \begin{corollary}\label{cor:cutratio}
 Let $\operatorname{maxcut}(G)=\gamma m$ and $0\le\rho\le1$.
 \begin{enumerate}
@@ -371,35 +299,31 @@ Let $\operatorname{maxcut}(G)=\gamma m$ and $0\le\rho\le1$.
 \begin{proof}
 By Proposition~\ref{prop:cut2sat}, the cut has at least $\rho(m+\gamma m)-m$ edges; dividing by $\gamma m$ gives the first claim. By Proposition~\ref{prop:cutconflict} it has at least $\rho(B+m+\gamma m)-B-m$ edges with $B+m=(6d+11)m$, which gives the second.
 \end{proof}
-
 \begin{theorem}\label{thm:cutclass}
 For every $d\ge1$ there is a polynomial-time algorithm that, given a simple $d$-regular graph $G$, returns an assignment of $T_{H(G)}$ of value at least
 \[
-  \Bigl(1-\frac{0.0608}{3d+6}\Bigr)\operatorname{OPT}(T_{H(G)})\ \ge\ \frac{83}{84}\operatorname{OPT}(T_{H(G)}),
+\Bigl(1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\Bigr)\operatorname{OPT}(T_{H(G)})\ \ge\ \frac{83}{84}\operatorname{OPT}(T_{H(G)}),
 \]
-where $H(G)$ is the conflict graph of Proposition~\ref{prop:cutconflict}.
+where $H(G)$ is the conflict graph of Proposition~\ref{prop:cutconflict} and $\alpha_{\mathrm{GW}}\approx0.87856$ is the Goemans--Williamson constant.
 \end{theorem}
 \begin{proof}
-Let $c=\operatorname{maxcut}(G)$. Solving the Goemans--Williamson relaxation to additive error $10^{-5}$ and rounding with derandomization~\cite{GoemansWilliamson1995,MahajanRamesh1999} returns in polynomial time a set $S$ with $\operatorname{cut}(S)\ge0.8785\,c$. Set $x_v$ true exactly for $v\in S$ and choose one true literal in every satisfied clause of $F_G$. These $m+\operatorname{cut}(S)$ literal occurrences are pairwise non-adjacent in $H(G)$, because they lie in distinct clauses and no two are complementary. So they form an independent set $I$ with $|I|=m+\operatorname{cut}(S)$, while $\alpha(H(G))=m+c$ by Proposition~\ref{prop:cutconflict}. Since $c\le m$,
+Let $c=\operatorname{maxcut}(G)$. Solving the Goemans--Williamson relaxation to additive error $10^{-5}$ and rounding with derandomization~\cite{GoemansWilliamson1995,MahajanRamesh1999} returns in polynomial time a set $S$ with $\operatorname{cut}(S)\ge\alpha_{\mathrm{GW}}\,c$. Set $x_v$ true exactly for $v\in S$ and choose one true literal in every satisfied clause of $F_G$. These $m+\operatorname{cut}(S)$ literal occurrences are pairwise non-adjacent in $H(G)$, because they lie in distinct clauses and no two are complementary. So they form an independent set $I$ with $|I|=m+\operatorname{cut}(S)$, while $\alpha(H(G))=m+c$ by Proposition~\ref{prop:cutconflict}. Since $c\le m$,
 \[
-  |I|\ge m+0.8785\,c\ge\frac{1.8785}{2}\,(m+c)=0.93925\,\alpha(H(G)),
+|I|\ge m+\alpha_{\mathrm{GW}}\,c\ge\frac{1+\alpha_{\mathrm{GW}}}{2}\,(m+c)=\frac{1+\alpha_{\mathrm{GW}}}{2}\,\alpha(H(G)),
 \]
-because $(1-0.8785)(m-c)\ge0$. Let $D=d+1$, so $H(G)$ is $D$-regular and $B=(D+1)N+M\ge(3D+2)\alpha(H(G))$ by $\alpha(H(G))\le N/2$. The lift of $I$ has value $B+|I|$, hence
+because $(1-\alpha_{\mathrm{GW}})(m-c)\ge0$. Let $D=d+1$, so $H(G)$ is $D$-regular and $B=(D+1)N+M\ge(3D+2)\alpha(H(G))$ by $\alpha(H(G))\le N/2$. The lift of $I$ has value $B+|I|$, hence
 \[
-  \frac{B+|I|}{B+\alpha(H(G))}\ge1-\frac{0.06075\,\alpha(H(G))}{B+\alpha(H(G))}\ge1-\frac{0.06075}{3D+3}\ge1-\frac{0.0608}{3d+6}.
+\frac{B+|I|}{B+\alpha(H(G))}\ge1-\frac{\frac{1-\alpha_{\mathrm{GW}}}{2}\,\alpha(H(G))}{B+\alpha(H(G))}\ge1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}.
 \]
-Finally $0.0608/(3d+6)\le0.0608/9<1/84$ for $d\ge1$.
+Finally $\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\le\frac{1-\alpha_{\mathrm{GW}}}{18}<\frac{1}{84}$ for $d\ge1$, since $1-\alpha_{\mathrm{GW}}\approx0.12144<18/84\approx0.214$.
 \end{proof}
-
 \begin{remark}\label{rem:cutclass-range}
-Theorem~\ref{thm:cutclass} applies to every degree $D=d+1$ with $4\le D\le20$, that is $3\le d\le19$, on the class $\{T_{H(G)}:G\text{ is }(D-1)\text{-regular}\}$. In that range $|I|\ge0.93925\,\alpha(H(G))$ exceeds $\rho(D)=\frac{27-D}{28}\le\frac{23}{28}$, so Proposition~\ref{prop:degd}(6) gives the ratio $83/84$ without any assumption on an independent-set algorithm. Since $0.93925>6/7$, Proposition~\ref{prop:degd}(4) gives the ratio $\frac{21D+20}{21D+21}$, which equals $\frac{104}{105}$ for $D=4$ and $\frac{440}{441}$ for $D=20$. For these $G$ the constant of Corollary~\ref{cor:cutratio} is $B+m=(6D+5)m$; for $D=4$ it equals $29m$, and an assignment of $T_{H(G)}$ of ratio $\frac{104}{105}$ yields a cut with at least $\frac{104}{105}\operatorname{maxcut}(G)-\frac{29}{105}m$ edges, which is $\frac{49}{105}m$ when $\operatorname{maxcut}(G)=\frac34m$. The statement concerns the conflict-graph class; for arbitrary $D$-regular graphs $H$ with $4\le D\le20$ the ratio $83/84$ is given by Proposition~\ref{prop:degd}(6) under the hypothesis stated there.
+Theorem~\ref{thm:cutclass} applies to every degree $D=d+1$ with $4\le D\le20$, that is $3\le d\le19$, on the class $\{T_{H(G)}:G\text{ is }(D-1)\text{-regular}\}$. In that range $|I|\ge\frac{1+\alpha_{\mathrm{GW}}}{2}\,\alpha(H(G))$ exceeds $\rho(D)=\frac{27-D}{28}\le\frac{23}{28}$, so Proposition~\ref{prop:degd}(6) gives the ratio $83/84$ without any assumption on an independent-set algorithm. Since $\frac{1+\alpha_{\mathrm{GW}}}{2}>6/7$, Proposition~\ref{prop:degd}(4) gives the ratio $\frac{21D+20}{21D+21}$, which equals $\frac{104}{105}$ for $D=4$ and $\frac{440}{441}$ for $D=20$. For these $G$ the constant of Corollary~\ref{cor:cutratio} is $B+m=(6D+5)m$; for $D=4$ it equals $29m$, and an assignment of $T_{H(G)}$ of ratio $\frac{104}{105}$ yields a cut with at least $\frac{104}{105}\operatorname{maxcut}(G)-\frac{29}{105}m$ edges, which is $\frac{49}{105}m$ when $\operatorname{maxcut}(G)=\frac34m$. The statement concerns the conflict-graph class; for arbitrary $D$-regular graphs $H$ with $4\le D\le20$ the ratio $83/84$ is given by Proposition~\ref{prop:degd}(6) under the hypothesis stated there.
 \end{remark}
-
 \subsection{Generalization to arbitrary simple graphs}
-
 The three-occurrence construction extends without change of method to any finite simple graph $H=(V,E)$ with $n=|V|$ and $m=|E|$, even when $H$ is not regular. At each vertex $v\in V$ of degree $d_v=\deg_H(v)$, label its incident edges with the ports $1,\ldots,d_v$ and introduce $d_v+1$ Boolean variables
 \[
-  z_{v,0},z_{v,1},\ldots,z_{v,d_v}.
+z_{v,0},z_{v,1},\ldots,z_{v,d_v}.
 \]
 The formula $T_H$ contains:
 \begin{enumerate}
@@ -407,136 +331,107 @@ The formula $T_H$ contains:
 \item for every edge $e=uv\in E$ with endpoint ports $p$ at $u$ and $q$ at $v$, one edge clause $(z_{u,p}\vee z_{v,q})$;
 \item for every vertex $v\in V$ and $i\in\mathbb{Z}/(d_v+1)\mathbb{Z}$, one consistency implication $(\neg z_{v,i}\vee z_{v,i+1})$.
 \end{enumerate}
-
 Every clause has at most one negative literal. Each clone $z_{v,i}$ occurs once in a source clause (the unit clause at $v$ for $i=0$, or the edge clause at port $i$ for $1\le i\le d_v$), once negatively in $(\neg z_{v,i}\vee z_{v,i+1})$, and once positively in $(\neg z_{v,i-1}\vee z_{v,i})$. Thus every variable of $T_H$ still has exactly three literal occurrences. Using $\sum_{v\in V} d_v = 2m$, the total number of variables is
 \[
-  \sum_{v\in V}(d_v+1) = n+2m,
+\sum_{v\in V}(d_v+1) = n+2m,
 \]
 and the total number of clauses is $n + m + (n+2m) = 2n+3m$. Put
 \[
-  B(H) = \sum_{v\in V}(d_v+1) + m = n + 3m.
+B(H) = \sum_{v\in V}(d_v+1) + m = n + 3m.
 \]
-
 \begin{lemma}[General quantitative repair and exact identity]\label{lem:general-identity}
 For every finite simple graph $H=(V,E)$ with $n=|V|$ and $m=|E|$,
 \[
-  \operatorname{OPT}(T_H) = n + 3m + \alpha(H).
+\operatorname{OPT}(T_H) = n + 3m + \alpha(H).
 \]
 Moreover, every assignment $z$ of value $A$ decodes in polynomial time to an independent set $R(z)\subseteq V$ of size at least $A-(n+3m)$.
 \end{lemma}
-
 \begin{proof}
 For an assignment $z$, let $U(z)=|\{v\in V: z_{v,0}=0\}|$, let $F(z)$ be the number of falsified edge clauses, and let $T(z)=\sum_{v\in V}|\{i\in\mathbb{Z}/(d_v+1)\mathbb{Z}: z_{v,i}=1,\ z_{v,i+1}=0\}|$. Since there are $n+2m$ consistency implications in total,
 \[
-  \operatorname{val}_{T_H}(z) = U(z) + (m - F(z)) + (n + 2m - T(z)) = n + 3m + U(z) - F(z) - T(z).
+\operatorname{val}_{T_H}(z) = U(z) + (m - F(z)) + (n + 2m - T(z)) = n + 3m + U(z) - F(z) - T(z).
 \]
 Call a vertex $v\in V$ selected when $z_{v,0}=0$, and clean when it is selected and its $(d_v+1)$-bit cycle has no $1$-to-$0$ transition. By Lemma~\ref{lem:cycle} (which holds for any cycle length $d_v+1\ge 1$), every clone $z_{v,i}$ of a clean selected vertex $v$ is zero. Let $C(z)$ be the set of clean selected vertices, and form $R(z)$ by deleting one endpoint of each edge induced by $C(z)$, ignoring repeated deletions. Then $R(z)$ is independent in $H$. Each nonclean selected vertex contributes at least one $1$-to-$0$ transition, so at most $T(z)$ selected vertices are nonclean. Every edge induced by $C(z)$ has both endpoint clones equal to zero and is therefore counted by $F(z)$, so at most $F(z)$ vertices are removed from $C(z)$. Consequently,
 \[
-  |R(z)| \ge |C(z)| - F(z) \ge U(z) - T(z) - F(z) = \operatorname{val}_{T_H}(z) - (n+3m).
+|R(z)| \ge |C(z)| - F(z) \ge U(z) - T(z) - F(z) = \operatorname{val}_{T_H}(z) - (n+3m).
 \]
 This gives the constructive repair and the upper bound $\operatorname{OPT}(T_H)\le n+3m+\alpha(H)$. Conversely, for any independent set $I\subseteq V$, setting $z_{v,i}=0$ for all $v\in I$ and $0\le i\le d_v$, and $z_{v,i}=1$ otherwise, satisfies all $n+2m$ consistency implications, all $m$ edge clauses, and $|I|$ unit clauses, realizing value $n+3m+|I|$. Taking $I$ maximum yields equality.
 \end{proof}
-
 \begin{theorem}[Non-regular conflict-graph family]\label{thm:nonreg-cutclass}
 Let $G=(V_G,E_G)$ be any finite simple graph with $m=|E_G|\ge 1$ edges and no isolated vertices, and let $H(G)$ be the conflict graph of $F_G$ from Proposition~\ref{prop:cutconflict}. Then every variable of $T_{H(G)}$ has exactly three literal occurrences, and there is a polynomial-time algorithm returning an assignment of $T_{H(G)}$ of value at least
 \[
-  \Bigl(1 - \frac{0.0608}{9}\Bigr)\operatorname{OPT}(T_{H(G)}) > 0.9932\,\operatorname{OPT}(T_{H(G)}).
+\Bigl(1 - \frac{1-\alpha_{\mathrm{GW}}}{18}\Bigr)\operatorname{OPT}(T_{H(G)}) > 0.9932\,\operatorname{OPT}(T_{H(G)}).
 \]
 \end{theorem}
-
 \begin{proof}
 Each vertex $v\in V_G$ of degree $d_v=\deg_G(v)\ge 1$ contributes $d_v$ positive literal occurrences and $d_v$ negative literal occurrences to $F_G$. Thus $H(G)$ has $N = 2\sum_{v\in V_G} d_v = 4m$ vertices. Every literal occurrence in $F_G$ has $1$ in-clause neighbor and $d_v$ complementary neighbors in $H(G)$ (with no overlap, as in Proposition~\ref{prop:cutconflict}), so those $2d_v$ vertices each have degree $d_v+1$ in $H(G)$. Hence the number of edges of $H(G)$ is
 \[
-  M = |E(H(G))| = \frac{1}{2}\sum_{v\in V_G} 2d_v(d_v+1) = \sum_{v\in V_G}(d_v^2 + d_v) = 2m + \sum_{v\in V_G} d_v^2.
+M = |E(H(G))| = \frac{1}{2}\sum_{v\in V_G} 2d_v(d_v+1) = \sum_{v\in V_G}(d_v^2 + d_v) = 2m + \sum_{v\in V_G} d_v^2.
 \]
 Since $d_v\ge 1$ for every $v\in V_G$, we have $d_v^2 \ge d_v$, so $\sum_{v\in V_G} d_v^2 \ge \sum_{v\in V_G} d_v = 2m$ and therefore $M \ge 4m$. By Lemma~\ref{lem:general-identity},
 \[
-  \operatorname{OPT}(T_{H(G)}) = B(H(G)) + \alpha(H(G)), \qquad
-  B(H(G)) = N + 3M \ge 4m + 12m = 16m.
+\operatorname{OPT}(T_{H(G)}) = B(H(G)) + \alpha(H(G)), \qquad
+B(H(G)) = N + 3M \ge 4m + 12m = 16m.
 \]
 On the other hand, as in Proposition~\ref{prop:cutconflict}, an independent set in $H(G)$ selects at most one literal per clause of $F_G$ and no complementary pair, so $\alpha(H(G)) = \operatorname{OPT}(F_G) = m + \operatorname{maxcut}(G) \le 2m$. Consequently, $B(H(G)) \ge 16m \ge 8\,\alpha(H(G))$.
-
-Now run the derandomized Goemans--Williamson algorithm~\cite{GoemansWilliamson1995,MahajanRamesh1999} on $G$ to obtain in polynomial time a cut $S$ with $\operatorname{cut}(S)\ge 0.8785\,\operatorname{maxcut}(G)$. Selecting one true literal per satisfied clause of $F_G$ under $S$ yields an independent set $I$ in $H(G)$ of size $|I| = m + \operatorname{cut}(S)$. Because $\operatorname{maxcut}(G)\le m$, we have $(1-0.8785)(m-\operatorname{maxcut}(G))\ge 0$, and hence
+Now run the derandomized Goemans--Williamson algorithm~\cite{GoemansWilliamson1995,MahajanRamesh1999} on $G$ to obtain in polynomial time a cut $S$ with $\operatorname{cut}(S)\ge \alpha_{\mathrm{GW}}\,\operatorname{maxcut}(G)$. Selecting one true literal per satisfied clause of $F_G$ under $S$ yields an independent set $I$ in $H(G)$ of size $|I| = m + \operatorname{cut}(S)$. Because $\operatorname{maxcut}(G)\le m$, we have $(1-\alpha_{\mathrm{GW}})(m-\operatorname{maxcut}(G))\ge 0$, and hence
 \[
-  |I| \ge m + 0.8785\,\operatorname{maxcut}(G) \ge \frac{1.8785}{2}\bigl(m + \operatorname{maxcut}(G)\bigr) = 0.93925\,\alpha(H(G)).
+|I| \ge m + \alpha_{\mathrm{GW}}\,\operatorname{maxcut}(G) \ge \frac{1+\alpha_{\mathrm{GW}}}{2}\bigl(m + \operatorname{maxcut}(G)\bigr) = \frac{1+\alpha_{\mathrm{GW}}}{2}\,\alpha(H(G)).
 \]
 Lifting $I$ to $T_{H(G)}$ gives an assignment of value $B(H(G)) + |I|$, whose approximation ratio is
 \begin{align*}
-  \frac{B(H(G)) + |I|}{B(H(G)) + \alpha(H(G))}
-  &= 1 - \frac{\alpha(H(G)) - |I|}{B(H(G)) + \alpha(H(G))} \\
-  &\ge 1 - \frac{0.06075\,\alpha(H(G))}{9\,\alpha(H(G))} \\
-  &\ge 1 - \frac{0.0608}{9} \\
-  &> 0.9932. \qedhere
+\frac{B(H(G)) + |I|}{B(H(G)) + \alpha(H(G))}
+&= 1 - \frac{\alpha(H(G)) - |I|}{B(H(G)) + \alpha(H(G))} \\
+&\ge 1 - \frac{\frac{1-\alpha_{\mathrm{GW}}}{2}\,\alpha(H(G))}{9\,\alpha(H(G))} \\
+&= 1 - \frac{1-\alpha_{\mathrm{GW}}}{18} \\
+&> 0.9932. \qedhere
 \end{align*}
 \end{proof}
-
 \subsection{Consequences of the MAX-CUT reduction for the Unique Games Conjecture}
-
 Khot, Kindler, Mossel and O'Donnell show that, assuming the Unique Games Conjecture, MAX-CUT cannot be approximated in polynomial time within any constant above $\alpha_{\mathrm{GW}}=\min_{0<x\le1}\frac{\arccos(1-2x)}{\pi x}\approx0.87856$~\cite{KKMO2007}, the guarantee of the Goemans--Williamson algorithm. This threshold quantifies over all graphs. Theorem~\ref{thm:cutclass} and Theorem~\ref{thm:nonreg-cutclass} concern the formulas $T_{H(G)}$ obtained from MAX-CUT instances $G$ through Proposition~\ref{prop:cut2sat} and Proposition~\ref{prop:cutconflict}. Every variable of such a formula occurs exactly three times, and the guarantees are $83/84$ for $d$-regular $G$ and $0.9932$ for $G$ without isolated vertices, both above $\alpha^*$ and $\beta^\star$. These are statements about a three-occurrence class and are therefore consistent with the hardness statements of this section.
-
-The guarantee on $T_{H(G)}$ does not give a better cut. By Corollary~\ref{cor:cutratio}(2) a ratio $\rho$ on $T_H$ yields a cut of at least $\bigl(\rho-\frac{(1-\rho)(6d+11)}{\gamma}\bigr)\operatorname{maxcut}(G)$ edges with $\gamma=\operatorname{maxcut}(G)/m\le1$. Take the best ratio proved for $T_{H(G)}$, namely $\rho_d=1-\frac{0.0608}{3d+6}$ from Theorem~\ref{thm:cutclass}. Then the cut fraction guaranteed by Corollary~\ref{cor:cutratio}(2) is
+Take the best ratio proved for $T_{H(G)}$, namely $\rho_d=1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}$ from Theorem~\ref{thm:cutclass}. Then the cut fraction guaranteed by Corollary~\ref{cor:cutratio}(2) is
 \[
-  1-\frac{0.0608}{3d+6}\Bigl(1+\frac{6d+11}{\gamma}\Bigr)\le1-\frac{0.0608}{3d+6}\,(6d+12)=1-2\cdot0.0608=0.8784,
+1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\Bigl(1+\frac{6d+11}{\gamma}\Bigr)\ge1-\frac{1-\alpha_{\mathrm{GW}}}{6d+12}\,(6d+12)=\alpha_{\mathrm{GW}}.
 \]
-which is below $0.8785$ and so below $\alpha_{\mathrm{GW}}$. The cut returned for the instances of Theorem~\ref{thm:cutclass} is the Goemans--Williamson cut itself, with $\operatorname{cut}(S)\ge0.8785\operatorname{maxcut}(G)$. The MAX-CUT guarantee is thus the one of~\cite{GoemansWilliamson1995,MahajanRamesh1999}, and the reduction transfers it to a guarantee on $T_{H(G)}$ that exceeds $\alpha^*$.
-
-Lean proves the clause-count identity $m+\operatorname{cut}(S)$ and the arithmetic of Corollary~\ref{cor:cutratio} (\texttt{CutTransfer}), the lifting step with $18785\,\alpha(H)\le20000\,|I|$ (\texttt{CutLift}), and the degree-dependent identity and ratio step for non-regular graphs (\texttt{GeneralDegreeFormula}). The Goemans--Williamson guarantee and the Khot--Kindler--Mossel--O'Donnell threshold are taken from the literature (\texttt{CitedResults}) and are not formalized.
-
+Thus the generic transfer through the corollary already recovers the Goemans--Williamson constant for the cut, and the algorithm explicitly returns a cut of size at least $\alpha_{\mathrm{GW}}\operatorname{maxcut}(G)$. The MAX-CUT guarantee is thus the one of~\cite{GoemansWilliamson1995,MahajanRamesh1999}, and the reduction transfers it to a guarantee on $T_{H(G)}$ that exceeds $\alpha^*$.
+Lean proves the clause-count identity $m+\operatorname{cut}(S)$ and the arithmetic of Corollary~\ref{cor:cutratio} (\texttt{CutTransfer}), the lifting step with $\frac{1+\alpha_{\mathrm{GW}}}{2}\alpha(H)\le |I|$ (\texttt{CutLift}), and the degree-dependent identity and ratio step for non-regular graphs (\texttt{GeneralDegreeFormula}). The Goemans--Williamson guarantee and the Khot--Kindler--Mossel--O'Donnell threshold are taken from the literature (\texttt{CitedResults}) and are not formalized.
 \section{Lean and computational verification}
-
 The module \texttt{PalomaMax2SAT.CubicThreeOccurrence} represents the cubic graph with three ports at every vertex. It formalizes the transition count, false edge clauses, explicit deletion repair, independence of the repaired set, its cardinality bound, the matching assignment from an independent set, and the exact optimum identity. It also proves the division-free inequality
 \[
- 84(4n+m+|I|)\ge83(4n+m+\alpha)
+84(4n+m+|I|)\ge83(4n+m+\alpha)
 \]
 from $2m=3n$, $2\alpha\le n$, and $7|I|\ge6\alpha$, together with the general arithmetic transfer
 \[
- 84\bigl((d+1)n+m+|I|\bigr)\ge83\bigl((d+1)n+m+\alpha\bigr)
+84\bigl((d+1)n+m+|I|\bigr)\ge83\bigl((d+1)n+m+\alpha\bigr)
 \]
 valid for every $d\ge3$ under the analogous hypotheses $2m=dn$ and $2\alpha\le n$. It also proves the rational identity $11+6/7=(83/84)\cdot12$ and the monotonicity statement that the endpoint ratio \((\beta+3/7)/(\beta+1/2)\) is at least \(83/84\) for all \(\beta\ge11/2\). GitHub Actions builds the module and runs the public theorem comparison.
-
 The module \texttt{PalomaMax2SAT.SemanticHorn} defines $T_H$ explicitly as a family of clauses, each a list of literals over the clone variables, indexed by the vertices (unit clauses), the edges (edge clauses) and the pairs $(v,i)$ (consistency implications). It proves that the number of clauses of $T_H$ satisfied by $z$ equals $U(z)+(m-F(z))+(4n-T(z))$, that the maximum of this number over all assignments is exactly $4n+m+\alpha$, that every clause has at most one negative literal, that $T_H$ has $5n+m$ clauses, and that every variable occurs exactly three times. The Berman--Fujito guarantee, the Trevisan near-bipartite branch, the $L$-reduction and APX-completeness argument, the general weighted theorems and the discussion of the Unique Games Conjecture are proved in the text and are not formalized in Lean.
-
 The module \texttt{PalomaMax2SAT.DegreeTransfer} formalizes the arithmetic of Proposition~\ref{prop:degd}. From $2m=dn$ and $2\alpha\le n$, the value $(d+1)n+m$ satisfies $(3d+2)(B+\alpha)\le(3d+3)B$ with $B=(d+1)n+m$. For $d\ge27$ it satisfies $83(B+\alpha)\le84B$. For $d\ge22$ and $5\alpha\le(d+3)s$ one gets $83(B+\alpha)\le84(B+s)$. From $6\alpha\le7s$ one gets $(21d+20)(B+\alpha)\le(21d+21)(B+s)$, and from $27\alpha\le28s+d\alpha$ one gets $83(B+\alpha)\le84(B+s)$. For $d=21$ it proves the two-branch arithmetic: from $2m=21n$, $2\alpha\le n$, $200\alpha\le99n\Rightarrow50\alpha\le241s$ and $99n<200\alpha\Rightarrow3n\le25s$ one gets $83(22n+m+\alpha)\le84(22n+m+s)$. It also proves the two branches of the $d=21$ argument separately, the inequality $\frac{15803}{241}\cdot\frac{99}{200}<\frac{65}{2}$, the fact that $200\alpha>99n$ gives a cut fraction above $0.99$, the step from at most $7m/100$ uncut edges to $3n\le25|I|$, and the tabulated values of $\rho(d)$ and of $(21d+20)/(21d+21)$. The independent-set guarantees are hypotheses; Lean does not formalize the semidefinite rounding. The module \texttt{PalomaMax2SAT.DegreeFormula} defines $T_H$ for every $d$ as an explicit list of Horn clauses over the $d+1$ clones of each vertex. It proves that the number of satisfied clauses equals $U(z)+(m-F(z))+((d+1)n-T(z))$, that the optimum is exactly $(d+1)n+m+\alpha$, that every clause is Horn, that $T_H$ has $(d+2)n+m$ clauses and that every variable occurs exactly three times. It derives $2m=dn$ from the port structure and $2\alpha\le n$ for $d>0$, proves that the lift of an independent set $I$ has value $(d+1)n+m+|I|$, and combines these with the arithmetic of \texttt{DegreeTransfer} into statements about $T_H$ itself: the baseline ratio $\frac{3d+2}{3d+3}$, the ratio $83/84$ for $d\ge27$, and the transfers of the Berman--Fujito, $6/7$, threshold and $d=21$ hypotheses.
-
-The module \texttt{PalomaMax2SAT.GeneralDegreeFormula} proves, for a per-vertex degree function $d_v$ and cycles of length $d_v+1$, the cycle lemma, the repair inequality $\mathrm{val}(z)\le B+|R(z)|$ with $R(z)$ independent, the value $B+|I|$ of the lift of an independent set, and hence the identity $\operatorname{OPT}=B+\alpha$ with $B=\sum_v(d_v+1)+m$, which equals $n+3m$ when $\sum_v d_v=2m$ (Lemma~\ref{lem:general-identity}); it also proves the division-free step $8\alpha\le B$, $18785\,\alpha\le 20000\,|I|\Rightarrow 9932(B+\alpha)\le 10000(B+|I|)$ used in Theorem~\ref{thm:nonreg-cutclass}. The explicit clause list and the three-occurrence count are formalized only for regular graphs, in \texttt{DegreeFormula}.
-
+The module \texttt{PalomaMax2SAT.GeneralDegreeFormula} proves, for a per-vertex degree function $d_v$ and cycles of length $d_v+1$, the cycle lemma, the repair inequality $\mathrm{val}(z)\le B+|R(z)|$ with $R(z)$ independent, the value $B+|I|$ of the lift of an independent set, and hence the identity $\operatorname{OPT}=B+\alpha$ with $B=\sum_v(d_v+1)+m$, which equals $n+3m$ when $\sum_v d_v=2m$ (Lemma~\ref{lem:general-identity}); it also proves the division-free step $8\alpha\le B$, $18786\,\alpha\le 20000\,|I|\Rightarrow 9932(B+\alpha)\le 10000(B+|I|)$ used in Theorem~\ref{thm:nonreg-cutclass}. The explicit clause list and the three-occurrence count are formalized only for regular graphs, in \texttt{DegreeFormula}.
 The module \texttt{PalomaMax2SAT.GraphTransfer} formalizes the hard score of the four-port cycle formulation. It proves the exact optima $4m+\alpha$ (edge weight four) and $m+\alpha$ (unit weights), the repair of every feasible assignment, and the division-free transfers $260\,\mathrm{score}\ge257(4m+\alpha)$ and $80\,\mathrm{score}\ge77(m+\alpha)$ from an independent set of size $s$ with $17\alpha\le20s$. The statement $28(m+s)\ge27(m+\alpha)$ is proved from the numerical hypothesis $6\alpha\le7s$, or from $20000\alpha\le9999n$ and $5999993\alpha\le7000000s$; a bridge statement takes the two branch guarantees $20000\alpha\le9999n\Rightarrow5999993\alpha\le7000000s$ and $20000\alpha>9999n\Rightarrow37n\le80s$ as hypotheses. Lean does not prove that an algorithm attains either guarantee. The module \texttt{PalomaMax2SAT.HardOccurrenceSplit} contains the hard-cycle consistency lemma used by this module. The independent Python audit checks 16,314 small Horn formula shapes and verifies equality of the complete sets of attainable source and feasible-split objective values. The repository is available at~\cite{VegaPalomaRepository}.
-
 An additional Python audit checks all independent sets on 258 small weighted formulas and enumerates labelled simple subcubic graphs through five vertices for the two-terminal path profile. The general signed-graph theorem and the use of the external approximation algorithms are proved in the text.
-
-For every degree $e+2$ it also proves the division-free form of the seventh claim of Proposition~\ref{prop:degd}, with $\varepsilon=1/c$ for a natural number $c$, both as arithmetic and for the lift of an independent set of the formula $T_H$. The arithmetic inequality $63d\le4(d+1)(d+3)+126$ used in the sweep over $d\ge3$ is also proved in \texttt{DegreeTransfer}. The module \texttt{PalomaMax2SAT.CutTransfer} proves Proposition~\ref{prop:cut2sat}(1), that an assignment of $F_G$ satisfies exactly $m+\operatorname{cut}(S)$ clauses, and the arithmetic of the two ratio transfers of Corollary~\ref{cor:cutratio}; the conflict-graph identity of Proposition~\ref{prop:cutconflict} is proved in the text only. The module \texttt{PalomaMax2SAT.CutLift} proves that an independent set $I$ of $H$ with $18785\,\alpha(H)\le20000\,|I|$ lifts to the ratio $83/84$ on $T_H$ for every degree $D\ge1$, which is the last step of Theorem~\ref{thm:cutclass}; the cut guarantee and the construction of $I$ from the cut are in the text. The module \texttt{PalomaMax2SAT.CitedResults} states the published guarantees used by the $d=21$ argument as explicit hypotheses, namely the existence of a cut with at most $7m/100$ uncut edges~\cite{GoemansWilliamson1995,MahajanRamesh1999} and of a Berman--Fujito independent set~\cite{BermanFujito1999}. It proves that such a cut yields an independent set $I$ with $3n\le25|I|$ and that, under the two hypotheses, some independent set lifts to a $83/84$-approximation of $T_H$ for $d=21$. The semidefinite rounding, the Unique Games Conjecture and its hardness thresholds are not formalized; the notes in \texttt{doc/formalization.md} list each cited result with its reference.
-
+For every degree $e+2$ it also proves the division-free form of the seventh claim of Proposition~\ref{prop:degd}, with $\varepsilon=1/c$ for a natural number $c$, both as arithmetic and for the lift of an independent set of the formula $T_H$. The arithmetic inequality $63d\le4(d+1)(d+3)+126$ used in the sweep over $d\ge3$ is also proved in \texttt{DegreeTransfer}. The module \texttt{PalomaMax2SAT.CutTransfer} proves Proposition~\ref{prop:cut2sat}(1), that an assignment of $F_G$ satisfies exactly $m+\operatorname{cut}(S)$ clauses, and the arithmetic of the two ratio transfers of Corollary~\ref{cor:cutratio}; the conflict-graph identity of Proposition~\ref{prop:cutconflict} is proved in the text only. The module \texttt{PalomaMax2SAT.CutLift} proves that an independent set $I$ of $H$ with $18786\,\alpha(H)\le20000\,|I|$ lifts to the ratio $83/84$ on $T_H$ for every degree $D\ge1$, which is the last step of Theorem~\ref{thm:cutclass}; the cut guarantee and the construction of $I$ from the cut are in the text. The module \texttt{PalomaMax2SAT.CitedResults} states the published guarantees used by the $d=21$ argument as explicit hypotheses, namely the existence of a cut with at most $7m/100$ uncut edges~\cite{GoemansWilliamson1995,MahajanRamesh1999} and of a Berman--Fujito independent set~\cite{BermanFujito1999}. It proves that such a cut yields an independent set $I$ with $3n\le25|I|$ and that, under the two hypotheses, some independent set lifts to a $83/84$-approximation of $T_H$ for $d=21$. The semidefinite rounding, the Unique Games Conjecture and its hardness thresholds are not formalized; the notes in \texttt{doc/formalization.md} list each cited result with its reference.
 \begin{thebibliography}{9}
 \bibitem{AlimontiKann2000}
 P.~Alimonti and V.~Kann, \emph{Some APX-completeness results for cubic graphs}, Theoretical Computer Science 237 (2000), 123--134. \url{https://doi.org/10.1016/S0304-3975(98)00158-3}.
-
 \bibitem{Trevisan}
 L.~Trevisan, \emph{Max Cut and the smallest eigenvalue}, STOC 2009. \url{https://theory.stanford.edu/~trevisan/pubs/maxcutstoc.pdf}.
-
 \bibitem{BermanFujito1999}
 P.~Berman and T.~Fujito, \emph{On approximation properties of the independent set problem for low degree graphs}, Theory of Computing Systems 32 (1999), 115--132. \url{https://doi.org/10.1007/s002240000113}.
-
 \bibitem{BrakensiekHuangZwick2024}
 J.~Brakensiek, N.~Huang, and U.~Zwick, \emph{Tight approximability of MAX 2-SAT and relatives, under UGC}, Proceedings of SODA 2024, 1328--1344. \url{https://doi.org/10.1137/1.9781611977912.53}.
-
 \bibitem{GHLMM2026}
 S.~Ghoshal, N.~Huang, E.~Lee, K.~Makarychev, and Y.~Makarychev, \emph{Threshold rounding and bounded-degree Boolean MAX 2-CSP}, arXiv:2607.11050, 2026. \url{https://arxiv.org/abs/2607.11050}.
-
 \bibitem{GoemansWilliamson1995}
 M.~X. Goemans and D.~P. Williamson, \emph{Improved approximation algorithms for maximum cut and satisfiability problems using semidefinite programming}, Journal of the ACM 42 (1995), 1115--1145.
-
 \bibitem{KKMO2007}
 S.~Khot, G.~Kindler, E.~Mossel, and R.~O'Donnell, \emph{Optimal inapproximability results for MAX-CUT and other 2-variable CSPs?}, SIAM Journal on Computing 37 (2007), 319--357.
-
 \bibitem{MahajanRamesh1999}
 S.~Mahajan and H.~Ramesh, \emph{Derandomizing approximation algorithms based on semidefinite programming}, SIAM Journal on Computing 28 (1999), 1641--1663.
-
 \bibitem{OpenAIMath2026}
 OpenAI, \emph{Proof of Khot's Unique Games Conjecture} (entry~102 of the OpenAI mathematics release, 6~October 2026), GitHub repository \texttt{openai/math}; not peer reviewed. \url{https://github.com/openai/math}.
-
 \bibitem{RamanRavikumarRao1998}
 V.~Raman, B.~Ravikumar, and S.~Srinivasa Rao, \emph{A simplified NP-complete MAXSAT problem}, Information Processing Letters 65 (1998), 1--6.
-
 \bibitem{VegaPalomaRepository}
 F.~Vega, \emph{Paloma MAX-HORN-2SAT formalization and experiments}, GitHub, 2026. \url{https://github.com/frankvegadelgado/paloma}.
 \end{thebibliography}
