@@ -16,6 +16,16 @@ literature as explicit hypotheses, and what it does not touch.
 * `CitedResults`: the combinatorial step from a cut with at most `7m/100` uncut edges to an
   independent set with `3n <= 25|I|`, and the end-to-end degree-21 statement.
 
+* `CutTransfer`: the number of clauses of `F_G` satisfied by an assignment equals `m + cut(S)`, and the arithmetic of the ratio transfer from `F_G` and from `T_H` to the cut (Corollary `cor:cutratio`). The conflict-graph identity `alpha(H) = m + maxcut(G)` is proved in the paper only.
+
+* `GeneralDegreeFormula`: for arbitrary degrees `d_v` (cycles of length `d_v + 1`), the repair inequality, the lift of an independent set, the exact identity `OPT = B + alpha` with `B = sum (d_v + 1) + m` (`= n + 3m` when degrees sum to `2m`), and the division-free step `8 alpha <= B`, `18785 alpha <= 20000 |I|` implies `9932 (B + alpha) <= 10000 (B + |I|)` behind Theorem `thm:nonreg-cutclass`. The explicit Horn clause list, the three-occurrence count, the conflict-graph computation `B >= 16m` and the Goemans-Williamson step are in the paper only (the last is cited).
+
+* `CutLift`: an independent set `I` of `H` with `18785 alpha <= 20000 |I|` lifts to ratio `83/84` on `T_H` for every degree (the last step of Theorem `thm:cutclass`). The construction of `I` from a cut and the identity `alpha(H) = m + maxcut(G)` are proved in the paper only; the cut guarantee `cut >= 0.8785 maxcut` is the cited Goemans-Williamson/Mahajan-Ramesh result.
+
+* `DegreeTransfer.bf_general_degree_d_proof` and `DegreeFormula.lift_ratio_bf_general`: the Berman-Fujito transfer for every degree with `epsilon = 1/c`, in division-free form (seventh claim of Proposition `prop:degd`).
+
+* `DegreeTransfer.bf_loss_bound`: `63 d <= 4 (d+1)(d+3) + 126`, the inequality behind the statement that the Berman-Fujito ratio exceeds `0.97` for every `d >= 4` (and so every regular class with `d >= 3` has a factor above the Brakensiek-Huang-Zwick constant). These are statements about three-occurrence classes, not about all instances.
+
 ## Taken from the literature (hypotheses, not proved)
 
 | Result | Reference | Lean form |

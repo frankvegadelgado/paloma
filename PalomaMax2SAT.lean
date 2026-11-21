@@ -6,4 +6,7 @@ public import PalomaMax2SAT.GraphTransfer
 public import PalomaMax2SAT.SemanticHorn
 public import PalomaMax2SAT.DegreeTransfer
 public import PalomaMax2SAT.DegreeFormula
+public import PalomaMax2SAT.GeneralDegreeFormula
 public import PalomaMax2SAT.CitedResults
+public import PalomaMax2SAT.CutTransfer
+public import PalomaMax2SAT.CutLift

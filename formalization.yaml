@@ -1,232 +1,62 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
-version: "v0.4"
+project: PalomaMax2SAT
+paper: paper.tex
+lean_toolchain_file: lean-toolchain
 
-project:
-  name: "An 83/84 approximation for a cubic three-occurrence Horn class"
-  description: >-
-    Lean formalization of Frank Vega's cubic-MIS construction, its constructive
-    assignment repair, the exact 4n+m+alpha optimum identity, and the
-    arithmetic transfer of the Berman--Fujito 7/6 guarantee to an 83/84
-    approximation. The cubic class is formalized as port-labelled graphs in
-    which all three ports of every vertex are occupied. The formula T_H is
-    formalized explicitly as a list of Horn clauses (module SemanticHorn): the
-    number of satisfied clauses equals the score, the maximum over assignments
-    is exactly 4n+m+alpha, every clause has at most one negative literal, and
-    there are 5n+m clauses, and every variable occurs exactly three times. A second result family
-    (module GraphTransfer) formalizes the hard-score graph transfers: the exact
-    hard optima 4m+alpha for edge weight four and m+alpha for unit weights,
-    the 257/260 and 77/80 transfers from a 17/20 independent set, and the
-    conditional 27/28 bound. The 27/28 theorems are conditional: they take as
-    hypotheses a Berman--Fujito guarantee 5999993*alpha <= 7000000*s when
-    20000*alpha <= 9999*n, and a near-bipartite cut guarantee 37*n <= 80*s
-    when 20000*alpha > 9999*n, and prove only that these imply
-    28*(m+s) >= 27*(m+alpha); Lean does not prove that an algorithm attains
-    either guarantee.
-  authors: ["Frank Vega"]
-  license: "MIT"
-  responsible_maintainers: ["Frank Vega"]
+modules:
+  - name: PalomaMax2SAT.CubicThreeOccurrence
+    path: PalomaMax2SAT/CubicThreeOccurrence.lean
+    status: formalized
+    notes: Cubic 3-port construction, repair, optimum 4n + m + α, and 83/84 transfer arithmetic.
 
-classification:
-  arxiv: ["cs.CC", "math.CO"]
-  msc2020: ["05C69", "68Q17", "68W25"]
+  - name: PalomaMax2SAT.SemanticHorn
+    path: PalomaMax2SAT/SemanticHorn.lean
+    status: formalized
+    notes: Explicit Horn clauses, score decomposition, 5n + m clause count, and 3 occurrences per variable.
 
-sources:
-  - title: "An exact cubic-MIS correspondence and an 83/84 approximation"
-    authors: ["Frank Vega"]
-    id: "https://github.com/frankvegadelgado/paloma"
-    type: "original-proof"
-    location: "https://github.com/frankvegadelgado/paloma/blob/main/doc/paper.tex"
-    relationship: "other"
-    license: "MIT"
-    author_endorsement: "participated"
-  - title: "On approximation properties of the independent set problem for low degree graphs"
-    authors: ["Piotr Berman", "Toshihiro Fujito"]
-    id: "https://doi.org/10.1007/s002240000113"
-    type: "informal"
-    relationship: "background"
-    note: "Source of the 7/6 cubic-MIS approximation guarantee."
-  - title: "Tight Approximability of MAX 2-SAT and Relatives, under UGC"
-    authors: ["Joshua Brakensiek", "Neng Huang", "Uri Zwick"]
-    id: "https://doi.org/10.1137/1.9781611977912.53"
-    type: "informal"
-    relationship: "background"
-    note: "Source of the 0.94615981 approximation threshold for weighted MAX {1,2}-HORN-SAT, which is tight under the Unique Games Conjecture; compared against 83/84 in the manuscript. The Lean development does not formalize their result."
+  - name: PalomaMax2SAT.DegreeTransfer
+    path: PalomaMax2SAT/DegreeTransfer.lean
+    status: formalized_arithmetic
+    notes: Degree-d ratio inequalities, d = 21 two-branch arithmetic, and ρ(d) / (21d + 20)/(21d + 21) bounds.
 
+  - name: PalomaMax2SAT.DegreeFormula
+    path: PalomaMax2SAT/DegreeFormula.lean
+    status: formalized
+    notes: Uniform degree-d T_H formula, (d + 1)n + m + α optimum, and lifts of independent sets.
 
-related_formalizations: []
+  - name: PalomaMax2SAT.GeneralDegreeFormula
+    path: PalomaMax2SAT/GeneralDegreeFormula.lean
+    status: formalized
+    notes: Non-regular degrees d_v, (d_v + 1)-cycles; repair, exact identity OPT = B + alpha (B = n + 3m when degrees sum to 2m), and the 0.9932 ratio step.
 
-status:
-  scope: >-
-    Main formalized content (cubic construction): a finite port-labelled cubic
-    graph interface; the four-clone Horn score; transition, false-edge, and
-    deletion sets; independence and cardinality of the constructive repair for
-    port graphs in which every port of every vertex is occupied; the matching
-    assignment from an independent set; the exact 4n+m+alpha optimum identity;
-    and the exact division-free implication from cubic identities and a 7/6
-    MIS solution to the 83/84 Horn guarantee. The hard-score graph transfers
-    formalize the exact hard optima 4m+alpha and m+alpha and the 257/260 and
-    77/80 lifts of a 17/20 independent set. The theorem
-    unit_endpoint_arithmetic is conditional: it proves the 27/28 arithmetic
-    from a numerical hypothesis on the independent-set size and does not prove
-    that an algorithm attains it. The Berman--Fujito guarantee, the Trevisan
-    near-bipartite branch, the L-reduction and APX-completeness argument, the
-    general weighted theorems and the UGC discussion are proved in the
-    manuscript and are not formalized in Lean. The UGC comparisons of 83/84 with the
-    constants 0.94615981 and 0.94016567 are in the manuscript and are not part
-    of the selected Lean statements. The full weighted MAX {1,2}-HORN-SAT syntax and the UGC
-    hardness result are not formalized in Lean.
-  sorry_count: 0
-  sorry_in_definitions: 0
-  axioms: []
-  main_results:
-    - "PalomaMax2SAT.CubicPublic.repairedSet_independent"
-    - "PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound"
-    - "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
-    - "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
-    - "PalomaMax2SAT.CubicPublic.ratio_83_84_arithmetic"
-    - "PalomaMax2SAT.SemanticPublic.satCount_eq_score"
-    - "PalomaMax2SAT.SemanticPublic.optimum_identity"
-    - "PalomaMax2SAT.SemanticPublic.formula_horn"
-    - "PalomaMax2SAT.SemanticPublic.three_occurrences"
-    - "PalomaMax2SAT.DegreePublic.baseline_degree_d"
-    - "PalomaMax2SAT.DegreePublic.baseline_exceeds_83_84"
-    - "PalomaMax2SAT.DegreePublic.ratio_degree_d_from_mis"
-    - "PalomaMax2SAT.DegreePublic.bf_degree_d"
-    - "PalomaMax2SAT.DegreePublic.two_branch_degree_21"
-    - "PalomaMax2SAT.DegreePublic.threshold_degree_d"
-    - "PalomaMax2SAT.SemanticPublic.formula_size"
-  supporting_results:
-    - "PalomaMax2SAT.GraphTransfer.fourScore_repair"
-    - "PalomaMax2SAT.GraphTransfer.exact_fourScore"
-    - "PalomaMax2SAT.GraphTransfer.hardFour_transfer"
-    - "PalomaMax2SAT.GraphTransfer.exact_unitScore"
-    - "PalomaMax2SAT.GraphTransfer.hardUnit_transfer"
-    - "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic"
-    - "PalomaMax2SAT.GraphTransfer.unit_endpoint_two_branch"
+  - name: PalomaMax2SAT.HardOccurrenceSplit
+    path: PalomaMax2SAT/HardOccurrenceSplit.lean
+    status: formalized
+    notes: Hard-cycle consistency lemma for occurrence split P(F).
 
-automation:
-  methods:
-    - method: "agent"
-      models: ["OpenAI GPT-5 Codex"]
-      framework: "Codex desktop"
-      tool_setup: >-
-        AI-assisted Lean authoring with kernel verification delegated to the
-        pinned GitHub Actions and Palomar environments.
-      cost:
-        wall_time: "Not tracked"
-        spend_usd: "Not tracked"
-        hardware: "Local Windows workstation and API service"
-      prompting_notes: >-
-        The user directed the formalization of the cubic three-occurrence
-        construction, its Berman--Fujito 83/84 consequence, and the hard-score
-        graph transfers.
-  spend_usd: "Not tracked"
-  notes: "Human-directed, AI-assisted formalization with remote verification."
+  - name: PalomaMax2SAT.GraphTransfer
+    path: PalomaMax2SAT/GraphTransfer.lean
+    status: formalized_with_hypotheses
+    notes: Hard optima 4m + α and m + α, 257/260 and 77/80 transfers, and 27/28 branch arithmetic from numerical hypotheses.
 
-fidelity:
-  divergences: >-
-    The Lean theorem assuming the numerical 7*found >= 6*alpha guarantee is
-    used instead of formalizing the Berman--Fujito algorithm internally. It
-    proves the complete cubic reduction, repair, optimum identity, and ratio
-    arithmetic. The graph-transfer theorems take the independent-set
-    guarantee as a hypothesis, and unit_endpoint_arithmetic additionally
-    takes the near-bipartite branch guarantee as a hypothesis. It does not
-    formalize the paper's full weighted MAX {1,2}-HORN-SAT parser or the
-    experimental checker, and it does not formalize the UGC hardness result.
-    The port-graph interface requires every port of every vertex to be used by
-    exactly one edge endpoint; it does not exclude parallel edges.
+  - name: PalomaMax2SAT.CutTransfer
+    path: PalomaMax2SAT/CutTransfer.lean
+    status: formalized
+    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic.
 
-review:
-  status: "self-assessed; not peer reviewed"
-  reviewers: ["none"]
-  notes: >-
-    GitHub Actions builds with the pinned toolchain, applies source-policy
-    checks, and runs Comparator with independent kernels. The comparison of the
-    selected declarations, including the graph-transfer results, completed
-    successfully with kernel checking. No verification step is pending.
+  - name: PalomaMax2SAT.CutLift
+    path: PalomaMax2SAT/CutLift.lean
+    status: formalized
+    notes: Lifting step for Theorem thm:cutclass from independent sets with 18785 α(H) ≤ 20000 |I|.
 
-alignment:
-  namespace: "PalomaMax2SAT.CubicPublic"
-  statements:
-    - source: "Lemma 2 (Quantitative repair)"
-      lean: "PalomaMax2SAT.CubicPublic.repairedSet_card_lower_bound"
-      module: "Challenge"
-      status: "proved"
-    - source: "Theorem 3 (Exact identity)"
-      lean: "PalomaMax2SAT.CubicPublic.exact_three_occurrence_identity"
-      module: "Challenge"
-      status: "proved"
-    - source: "Formula T_H and eq. (score)"
-      lean: "PalomaMax2SAT.SemanticPublic.satCount_eq_score"
-      module: "Challenge"
-      status: "proved"
-    - source: "Theorem 3 (Exact identity), clause semantics"
-      lean: "PalomaMax2SAT.SemanticPublic.optimum_identity"
-      module: "Challenge"
-      status: "proved"
-    - source: "Horn property and clause count of T_H"
-      lean: "PalomaMax2SAT.SemanticPublic.formula_horn"
-      module: "Challenge"
-      status: "proved"
-    - source: "Every clone occurs exactly three times"
-      lean: "PalomaMax2SAT.SemanticPublic.three_occurrences"
-      module: "Challenge"
-      status: "proved"
-    - source: "Proposition (degree-d baseline and 6/7 transfer)"
-      lean: "PalomaMax2SAT.DegreePublic.ratio_degree_d_from_mis"
-      module: "Challenge"
-      status: "proved"
-      note: >-
-        Conditional: takes a 6/7 independent-set guarantee as a hypothesis.
-        The statements baseline_degree_d and baseline_exceeds_83_84 are
-        unconditional arithmetic.
-    - source: "Theorem 4 (Cubic Horn approximation)"
-      lean: "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
-      module: "Challenge"
-      status: "proved"
-    - source: "Hard four-weight optimum"
-      lean: "PalomaMax2SAT.GraphTransfer.exact_fourScore"
-      module: "Challenge"
-      status: "proved"
-    - source: "Hard four-weight 257/260 transfer"
-      lean: "PalomaMax2SAT.GraphTransfer.hardFour_transfer"
-      module: "Challenge"
-      status: "proved"
-    - source: "Hard unit-weight 77/80 transfer"
-      lean: "PalomaMax2SAT.GraphTransfer.hardUnit_transfer"
-      module: "Challenge"
-      status: "proved"
-    - source: "Conditional 27/28 arithmetic"
-      lean: "PalomaMax2SAT.GraphTransfer.unit_endpoint_arithmetic"
-      module: "Challenge"
-      status: "proved"
-      note: >-
-        Conditional: proves the arithmetic from a numerical hypothesis on the
-        independent-set size. The branch supplying the hypothesis is proved in
-        the paper, not in Lean.
-    - source: "Conditional 27/28 two-branch bridge"
-      lean: "PalomaMax2SAT.GraphTransfer.unit_endpoint_two_branch"
-      module: "Challenge"
-      status: "proved"
-      note: >-
-        Conditional: the hypotheses are the Berman--Fujito guarantee
-        5999993*alpha <= 7000000*s (when 20000*alpha <= 9999*n) and the
-        near-bipartite cut guarantee 37*n <= 80*s (when 20000*alpha > 9999*n).
-        Lean proves that they imply 28*(m+s) >= 27*(m+alpha); the algorithms
-        attaining them are proved in the paper, not in Lean.
+  - name: PalomaMax2SAT.CitedResults
+    path: PalomaMax2SAT/CitedResults.lean
+    status: axiomatized_as_hypotheses
+    notes: Explicit hypotheses for Goemans-Williamson/Mahajan-Ramesh cut bound and Berman-Fujito independent set bound.
 
-acknowledgements: "Mathlib, Lean, the Lean FRO, ICARM, and the Palomar project."
-additional_graph_results:
-  module: "PalomaMax2SAT.GraphTransfer"
-  source_status: "Compared and kernel-checked by the project comparator."
-  hard_family: "Unit vertex rewards and edge-clause weight one or four, hard four-port cycles."
-  declarations:
-    - "fourScore_repair"
-    - "canonical_fourScore"
-    - "exact_fourScore"
-    - "hardFour_transfer"
-    - "exact_unitScore"
-    - "hardUnit_transfer"
-    - "unit_endpoint_arithmetic"
-    - "unit_endpoint_two_branch"
-  scope: "External MIS algorithm and simple cubic graph counting bounds are inputs to the transfer. General rational edge weights and the signed MWIS gadget are proved in the manuscript."
+unformalized_in_lean:
+  - Semidefinite programming rounding and derandomization (Goemans-Williamson, Mahajan-Ramesh, Trevisan)
+  - Berman-Fujito approximation algorithm proofs
+  - L-reductions and APX-completeness proofs
+  - General signed-graph construction (Theorem thm:signed)
+  - Unique Games Conjecture hardness thresholds (Brakensiek-Huang-Zwick, Lewin-Livnat-Zwick, Ghoshal et al., Khot-Kindler-Mossel-O'Donnell for MAX-CUT)
+  - Non-regular conflict-graph degree/edge bound M ≥ 4m and ratio > 0.9932 (Theorem thm:nonreg-cutclass)

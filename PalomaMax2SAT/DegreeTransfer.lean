@@ -132,4 +132,33 @@ theorem endpoint_ratio_table :
     (21 * (12 : ℚ) + 20) / (21 * 12 + 21) = 272 / 273 := by
   norm_num
 
+/-- Berman--Fujito transfer for every degree `d = e + 2 ≥ 2` with `ε = 1/c`: from
+`5α ≤ (d + 3 + 1/c) s`, that is `5 c α ≤ ((d+3) c + 1) s`, one gets, with
+`B = (d+1) n + m`,
+`(3d+3)((d+3)c+1)(B+α) ≤ (3d+3)((d+3)c+1)(B+s) + ((d-2)c+1)(B+α)`.
+Dividing by `(3d+3)((d+3)c+1)(B+α)` this is the ratio
+`1 - (d-2+ε)/((3d+3)(d+3+ε))`. Lean does not prove that an algorithm attains the
+guarantee. -/
+theorem bf_general_degree_d_proof (e n m a s c : ℕ) (hm : 2 * m = (e + 2) * n)
+    (hn : 2 * a ≤ n) (hs : 5 * c * a ≤ (((e + 2) + 3) * c + 1) * s) :
+    (3 * (e + 2) + 3) * (((e + 2) + 3) * c + 1) * ((e + 2 + 1) * n + m + a) ≤
+      (3 * (e + 2) + 3) * (((e + 2) + 3) * c + 1) * ((e + 2 + 1) * n + m + s) +
+        (e * c + 1) * ((e + 2 + 1) * n + m + a) := by
+  have h2 : 2 * ((e + 2 + 1) * n + m) = (3 * (e + 2) + 2) * n := by nlinarith [hm]
+  have h1 : (3 * (e + 2) + 2) * (2 * a) ≤ (3 * (e + 2) + 2) * n :=
+    Nat.mul_le_mul_left _ hn
+  have hB : (3 * (e + 2) + 2) * a ≤ (e + 2 + 1) * n + m := by nlinarith [h1, h2]
+  have h3 := Nat.mul_le_mul_left (3 * (e + 2) + 3) hs
+  have h4 := Nat.mul_le_mul_left (e * c + 1) hB
+  nlinarith [h3, h4]
+
+/-- `63 (d - 2) ≤ 4 (d + 1) (d + 3)` for every `d`, that is `(d-2)/(3(d+1)(d+3)) ≤ 4/189`
+(equality at `d = 6`); this bounds the loss of the Berman--Fujito transfer for all
+degrees. -/
+theorem bf_loss_bound (d : ℕ) : 63 * d ≤ 4 * (d + 1) * (d + 3) + 126 := by
+  rcases Nat.lt_or_ge d 6 with h | h
+  · interval_cases d <;> norm_num
+  · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+    nlinarith [sq_nonneg k]
+
 end PalomaMax2SAT.DegreeTransfer

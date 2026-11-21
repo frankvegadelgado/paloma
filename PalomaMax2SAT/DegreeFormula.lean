@@ -109,27 +109,24 @@ private theorem no_transition_all_false {n d : ℕ} (z : Fin n → Fin (d + 1) �
     cases h : z v (i + 1) with
     | true => rfl
     | false => exact absurd (⟨hi, h⟩ : transition z v i) (ht i)
-  have prop : ∀ j, z v j = true → ∀ k : ℕ, z v (j + (k : Fin (d + 1))) = true := by
-    intro j hj k
-    induction k with
-    | zero => simpa using hj
-    | succ k ih =>
-      have h := step _ ih
-      rw [Nat.cast_succ, ← add_assoc]
-      exact h
+  have back : ∀ i, z v (i + 1) = false → z v i = false := by
+    intro i hi
+    cases h : z v i with
+    | false => rfl
+    | true =>
+      have h' := step i h
+      rw [hi] at h'
+      simp at h'
+  have hlast : z v (Fin.last d) = false := by
+    apply back
+    rw [Fin.last_add_one]
+    exact hzero
   intro i
-  by_cases hi : z v i = true
-  · exfalso
-    have h := prop i hi ((-i).val)
-    have hc : (((-i).val : ℕ) : Fin (d + 1)) = -i := by
-      first
-        | exact Fin.cast_val_eq_self _
-        | simp
-    rw [hc] at h
-    have h0 : i + -i = 0 := by simp
-    rw [h0, hzero] at h
-    simp at h
-  · simpa using hi
+  refine Fin.reverseInduction (motive := fun i => z v i = false) hlast ?_ i
+  intro j hj
+  apply back
+  rw [Fin.coeSucc_eq_succ]
+  exact hj
 
 theorem repairedSet_independent_proof {d n m : ℕ} (G : PortGraph d n m)
     (z : Fin n → Fin (d + 1) → Bool) : Independent G (repairedSet G z) := by
@@ -262,7 +259,7 @@ noncomputable def portEquiv {d n m : ℕ} (G : PortGraph d n m) :
     Fin m ⊕ Fin m ≃ Fin n × Fin d :=
   Equiv.ofBijective (portOf G) (portOf_bijective G)
 
-def edgeOfPort {d n m : ℕ} (G : PortGraph d n m) (q : Fin n × Fin d) : Fin m :=
+noncomputable def edgeOfPort {d n m : ℕ} (G : PortGraph d n m) (q : Fin n × Fin d) : Fin m :=
   Sum.elim id id ((portEquiv G).symm q)
 
 theorem portOf_symm {d n m : ℕ} (G : PortGraph d n m) (q : Fin n × Fin d) :
@@ -655,5 +652,17 @@ theorem lift_ratio_degree_21 {n m alpha : ℕ} (G : PortGraph 21 n m)
   have h := PalomaMax2SAT.DegreeTransfer.two_branch_degree_21_proof n m alpha I.card
     (two_mul_edges_eq G) (independence_number_le_half G (by omega) halpha) hbf hcut
   omega
+
+/-- Berman--Fujito transfer for every degree `e + 2` with `ε = 1/c`. -/
+theorem lift_ratio_bf_general {e n m alpha c : ℕ} (G : PortGraph (e + 2) n m)
+    (halpha : IsIndependenceNumber G alpha) (I : Finset (Fin n))
+    (hI : Independent G I) (hs : 5 * c * alpha ≤ (((e + 2) + 3) * c + 1) * I.card) :
+    (3 * (e + 2) + 3) * (((e + 2) + 3) * c + 1) * ((e + 2 + 1) * n + m + alpha) ≤
+      (3 * (e + 2) + 3) * (((e + 2) + 3) * c + 1) *
+          satCount G (assignmentOfIndependent I : Fin n → Fin (e + 2 + 1) → Bool) +
+        (e * c + 1) * ((e + 2 + 1) * n + m + alpha) := by
+  rw [lift_satCount G I hI]
+  exact PalomaMax2SAT.DegreeTransfer.bf_general_degree_d_proof e n m alpha I.card c
+    (two_mul_edges_eq G) (independence_number_le_half G (by omega) halpha) hs
 
 end PalomaMax2SAT.DegreeFormula
