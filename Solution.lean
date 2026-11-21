@@ -35,6 +35,20 @@ theorem ratio_83_84_arithmetic :
     (11 : ℚ) + 6 / 7 = (83 / 84) * 12 := by
   exact ratio_83_84_arithmetic_proof
 
+theorem ratio_at_least_83_84_general
+    (d n m alpha found : ℕ)
+    (hd : 3 ≤ d)
+    (hreg : 2 * m = d * n)
+    (halpha : 2 * alpha ≤ n)
+    (happrox : 7 * found ≥ 6 * alpha) :
+    84 * ((d + 1) * n + m + found) ≥ 83 * ((d + 1) * n + m + alpha) := by
+  exact CubicThreeOccurrence.ratio_at_least_83_84_general d n m alpha found hd hreg halpha happrox
+
+theorem general_endpoint_ratio (d : ℕ) (hd : 3 ≤ d) :
+    let β : ℚ := (3 * d + 2) / 2
+    (β + 3 / 7) / (β + 1 / 2) ≥ (83 : ℚ) / 84 := by
+  exact CubicThreeOccurrence.general_endpoint_ratio d hd
+
 end PalomaMax2SAT.CubicPublic
 
 namespace PalomaMax2SAT.SemanticPublic
@@ -68,3 +82,38 @@ theorem three_occurrences {n m : ℕ} (G : PortGraph n m)
   exact three_occurrences_proof G x
 
 end PalomaMax2SAT.SemanticPublic
+
+namespace PalomaMax2SAT.DegreePublic
+
+theorem baseline_degree_d (d n m a : ℕ) (hm : 2 * m = d * n) (hn : 2 * a ≤ n) :
+    (3 * d + 2) * ((d + 1) * n + m + a) ≤ (3 * d + 3) * ((d + 1) * n + m) := by
+  exact DegreeTransfer.baseline_degree_d_proof d n m a hm hn
+
+theorem baseline_exceeds_83_84 (d n m a : ℕ) (hd : 27 ≤ d)
+    (hm : 2 * m = d * n) (hn : 2 * a ≤ n) :
+    83 * ((d + 1) * n + m + a) ≤ 84 * ((d + 1) * n + m) := by
+  exact DegreeTransfer.baseline_exceeds_83_84_proof d n m a hd hm hn
+
+theorem ratio_degree_d_from_mis (d n m a s : ℕ) (hm : 2 * m = d * n)
+    (hn : 2 * a ≤ n) (hs : 6 * a ≤ 7 * s) :
+    (21 * d + 20) * ((d + 1) * n + m + a) ≤
+      (21 * d + 21) * ((d + 1) * n + m + s) := by
+  exact DegreeTransfer.ratio_degree_d_from_mis_proof d n m a s hm hn hs
+
+theorem bf_degree_d (d n m a s : ℕ) (hd : 22 ≤ d) (hm : 2 * m = d * n)
+    (hn : 2 * a ≤ n) (hs : 5 * a ≤ (d + 3) * s) :
+    83 * ((d + 1) * n + m + a) ≤ 84 * ((d + 1) * n + m + s) := by
+  exact DegreeTransfer.bf_degree_d_proof d n m a s hd hm hn hs
+
+theorem two_branch_degree_21 (n m a s : ℕ) (hm : 2 * m = 21 * n) (hn : 2 * a ≤ n)
+    (hbf : 200 * a ≤ 99 * n → 50 * a ≤ 241 * s)
+    (hcut : 99 * n < 200 * a → 3 * n ≤ 25 * s) :
+    83 * (22 * n + m + a) ≤ 84 * (22 * n + m + s) := by
+  exact DegreeTransfer.two_branch_degree_21_proof n m a s hm hn hbf hcut
+
+theorem threshold_degree_d (d n m a s : ℕ) (hm : 2 * m = d * n) (hn : 2 * a ≤ n)
+    (hs : 27 * a ≤ 28 * s + d * a) :
+    83 * ((d + 1) * n + m + a) ≤ 84 * ((d + 1) * n + m + s) := by
+  exact DegreeTransfer.threshold_degree_d_proof d n m a s hm hn hs
+
+end PalomaMax2SAT.DegreePublic

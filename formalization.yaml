@@ -88,6 +88,12 @@ status:
     - "PalomaMax2SAT.SemanticPublic.optimum_identity"
     - "PalomaMax2SAT.SemanticPublic.formula_horn"
     - "PalomaMax2SAT.SemanticPublic.three_occurrences"
+    - "PalomaMax2SAT.DegreePublic.baseline_degree_d"
+    - "PalomaMax2SAT.DegreePublic.baseline_exceeds_83_84"
+    - "PalomaMax2SAT.DegreePublic.ratio_degree_d_from_mis"
+    - "PalomaMax2SAT.DegreePublic.bf_degree_d"
+    - "PalomaMax2SAT.DegreePublic.two_branch_degree_21"
+    - "PalomaMax2SAT.DegreePublic.threshold_degree_d"
     - "PalomaMax2SAT.SemanticPublic.formula_size"
   supporting_results:
     - "PalomaMax2SAT.GraphTransfer.fourScore_repair"
@@ -166,6 +172,14 @@ alignment:
       lean: "PalomaMax2SAT.SemanticPublic.three_occurrences"
       module: "Challenge"
       status: "proved"
+    - source: "Proposition (degree-d baseline and 6/7 transfer)"
+      lean: "PalomaMax2SAT.DegreePublic.ratio_degree_d_from_mis"
+      module: "Challenge"
+      status: "proved"
+      note: >-
+        Conditional: takes a 6/7 independent-set guarantee as a hypothesis.
+        The statements baseline_degree_d and baseline_exceeds_83_84 are
+        unconditional arithmetic.
     - source: "Theorem 4 (Cubic Horn approximation)"
       lean: "PalomaMax2SAT.CubicPublic.ratio_83_84_from_cubic_mis"
       module: "Challenge"
