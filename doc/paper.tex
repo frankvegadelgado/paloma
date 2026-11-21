@@ -13,7 +13,7 @@
 \author{Frank Vega}
 \address{Information Physics Institute, 840 W 67th St, Hialeah, FL 33012, USA}
 \email{vega.frank@gmail.com}
-\date{November 19, 2026}
+\date{November 21, 2026}
 \subjclass[2020]{68Q25, 68W25, 68Q15, 68Q17, 05C69}
 \keywords{approximate-computing, max-2sat, independent-set-problem, lean4, np-hard, satisfiability, unique-games-conjecture}
 \begin{document}
@@ -26,7 +26,7 @@ and every assignment of value $A$ is repaired in polynomial time to an independe
 
 MAX-CUT on a $d$-regular graph $G$ reduces to MAX 2-SAT with the clauses $(x_u\vee x_v)$ and $(\neg x_u\vee\neg x_v)$ per edge, of value $m+\operatorname{cut}(S)$. The conflict graph $H(G)$ is $(d+1)$-regular and $\alpha(H(G))=m+\operatorname{maxcut}(G)$. A Goemans--Williamson cut gives on $T_{H(G)}$ the factor $1-\frac{1-\alpha_\varepsilon}{6d+12}\ge83/84$ for every $d\ge1$, and a $\gamma$-dependent analysis gives $1-\frac{0.1053}{6d+11.5}$, where $\alpha_\varepsilon=\alpha_{\mathrm{GW}}-10^{-5}$ and $\gamma=\operatorname{maxcut}(G)/m$. For arbitrary simple graphs without isolated vertices the factor exceeds $0.9932$. A cut guarantee $c_d$ on graphs of maximum degree $d$ gives $1-\frac{1-c_d}{6d+12}$, which exceeds $0.9977$ in expectation for $d=3$. A ratio on $T_{H(G)}$ and a cut guarantee are equivalent, so the cut recovered is the Goemans--Williamson or bounded-degree cut used, and the MAX-CUT guarantee is not improved.
 
-The main consequence is that on the class $\{T_{H(G)}\}$ of three-occurrence Horn formulas obtained from MAX-CUT instances the proved factor $83/84$ exceeds the Unique Games thresholds $\approx0.94616$ and $\approx0.94017$ that hold for all instances of weighted MAX-HORN-2SAT and of MAX 2-SAT (Theorem~\ref{thm:ugc-class}).
+The main consequence is that on the class $\{T_{H(G)}\}$ of three-occurrence Horn formulas obtained from MAX-CUT instances the proved factor $83/84$ exceeds the Unique Games thresholds $\approx0.94616$ and $\approx0.94017$ that hold for all instances of weighted MAX-HORN-2SAT and of MAX 2-SAT.
 
 For a restricted hard-split family with unit vertex rewards and edge-clause weights at least one we obtain $27/28$, and $257/260$ with edge weights four. The Unique Games thresholds of Brakensiek--Huang--Zwick ($\approx0.94616$), Lewin--Livnat--Zwick ($\approx0.94017$) for MAX 2-SAT, and Khot--Kindler--Mossel--O'Donnell ($\approx0.87856$) for MAX-CUT quantify over all instances; the guarantees above concern classes with three occurrences per variable, exceed the first two thresholds, and are consistent with the conjecture. Max-Ones 2-SAT for negative (Horn) formulas equals Maximum Independent Set and Min-Ones 2-SAT for positive formulas equals Minimum Vertex Cover, with the same optima, so the published hardness of these two problems applies to them, and $\operatorname{OPT}(T_H)=4|V|+|E|+\operatorname{MaxOnes}(N_H)$ for the cubic negative formula $N_H$. The Lean~4 development formalizes the formula $T_H$ for every degree and every degree sequence, its score decomposition, repair and optimum identity, the arithmetic transfers, the MAX-CUT clause count and lifting step, and the hard-score optima $4m+\alpha$ and $m+\alpha$; the Goemans--Williamson, Berman--Fujito and Unique Games statements are explicit hypotheses taken from the literature.
 \end{abstract}
