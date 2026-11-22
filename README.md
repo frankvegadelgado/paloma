@@ -1,6 +1,6 @@
 # Paloma: MAX-HORN-2SAT and MAX-CUT formalization
 
-Lean 4 formalization and computational checks for *An 83/84 approximation for a cubic three-occurrence Horn class* (`doc/paper.tex`). The paper also covers degree-d graphs, non-regular graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
+Lean 4 formalization for *An 83/84 approximation for a cubic three-occurrence Horn class* (`doc/paper.tex`). The paper also covers degree-d graphs, non-regular graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
 
 ## Main result: ratio above the Unique Games thresholds
 
@@ -14,7 +14,6 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 | `doc/formalization.md` | What Lean proves, what is cited, what is not formalized. |
 | `formalization.yaml` | Module inventory with status of each module. |
 | `PalomaMax2SAT/` | Lean 4 modules (table below). |
-| `experiments/` | Python verification scripts (`graph_transfer.py`). |
 | `scripts/` | `check-lean-sources.py`, `verify-comparator.sh`. |
 
 ## Lean modules
@@ -57,5 +56,4 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 lake build
 python3 scripts/check-lean-sources.py
 bash scripts/verify-comparator.sh
-python3 experiments/graph_transfer.py
 ```
