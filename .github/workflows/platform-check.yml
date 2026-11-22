@@ -1,0 +1,47 @@
+name: Prove2Me platform check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  platform-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+        working-directory: prove2me/platform
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install toolchain
+        run: elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve Mathlib
+        run: lake update
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build definitions
+        run: lake build Definitions.Def_PalomaMax2SAT_DegreeFormula 2>&1 | tee ../defs.log
+      - name: Build theorem stub (sorry warning expected)
+        run: lake build Theorems.Thm_PalomaMax2SAT_UgcBarrier_ugc_barrier 2>&1 | tee ../thm.log
+      - name: Build solution
+        run: lake build Solutions.Sol_PalomaMax2SAT_UgcBarrier_ugc_barrier 2>&1 | tee ../sol.log
+      - name: Check solution has no sorry and no own-target import
+        run: |
+          ! grep -n "sorry" Solutions/Sol_PalomaMax2SAT_UgcBarrier_ugc_barrier.lean
+          ! grep -n "Thm_PalomaMax2SAT_UgcBarrier_ugc_barrier" Solutions/Sol_PalomaMax2SAT_UgcBarrier_ugc_barrier.lean
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-check
+          path: |
+            prove2me/*.log
