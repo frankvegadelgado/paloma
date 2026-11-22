@@ -11,7 +11,7 @@ Division-free or rational arithmetic behind the statements of `paper.tex` that a
 another module: the comparison of `83/84` with the Unique Games thresholds (Theorem
 `thm:ugc-class`), the two-branch arithmetic of Theorem `thm:ratio`, the numerical constants of
 Theorem `thm:cutclass`, Theorem `thm:nonreg-cutclass` and Proposition `prop:bounded-cut`, the
-supremum in Remark `rem:gamma-linear`, the example of the hard-split section, and the tables.
+supremum in Remark `rem:gamma-linear`, and the tables.
 The Goemans--Williamson, Berman--Fujito and Trevisan guarantees enter only as hypotheses.
 -/
 
@@ -67,13 +67,6 @@ theorem ratio_83_84_two_branch (n m a s : ℕ)
     omega
   · have := hNB (by omega)
     omega
-
-/-- The example of the hard-split section: four cubes, `|I| = 14`, `α = 16`, `n = 32`,
-`m = 48`. The lift meets `7|I| ≥ 6α`, scores `190/192` on `T_H` and `62/64` on `P(F_H(1))`. -/
-theorem cube_example :
-    2 * 48 = 3 * 32 ∧ 6 * 16 ≤ 7 * 14 ∧ 4 * 32 + 48 + 14 = 190 ∧ 4 * 32 + 48 + 16 = 192 ∧
-      48 + 14 = 62 ∧ 48 + 16 = 64 ∧ 62 * 192 < 190 * 64 := by
-  norm_num
 
 /-- Table of `1 - (d-2)/(3(d+1)(d+3))` for `d = 4, 5, 6, 20`. -/
 theorem bf_limit_table :

@@ -14,7 +14,7 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 | `doc/formalization.md` | What Lean proves, what is cited, what is not formalized. |
 | `formalization.yaml` | Module inventory with status of each module. |
 | `PalomaMax2SAT/` | Lean 4 modules (table below). |
-| `experiments/` | Python verification scripts (`graph_transfer.py`, `weighted_test_horn_split.py`). |
+| `experiments/` | Python verification scripts (`graph_transfer.py`). |
 | `scripts/` | `check-lean-sources.py`, `verify-comparator.sh`. |
 
 ## Lean modules
@@ -26,10 +26,8 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 | `DegreeTransfer` | formalized (arithmetic) | Degree-`d` ratio inequalities, `d = 21` two-branch arithmetic, `ρ(d)` and `(21d+20)/(21d+21)` bounds, Berman–Fujito form for every degree, `63d ≤ 4(d+1)(d+3)+126`. |
 | `DegreeFormula` | formalized | Uniform degree-`d` formula `T_H`, optimum `(d+1)n + m + α`, `2m = dn`, `2α ≤ n`, dual-Horn property and complement-variable translation to Horn clauses, `(d+2)n + m` clauses, three occurrences, lift of an independent set. |
 | `GeneralDegreeFormula` | formalized | Arbitrary degrees `d_v` with `(d_v+1)`-cycles: repair inequality, lift of an independent set, optimum `B + α` with `B = Σ(d_v+1) + m` (`= n + 3m` when degrees sum to `2m`), and the step `8α ≤ B`, `18785α ≤ 20000|I|` ⇒ `0.9932` ratio. |
-| `HardOccurrenceSplit` | formalized | Hard-cycle consistency for the occurrence split `P(F)`. |
-| `GraphTransfer` | formalized with hypotheses | Hard optima `4m + α` and `m + α`, `257/260` and `77/80` transfers, `27/28` branch arithmetic from numerical hypotheses. |
 | `CutTransfer` | formalized | MAX-CUT as MAX 2-SAT: satisfied clauses of `F_G` equal `m + cut(S)`; arithmetic of the ratio transfer to the cut; the lifted ratio on `T_H` is strictly above `0.8785` (`lifted_ratio_gt_gw`). |
-| `PaperArithmetic` | formalized | Numerical statements of the paper: `83/84 > 0.94615981 > 0.94016567`, two-branch arithmetic of Theorem `thm:ratio`, constants of `thm:cutclass`, `thm:nonreg-cutclass`, `prop:bounded-cut`, the supremum of `rem:gamma-linear`, the cube example, value tables. |
+| `PaperArithmetic` | formalized | Numerical statements of the paper: `83/84 > 0.94615981 > 0.94016567`, two-branch arithmetic of Theorem `thm:ratio`, constants of `thm:cutclass`, `thm:nonreg-cutclass`, `prop:bounded-cut`, the supremum of `rem:gamma-linear`, value tables. |
 | `CutLift` | formalized | Lifting step of Theorem `thm:cutclass`: `18785α(H) ≤ 20000|I|` gives `83/84` on `T_H`. |
 | `OnesOptimal` | formalized | Max-Ones for negative (Horn) 2-CNF is the independence number; Min-Ones for positive 2-CNF is `|F|` plus the minimum vertex cover outside `F`; Gallai's identity. |
 | `LReduction` | formalized | Greedy independent set `n ≤ (Δ+1)|I|`, `L`-reduction constants of Theorem `thm:apx` (`OPT ≤ 23α` for `d = 3`, second constant `1`). |
@@ -46,11 +44,12 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 - Trevisan's bounded-degree independent-set results.
 - Unique Games thresholds: Brakensiek–Huang–Zwick, Lewin–Livnat–Zwick, Ghoshal et al., Khot–Kindler–Mossel–O'Donnell for MAX-CUT. The Unique Games Conjecture is not formalized.
 
-## In the paper only
+## Not formalized in Lean
 
-- L-reductions and APX-completeness.
-- The signed-graph construction (Theorem `thm:signed`).
-- The conflict-graph identity `α(H(G)) = m + maxcut(G)` and the non-regular family bound `B ≥ 16m ≥ 8α` (Theorem `thm:nonreg-cutclass`).
+- Theorem `thm:apx`: the `L`-reduction constants are in `LReduction`; the APX-hardness of cubic Maximum Independent Set is cited and the APX-completeness statement itself is not stated in Lean.
+- Theorem `thm:signed`: the weight identity `D·M + OPT(F)` of the signed graph is in `SignedGraph`; the vertex count and maximum degree of the signed graph are in the paper only.
+- Proposition `prop:cutconflict` and Theorem `thm:nonreg-cutclass`: the identity `α(H(G)) = m + maxcut(G)` is in `ConflictGraph`, and regularity, occurrence counts and `M ≥ 4m` are in `ConflictDegree`; the combination `B ≥ 16m ≥ 8α` for the conflict graph is carried out in the paper, with its arithmetic in `GeneralDegreeFormula` and `PaperArithmetic`.
+- The analytic part of Proposition `prop:gamma-ratio` (convex envelope, numerical maximum `0.10526`), the Unique Games thresholds, and all running-time statements.
 
 ## Building and verifying
 
@@ -59,5 +58,4 @@ lake build
 python3 scripts/check-lean-sources.py
 bash scripts/verify-comparator.sh
 python3 experiments/graph_transfer.py
-python3 experiments/weighted_test_horn_split.py
 ```

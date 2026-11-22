@@ -22,9 +22,9 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 * `CitedResults`: the combinatorial step from a cut with at most `7m/100` uncut edges to an
   independent set with `3n <= 25|I|`, and the end-to-end degree-21 statement.
 
-* `CutTransfer`: the number of clauses of `F_G` satisfied by an assignment equals `m + cut(S)`, and the arithmetic of the ratio transfer from `F_G` and from `T_H` to the cut (Corollary `cor:cutratio`). The conflict-graph identity `alpha(H) = m + maxcut(G)` is proved in the paper only.
+* `CutTransfer`: the number of clauses of `F_G` satisfied by an assignment equals `m + cut(S)`, and the arithmetic of the ratio transfer from `F_G` and from `T_H` to the cut (Corollary `cor:cutratio`). The conflict-graph identity `alpha(H) = m + maxcut(G)` is proved in `ConflictGraph`.
 
-* `GeneralDegreeFormula`: for arbitrary degrees `d_v` (cycles of length `d_v + 1`), the repair inequality, the lift of an independent set, the exact identity `OPT = B + alpha` with `B = sum (d_v + 1) + m` (`= n + 3m` when degrees sum to `2m`), and the division-free step `8 alpha <= B`, `18785 alpha <= 20000 |I|` implies `9932 (B + alpha) <= 10000 (B + |I|)` behind Theorem `thm:nonreg-cutclass`. The explicit Horn clause list, the three-occurrence count, the conflict-graph computation `B >= 16m` and the Goemans-Williamson step are in the paper only (the last is cited).
+* `GeneralDegreeFormula`: for arbitrary degrees `d_v` (cycles of length `d_v + 1`), the repair inequality, the lift of an independent set, the exact identity `OPT = B + alpha` with `B = sum (d_v + 1) + m` (`= n + 3m` when degrees sum to `2m`), and the division-free step `8 alpha <= B`, `18785 alpha <= 20000 |I|` implies `9932 (B + alpha) <= 10000 (B + |I|)` behind Theorem `thm:nonreg-cutclass`. The explicit clause list and the three-occurrence count are in `SemanticHorn` and `DegreeFormula`, and the conflict-graph counts (regularity, occurrences, `M >= 4m`) are in `ConflictDegree`; the combination `B >= 16m` for the conflict graph is carried out in the paper, and the Goemans-Williamson step is cited.
 
 * `CutTransfer.gap_ratio`: the division-free inequality behind Proposition `prop:gamma-ratio`: from `m <= 2 maxcut` and `maxcut - cut <= 0.1053 m` the lift of the cut has ratio at least `1 - 0.1053/(6d + 11.5)`. The Goemans-Williamson convex-envelope bound `cut >= h(gamma) m`, the numerical maximum `0.10526` of `gamma - h(gamma)`, and the bounded-degree cut guarantees (Feige-Karpinski-Langberg, Halperin-Livnat-Zwick, Hsieh-Kothari) are taken from the literature or computed in the paper and are not formalized.
 
@@ -47,7 +47,7 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 
 * `Solution.ratio_at_least_83_84_general` and `Solution.general_endpoint_ratio`: the transfer `84((d+1)n + m + |I|) >= 83((d+1)n + m + alpha)` for every `d >= 3` and the monotone endpoint ratio `(beta + 3/7)/(beta + 1/2) >= 83/84`, proved directly in `Solution.lean`.
 
-* `PaperArithmetic`: the comparison `83/84 > 0.94615981 > 0.94016567` (Theorem `thm:ugc-class`), `(3d+2)/(3d+3) > 0.95` for `d >= 6`, strict monotonicity of `(21d+20)/(21d+21)`, the two-branch arithmetic `84(4n+m+s) >= 83(4n+m+alpha)` of Theorem `thm:ratio` from the two branch guarantees as hypotheses, the constants of Theorems `thm:cutclass` and `thm:nonreg-cutclass` and of Proposition `prop:bounded-cut` (`0.9977`), the bound `gamma/(K+gamma) <= 1/(K+1)` of Remark `rem:gamma-linear`, the cube example of the hard-split section, and the tabulated values.
+* `PaperArithmetic`: the comparison `83/84 > 0.94615981 > 0.94016567` (Theorem `thm:ugc-class`), `(3d+2)/(3d+3) > 0.95` for `d >= 6`, strict monotonicity of `(21d+20)/(21d+21)`, the two-branch arithmetic `84(4n+m+s) >= 83(4n+m+alpha)` of Theorem `thm:ratio` from the two branch guarantees as hypotheses, the constants of Theorems `thm:cutclass` and `thm:nonreg-cutclass` and of Proposition `prop:bounded-cut` (`0.9977`), the bound `gamma/(K+gamma) <= 1/(K+1)` of Remark `rem:gamma-linear` of the hard-split section, and the tabulated values.
 
 ## Taken from the literature (hypotheses, not proved)
 
@@ -56,7 +56,7 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 | Semidefinite rounding of Max Cut; cut fraction at least `arccos(1-2c)/pi` for SDP value `c >= 0.845` | Goemans and Williamson, J. ACM 42 (1995) | `CutGuarantee` |
 | Derandomization of the rounding in polynomial time | Mahajan and Ramesh, SIAM J. Comput. 28 (1999) | `CutGuarantee` |
 | Independent set in degree-`Delta` graphs within `(Delta+3)/5 + epsilon` | Berman and Fujito (1999) | `BFGuarantee`, and the hypothesis `5 alpha <= (d+3)|I|` |
-| Near-bipartite branch for cubic graphs | Trevisan | hypotheses of the `GraphTransfer` bridge |
+| Near-bipartite branch for cubic graphs | Trevisan | hypotheses of the two-branch arithmetic in `PaperArithmetic` |
 | Max Cut on graphs of maximum degree `d` above the Goemans-Williamson constant (expected ratio `0.9326` for `d = 3`) | Feige-Karpinski-Langberg, J. Algorithms 43 (2002); Halperin-Livnat-Zwick, J. Algorithms 53 (2004); Hsieh-Kothari, ICALP 2023 | `BoundedCut` |
 | UG-hardness of Max Cut above `0.87856`, and of MAX 2-SAT and Horn-2SAT above the Lewin-Livnat-Zwick and Brakensiek-Huang-Zwick constants | Khot-Kindler-Mossel-O'Donnell, SIAM J. Comput. 37 (2007); Brakensiek-Huang-Zwick (SODA 2024) | not stated in Lean |
 | `L`-reduction and APX-completeness for cubic graphs | Alimonti and Kann (2000) | text only |
