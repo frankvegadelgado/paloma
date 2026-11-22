@@ -14,7 +14,7 @@ true variables. This module proves that the number of satisfied clauses is
 transfer from `F_G` and from `T_H` to the cut.
 
 The conflict-graph identity `α(H) = m + maxcut(G)` (Proposition `prop:cutconflict`) is
-proved in the text and is not formalized here.
+proved in `ConflictGraph`.
 -/
 
 namespace PalomaMax2SAT.CutTransfer
@@ -83,22 +83,6 @@ degree-`D` transfer for every `D ≥ 1`. -/
 theorem threshold_from_cut (D a s : ℕ) (hD : 1 ≤ D) (hs : 18785 * a ≤ 20000 * s) :
     27 * a ≤ 28 * s + D * a := by
   have h : 1 * a ≤ D * a := Nat.mul_le_mul_right a hD
-  omega
-
-/-- Division-free form of the first bound of Proposition `prop:gamma-ratio`: if
-`m ≤ 2 c` (`maxcut ≥ m/2`) and `maxcut - cut ≤ 0.1053 m`, then the lift of a cut of `k` edges
-has ratio at least `1 - 0.1053/(6d + 11.5)`, where `B + m = (6d + 11) m`. -/
-theorem gap_ratio (d m c k : ℕ) (hc : m ≤ 2 * c) (hgap : 10000 * c ≤ 10000 * k + 1053 * m) :
-    (60000 * d + 113947) * ((6 * d + 11) * m + c) ≤
-      (60000 * d + 115000) * ((6 * d + 11) * m + k) := by
-  nlinarith [Nat.mul_le_mul_left (12 * d + 23) hgap, hc]
-
-/-- Remark `rem:gamma-linear`, division-free: the lift of a cut with `8785 · maxcut ≤ 10000 · cut`
-has instance ratio strictly above `0.8785`. Here `K = (6d + 11) m > 0` is the constant `B + m`,
-`c = maxcut` and `k = cut`: `8785 (K + c) < 10000 (K + k)`, that is
-`(K + k)/(K + c) > 0.8785`. -/
-theorem lifted_ratio_gt_gw (K c k : ℕ) (hK : 0 < K) (hcut : 8785 * c ≤ 10000 * k) :
-    8785 * (K + c) < 10000 * (K + k) := by
   omega
 
 end PalomaMax2SAT.CutTransfer

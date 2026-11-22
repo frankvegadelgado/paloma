@@ -10,8 +10,7 @@ public import Mathlib
 Division-free or rational arithmetic behind the statements of `paper.tex` that are not part of
 another module: the comparison of `83/84` with the Unique Games thresholds (Theorem
 `thm:ugc-class`), the two-branch arithmetic of Theorem `thm:ratio`, the numerical constants of
-Theorem `thm:cutclass`, Theorem `thm:nonreg-cutclass` and Proposition `prop:bounded-cut`, the
-supremum in Remark `rem:gamma-linear`, and the tables.
+Theorem `thm:cutclass` and Proposition `prop:bounded-cut`, and the tables.
 The Goemans--Williamson, Berman--Fujito and Trevisan guarantees enter only as hypotheses.
 -/
 
@@ -39,19 +38,9 @@ theorem endpoint_at_three : (21 * 3 + 20) * 84 = 83 * (21 * 3 + 21) := by norm_n
 /-- Theorem `thm:cutclass`: `1 - α_ε ≤ 0.1215` gives a loss `(1 - α_ε)/(6d+12) < 1/84`. -/
 theorem cutclass_loss_lt (d : ℕ) : 1215 * 84 < 10000 * (6 * d + 12) := by omega
 
-/-- Theorem `thm:nonreg-cutclass`: `(1 - α_ε)/18 < 0.0068`, so the ratio exceeds `0.9932`. -/
-theorem nonreg_constant : 1215 * 10000 < 68 * 180000 := by norm_num
-
 /-- Proposition `prop:bounded-cut` with `c_3 = 0.9326`: the ratio exceeds `0.9977`. -/
 theorem bounded_cut_cubic :
     (9977 : ℚ) / 10000 < 1 - (1 - 9326 / 10000) / (6 * 3 + 12) := by norm_num
-
-/-- Remark `rem:gamma-linear`: `γ/(K+γ) ≤ 1/(K+1)` for `0 ≤ γ ≤ 1`, so the supremum of
-`(1-α_ε)γ/(6d+11+γ)` over `γ ≤ 1` is `(1-α_ε)/(6d+12)` (take `K = 6d+11`). -/
-theorem gamma_over_sum_le (K γ : ℚ) (hK : 0 < K) (h0 : 0 ≤ γ) (h1 : γ ≤ 1) :
-    γ / (K + γ) ≤ 1 / (K + 1) := by
-  rw [div_le_div_iff₀ (by linarith) (by linarith)]
-  nlinarith [mul_le_mul_of_nonneg_left h1 hK.le]
 
 /-- Theorem `thm:ratio`, arithmetic of the two branches on the cubic formula `T_H`
 (`B = 4n + m`, `2m = 3n`): the Berman--Fujito branch is assumed to return `s` with

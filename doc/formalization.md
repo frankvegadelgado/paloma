@@ -24,18 +24,14 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 
 * `CutTransfer`: the number of clauses of `F_G` satisfied by an assignment equals `m + cut(S)`, and the arithmetic of the ratio transfer from `F_G` and from `T_H` to the cut (Corollary `cor:cutratio`). The conflict-graph identity `alpha(H) = m + maxcut(G)` is proved in `ConflictGraph`.
 
-* `GeneralDegreeFormula`: for arbitrary degrees `d_v` (cycles of length `d_v + 1`), the repair inequality, the lift of an independent set, the exact identity `OPT = B + alpha` with `B = sum (d_v + 1) + m` (`= n + 3m` when degrees sum to `2m`), and the division-free step `8 alpha <= B`, `18785 alpha <= 20000 |I|` implies `9932 (B + alpha) <= 10000 (B + |I|)` behind Theorem `thm:nonreg-cutclass`. The explicit clause list and the three-occurrence count are in `SemanticHorn` and `DegreeFormula`, and the conflict-graph counts (regularity, occurrences, `M >= 4m`) are in `ConflictDegree`; the combination `B >= 16m` for the conflict graph is carried out in the paper, and the Goemans-Williamson step is cited.
 
-* `CutTransfer.gap_ratio`: the division-free inequality behind Proposition `prop:gamma-ratio`: from `m <= 2 maxcut` and `maxcut - cut <= 0.1053 m` the lift of the cut has ratio at least `1 - 0.1053/(6d + 11.5)`. The Goemans-Williamson convex-envelope bound `cut >= h(gamma) m`, the numerical maximum `0.10526` of `gamma - h(gamma)`, and the bounded-degree cut guarantees (Feige-Karpinski-Langberg, Halperin-Livnat-Zwick, Hsieh-Kothari) are taken from the literature or computed in the paper and are not formalized.
 
-* `CitedResults` (MAX-CUT part): `GWCut`, `GammaCut`, `BoundedCut` state the cited cut guarantees as numerical hypotheses; `independent_of_GWCut`, `gap_of_BoundedCut` and `bounded_cut_ratio` prove what follows (Theorem `thm:cutclass` step and Proposition `prop:bounded-cut`, division-free). `GeneralDegreeFormula.conflict_edges_ge` and `conflict_base_ge` prove the arithmetic `M >= 4m`, `8 alpha <= B` of Theorem `thm:nonreg-cutclass`.
+* `CitedResults` (MAX-CUT part): `GWCut` and `BoundedCut` state the cited cut guarantees as numerical hypotheses; `independent_of_GWCut`, `gap_of_BoundedCut` and `bounded_cut_ratio` prove what follows (Theorem `thm:cutclass` step and Proposition `prop:bounded-cut`, division-free).
 
-* `OnesOptimal`: for a graph `G` and sets `Z`, `F`, the negative formula (clauses `(not x_u or not x_v)` on edges, `(not x_u)` on `Z`) is satisfied by `a` iff the true variables form an independent set avoiding `Z` (`negSat_iff`), so Max-Ones equals the independence number (`maxOnes_negative`); the positive formula is satisfied iff `F` is true and the true variables outside `F` cover the remaining edges (`posSat_iff_cover`), so Min-Ones is `|F|` plus the minimum cover (`minOnes_positive`). The hardness of Maximum Independent Set and Minimum Vertex Cover is cited in the paper and not formalized.
 
 * `ConflictGraph`: the literal occurrences of `F_G` are `Fin m x Bool x Bool` (edge, sign of the clause, endpoint); two are adjacent when distinct and in the same clause, or on the same variable with opposite signs. `alpha_eq` proves that the independence number is `m + maxcut(G)` for every graph given by its edge list: `selSet` turns a vertex set `S` into an independent set of size `m + cut(S)` (`card_selSet`, `selSet_independent`) and `cutOf` turns an independent set `I` into a set `S` with `|I| <= m + cut(S)` (`card_le_edgeValues`).
-* `ConflictDegree`: the neighbours of `(e, s, b)` are its partner in the clause and the opposite-sign occurrences of the same variable (`nbrs_eq`, `card_nbrs`); hence `(d+1)`-regularity (`card_nbrs_regular`), `2 deg(v)` occurrences per variable (`occurrences_eq`), `4m` vertices (`card_occ`) and `M >= 4m` (`ordered_edges_ge`, `edges_ge`).
+* `ConflictDegree`: the neighbours of `(e, s, b)` are its partner in the clause and the opposite-sign occurrences of the same variable (`nbrs_eq`, `card_nbrs`); hence `(d+1)`-regularity (`card_nbrs_regular`), `2 deg(v)` occurrences per variable (`occurrences_eq`), `4m` vertices (`card_occ`).
 * `LReduction`: `exists_large_independent` (greedy bound), `opt_le_const` (first constant for degree `d`), `cubic_opt_le` (`OPT <= 23 alpha`), `repair_le` and `repair_abs_le` (second constant `1`). The APX-completeness of cubic MIS is cited.
-* `OnesBridge`: `negGraph` is the simple graph of a port graph; `opt_and_maxOnes` states the optimum of `T_H` and the maximum number of true variables of `N_H` with the same `alpha`; `minOnes_positive_graph` gives `n - alpha` for the positive formula.
 * `SignedGraph`: the signed graph `J` is encoded by a set `P` of ports and a set `R` of reward vertices with the conditions of `Indep` (pair edge, cycle edge, reward-to-port edge, reward-to-reward edge). `upper` bounds the weight by `D*M + score(x)` for an assignment `x` read from the ports, `lower` realizes `D*M + score(x)`, and `signed_theorem` combines them. The vertex count `3D` and the maximum degree three of `J` are not formalized.
 * `CutLift`: an independent set `I` of `H` with `18785 alpha <= 20000 |I|` lifts to ratio `83/84` on `T_H` for every degree (the last step of Theorem `thm:cutclass`). The construction of `I` from a cut is in `ConflictGraph` (`selSet`, `alpha_eq`); the cut guarantee `cut >= 0.8785 maxcut` is the cited Goemans-Williamson/Mahajan-Ramesh result.
 
@@ -43,11 +39,10 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 
 * `DegreeTransfer.bf_loss_bound`: `63 d <= 4 (d+1)(d+3) + 126`, the inequality behind the statement that the Berman-Fujito ratio exceeds `0.97` for every `d >= 4` (and so every regular class with `d >= 3` has a factor above the Brakensiek-Huang-Zwick constant). These are statements about three-occurrence classes, not about all instances.
 
-* `CutTransfer.lifted_ratio_gt_gw`: for `K > 0` and `8785 maxcut <= 10000 cut`, `8785 (K + maxcut) < 10000 (K + cut)`, that is the lift of a Goemans-Williamson cut has ratio strictly above `0.8785` on `T_H` (Remark `rem:gamma-linear`).
 
 * `Solution.ratio_at_least_83_84_general` and `Solution.general_endpoint_ratio`: the transfer `84((d+1)n + m + |I|) >= 83((d+1)n + m + alpha)` for every `d >= 3` and the monotone endpoint ratio `(beta + 3/7)/(beta + 1/2) >= 83/84`, proved directly in `Solution.lean`.
 
-* `PaperArithmetic`: the comparison `83/84 > 0.94615981 > 0.94016567` (Theorem `thm:ugc-class`), `(3d+2)/(3d+3) > 0.95` for `d >= 6`, strict monotonicity of `(21d+20)/(21d+21)`, the two-branch arithmetic `84(4n+m+s) >= 83(4n+m+alpha)` of Theorem `thm:ratio` from the two branch guarantees as hypotheses, the constants of Theorems `thm:cutclass` and `thm:nonreg-cutclass` and of Proposition `prop:bounded-cut` (`0.9977`), the bound `gamma/(K+gamma) <= 1/(K+1)` of Remark `rem:gamma-linear` of the hard-split section, and the tabulated values.
+* `PaperArithmetic`: the comparison `83/84 > 0.94615981 > 0.94016567` (Theorem `thm:ugc-class`), `(3d+2)/(3d+3) > 0.95` for `d >= 6`, strict monotonicity of `(21d+20)/(21d+21)`, the two-branch arithmetic `84(4n+m+s) >= 83(4n+m+alpha)` of Theorem `thm:ratio` from the two branch guarantees as hypotheses, the constants of Theorem `thm:cutclass` and of Proposition `prop:bounded-cut` (`0.9977`), and the tabulated values.
 
 ## Taken from the literature (hypotheses, not proved)
 
@@ -75,5 +70,15 @@ stated ratio on `T_H`.
   comparison `83/84 > 0.94615981 > 0.94016567` of Theorem `thm:ugc-class` is in the paper.
 * The bounded-occurrence approximation of Ghoshal, Huang, Lee, Makarychev and Makarychev,
   and the Raman, Ravikumar and Rao classification of two- and three-occurrence MAX 2-SAT.
+* Statements of the paper that are not stated in Lean:
+  - Theorem `thm:apx`: the APX-completeness statement (only the `L`-reduction constants are proved).
+  - Theorem `thm:signed`: the vertex count `3D` and maximum degree three of `J`.
+  - Proposition `prop:cutconflict`: the consequence `OPT(T_H) = B + m + maxcut(G)` for the conflict graph `H = H(G)` and the extraction of a cut from an assignment of `T_H` as one statement; its ingredients are `alpha_eq`, `exact_degree_identity_proof` and `cut_from_TH_value`.
+  - Proposition `prop:cutconflict`: simplicity of `H(G)` (no loops or repeated edges) is not a separate lemma; the neighbour counts behind `(d+1)`-regularity are `nbrs_eq`, `card_nbrs`, `card_nbrs_regular`.
+  - Proposition `prop:cut2sat`: `OPT(F_G) = m + maxcut(G)` is not one statement; it is `value_eq_edges_add_cut` together with `alpha_eq`. Corollary `cor:cutratio` is proved division-free (`cut_from_2sat_value`, `cut_from_TH_value`), not with real `gamma` and `rho`.
+  - Section on Unique Games thresholds: the decimal remarks `19/20 > 0.94615981`, `r(3) - 0.94016567 ~ 0.04793` and `(d-2)/(3(d+1)(d+3)) < 0.022` are not stated; `ugc_thresholds`, `endpoint_increasing`, `baseline_above_095` and the bound `63 (d-2) <= 4 (d+1)(d+3)` are.
+  - Section on signed graphs: the unary-terminal path example (maximum weights `1, 1, 1, 2`) and the example of `k = 82` positive unit clauses are not stated.
+  - Theorem `thm:ratio` and Proposition `prop:degd` (5): the Trevisan bound `1 - 4 sqrt(eps) + 8 eps > 0.95`, the Goemans-Williamson bound `arccos(1-2c)/pi` for `c >= 0.845` and the exhaustive solution of small orders are cited or in the text only; Lean has the arithmetic consequences (`bf_branch_numeric_21`, `cut_fraction_degree_21`, `ratio_83_84_two_branch`).
+  - Every polynomial-time statement: Theorems `thm:ratio`, `thm:cutclass`, `thm:ugc-class`, and Proposition `prop:degd` (5), (7) assert algorithms; Lean proves the ratio of the lift of a given independent set or cut, and the algorithms are cited.
 * Conditional statements: the threshold results for `4 <= d <= 20` hold only for an
   independent-set algorithm of ratio `(27-d)/28`, which is not proved.

@@ -4,14 +4,11 @@ public import PalomaMax2SAT.CubicThreeOccurrence
 public import PalomaMax2SAT.SemanticHorn
 public import PalomaMax2SAT.DegreeTransfer
 public import PalomaMax2SAT.DegreeFormula
-public import PalomaMax2SAT.GeneralDegreeFormula
 public import PalomaMax2SAT.CitedResults
 public import PalomaMax2SAT.CutTransfer
 public import PalomaMax2SAT.CutLift
-public import PalomaMax2SAT.OnesOptimal
 public import PalomaMax2SAT.LReduction
 public import PalomaMax2SAT.ConflictGraph
 public import PalomaMax2SAT.ConflictDegree
-public import PalomaMax2SAT.OnesBridge
 public import PalomaMax2SAT.SignedGraph
 public import PalomaMax2SAT.PaperArithmetic

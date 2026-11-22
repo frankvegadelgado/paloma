@@ -1,7 +1,7 @@
 version: v0.4
 project:
   name: "PalomaMax2SAT: an 83/84 approximation for a cubic three-occurrence Horn class"
-  description: "Lean 4 formalization of the paper 'An 83/84 approximation for a cubic three-occurrence Horn class'. The compared results are: the three-occurrence formula T_H built from a cubic graph, its explicit clause semantics (at most one negative literal per clause, with a proved complement-variable translation to standard Horn clauses that preserves satisfaction), the exact identity OPT(T_H) = 4n + m + alpha, the repair lemma, the number of clauses and the three occurrences of every variable, and the 83/84 approximation ratio transferred from a cubic independent-set guarantee, together with the degree-d ratio arithmetic. The supporting modules also formalize the lift of a MAX-CUT guarantee through the conflict graph to a ratio strictly above the Goemans-Williamson constant. Goemans-Williamson, Berman-Fujito and the Unique Games thresholds are cited hypotheses, not reproved."
+  description: "Lean 4 formalization of the paper 'An 83/84 approximation for a cubic three-occurrence Horn class'. The compared results are: the three-occurrence formula T_H built from a cubic graph, its explicit clause semantics (at most one negative literal per clause, with a proved complement-variable translation to standard Horn clauses that preserves satisfaction), the exact identity OPT(T_H) = 4n + m + alpha, the repair lemma, the number of clauses and the three occurrences of every variable, and the 83/84 approximation ratio transferred from a cubic independent-set guarantee, together with the degree-d ratio arithmetic. The supporting modules also formalize the MAX-CUT reduction, the conflict graph and the lift of a Goemans-Williamson cut to the 83/84 ratio. Goemans-Williamson, Berman-Fujito and the Unique Games thresholds are cited hypotheses, not reproved."
   authors:
     - name: "Frank Vega"
       orcid: "0000-0001-8210-4126"
@@ -75,20 +75,15 @@ modules:
     status: formalized
     notes: "Uniform degree-d T_H formula, complement-variable translation to standard Horn clauses, (d + 1)n + m + α optimum, and lifts of independent sets."
 
-  - name: PalomaMax2SAT.GeneralDegreeFormula
-    path: PalomaMax2SAT/GeneralDegreeFormula.lean
-    status: formalized
-    notes: Non-regular degrees d_v, (d_v + 1)-cycles; repair, exact identity OPT = B + alpha (B = n + 3m when degrees sum to 2m), and the 0.9932 ratio step.
-
   - name: PalomaMax2SAT.CutTransfer
     path: PalomaMax2SAT/CutTransfer.lean
     status: formalized
-    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic and the strict inequality rho_d(gamma) > 0.8785 of Remark rem:gamma-linear (lifted_ratio_gt_gw).
+    notes: MAX-CUT clause count m + cut(S) and and Corollary cor:cutratio arithmetic.
 
   - name: PalomaMax2SAT.PaperArithmetic
     path: PalomaMax2SAT/PaperArithmetic.lean
     status: formalized
-    notes: "Numerical statements of the paper: 83/84 above the UG thresholds (thm:ugc-class), two-branch arithmetic of thm:ratio, constants of thm:cutclass, thm:nonreg-cutclass and prop:bounded-cut, the supremum of rem:gamma-linear, and the value tables."
+    notes: "Numerical statements of the paper: 83/84 above the UG thresholds (thm:ugc-class), two-branch arithmetic of thm:ratio, constants of thm:cutclass and prop:bounded-cut, and the value tables."
 
   - name: PalomaMax2SAT.CutLift
     path: PalomaMax2SAT/CutLift.lean
@@ -99,11 +94,6 @@ modules:
     path: PalomaMax2SAT/CitedResults.lean
     status: axiomatized_as_hypotheses
     notes: Explicit hypotheses for Goemans-Williamson/Mahajan-Ramesh cut bound and Berman-Fujito independent set bound.
-
-  - name: PalomaMax2SAT.OnesOptimal
-    path: PalomaMax2SAT/OnesOptimal.lean
-    status: formalized
-    notes: Max-Ones for negative (Horn) 2-CNF equals the independence number, Min-Ones for positive 2-CNF equals |F| plus the minimum vertex cover outside F, and Gallai's identity.
 
   - name: PalomaMax2SAT.LReduction
     path: PalomaMax2SAT/LReduction.lean
@@ -118,12 +108,7 @@ modules:
   - name: PalomaMax2SAT.ConflictDegree
     path: PalomaMax2SAT/ConflictDegree.lean
     status: formalized
-    notes: Degrees of the conflict graph, (d+1)-regularity, 2 deg(v) occurrences of x_v, and M >= 4m for arbitrary graphs.
-
-  - name: PalomaMax2SAT.OnesBridge
-    path: PalomaMax2SAT/OnesBridge.lean
-    status: formalized
-    notes: For the cubic port graph, OPT(T_H) = 4n + m + alpha and MaxOnes(N_H) = alpha with the same alpha; MinOnes of the positive formula is n - alpha.
+    notes: Degrees of the conflict graph, (d+1)-regularity, 2 deg(v) occurrences of x_v, and 4m vertices of the conflict graph.
 
   - name: PalomaMax2SAT.SignedGraph
     path: PalomaMax2SAT/SignedGraph.lean
@@ -134,8 +119,10 @@ unformalized_in_lean:
   - Semidefinite programming rounding and derandomization (Goemans-Williamson, Mahajan-Ramesh, Trevisan)
   - Berman-Fujito approximation algorithm proofs
   - APX-completeness of cubic Maximum Independent Set (Alimonti-Kann), used to conclude APX-completeness of the image class
-  - Hardness of Maximum Independent Set and Minimum Vertex Cover (Hastad, Zuckerman, Khot-Regev, Austrin-Khot-Safra, Chan, Halperin) used for Max-Ones and Min-Ones
   - Unique Games Conjecture hardness thresholds (Brakensiek-Huang-Zwick, Lewin-Livnat-Zwick, Ghoshal et al., Khot-Kindler-Mossel-O'Donnell for MAX-CUT)
-  - Analytic part of Proposition prop:gamma-ratio (convex envelope of arccos(1-2x)/pi and the maximum 0.10526 of gamma - h(gamma))
   - Vertex count 3D and maximum degree three of the signed graph J (Theorem thm:signed)
+  - "OPT(T_H) = B + m + maxcut(G) for the conflict graph as a single statement (Proposition prop:cutconflict); its ingredients are proved separately"
+  - "Simplicity of the conflict graph H(G) as a separate lemma (Proposition prop:cutconflict); OPT(F_G) = m + maxcut(G) as one statement and Corollary cor:cutratio with real gamma and rho (proved division-free)"
+  - "Decimal remarks of the Unique Games section (19/20 above 0.94615981, 0.04793, 0.022) and the examples of the signed-graph section (unary-terminal path, k = 82 unit clauses)"
+  - "Trevisan bound 1 - 4 sqrt(eps) + 8 eps > 0.95, the Goemans-Williamson bound arccos(1-2c)/pi for c >= 0.845 and the exhaustive solution of small orders (Theorem thm:ratio, Proposition prop:degd (5))"
   - Polynomial running time of every constructive statement (the repair, the lifts and the decodings are defined as functions, their running time is not modelled)

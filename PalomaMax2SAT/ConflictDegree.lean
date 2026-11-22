@@ -14,8 +14,7 @@ For the conflict graph `H(G)` on the literal occurrences `Occ m` of `F_G` this m
   `prop:cut2sat`, item 2);
 * `card_nbrs`: the occurrence `(e, s, b)` has `1 + deg(var)` neighbours, so `H(G)` is
   `(d + 1)`-regular when `G` is `d`-regular (Proposition `prop:cutconflict`);
-* `ordered_edges_ge`: twice the number of edges of `H(G)` is at least `8 m`, that is,
-  `M ≥ 4 m` (proof of Theorem `thm:nonreg-cutclass`).
+* `card_occ`: `H(G)` has `4 m` vertices.
 
 Here `deg(v) = occ G v` is the number of edge endpoints equal to `v`.
 -/
@@ -88,19 +87,6 @@ theorem card_nbrs (G : EdgeGraph n m) (e : Fin m) (s b : Bool) :
   rw [nbrs_eq]
   omega
 
-theorem one_le_occ (G : EdgeGraph n m) (e : Fin m) (b : Bool) : 1 ≤ occ G (ov G e b) := by
-  rw [← card_slots]
-  have h : 0 < (slots G (ov G e b)).card :=
-    Finset.card_pos.mpr ⟨(e, b), by simp [slots]⟩
-  omega
-
-/-- Every occurrence has at least two neighbours. -/
-theorem two_le_card_nbrs (G : EdgeGraph n m) (p : Occ m) : 2 ≤ (nbrs G p).card := by
-  obtain ⟨e, s, b⟩ := p
-  rw [card_nbrs]
-  have := one_le_occ G e b
-  omega
-
 /-- Regularity: if every vertex of `G` has degree `d`, the conflict graph is `(d + 1)`-regular. -/
 theorem card_nbrs_regular (G : EdgeGraph n m) (d : ℕ) (hd : ∀ v, occ G v = d) (p : Occ m) :
     (nbrs G p).card = d + 1 := by
@@ -108,34 +94,10 @@ theorem card_nbrs_regular (G : EdgeGraph n m) (d : ℕ) (hd : ∀ v, occ G v = d
   rw [card_nbrs, hd]
   omega
 
-/-- Twice the number of edges of the conflict graph. -/
-theorem ordered_edges_eq (G : EdgeGraph n m) :
-    (Finset.univ.filter fun pq : Occ m × Occ m => Adj G pq.1 pq.2).card =
-      ∑ p : Occ m, (nbrs G p).card := by
-  rw [Finset.card_filter, Fintype.sum_prod_type]
-  refine Finset.sum_congr rfl fun p _ => ?_
-  rw [nbrs, Finset.card_filter]
-
 /-- The conflict graph has `4 m` vertices. -/
 theorem card_occ (m : ℕ) : Fintype.card (Occ m) = 4 * m := by
   simp [Occ, Fintype.card_prod]
   ring
-
-/-- `2 M ≥ 8 m`, that is `M ≥ 4 m`. -/
-theorem ordered_edges_ge (G : EdgeGraph n m) :
-    8 * m ≤ (Finset.univ.filter fun pq : Occ m × Occ m => Adj G pq.1 pq.2).card := by
-  rw [ordered_edges_eq]
-  have h1 : ∑ p : Occ m, (2 : ℕ) ≤ ∑ p : Occ m, (nbrs G p).card :=
-    Finset.sum_le_sum fun p _ => two_le_card_nbrs G p
-  rw [Finset.sum_const, Finset.card_univ, card_occ, smul_eq_mul] at h1
-  omega
-
-/-- With `M` edges in the conflict graph (`2 M` ordered pairs), `M ≥ 4 m`. -/
-theorem edges_ge (G : EdgeGraph n m) (M : ℕ)
-    (hM : 2 * M = (Finset.univ.filter fun pq : Occ m × Occ m => Adj G pq.1 pq.2).card) :
-    4 * m ≤ M := by
-  have := ordered_edges_ge G
-  omega
 
 /-- The variable `x_v` occurs in exactly `2 deg(v)` clauses. -/
 theorem occurrences_eq (G : EdgeGraph n m) (v : Fin n) :

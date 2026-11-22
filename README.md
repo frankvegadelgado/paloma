@@ -1,10 +1,10 @@
 # Paloma: MAX-HORN-2SAT and MAX-CUT formalization
 
-Lean 4 formalization for *An 83/84 approximation for a cubic three-occurrence Horn class* (`doc/paper.tex`). The paper also covers degree-d graphs, non-regular graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
+Lean 4 formalization for *An 83/84 approximation for a cubic three-occurrence Horn class* (`doc/paper.tex`). The paper also covers degree-d graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
 
 ## Main result: ratio above the Unique Games thresholds
 
-On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances (Theorem `thm:ugc-class`, from Theorem `thm:cutclass`), the polynomial-time factor `83/84` exceeds the Unique Games thresholds `α* ≈ 0.94616` (Brakensiek–Huang–Zwick, weighted MAX-HORN-2SAT) and `β* ≈ 0.94017` (Lewin–Livnat–Zwick, MAX 2-SAT), which hold for all instances. A Goemans–Williamson cut lifted to `T_{H(G)}` has ratio `(B + m + cut)/(B + m + maxcut) > α_GW` (Remark `rem:gamma-linear`; `lifted_ratio_gt_gw` in `CutTransfer`), and the cut recovered is the Goemans–Williamson cut, so the MAX-CUT guarantee itself is not improved. The class has three occurrences per variable, so the result is consistent with the conjecture. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`); the Goemans–Williamson guarantee and the thresholds are cited (`CitedResults`).
+On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances (Theorem `thm:ugc-class`, from Theorem `thm:cutclass`), the polynomial-time factor `83/84` exceeds the Unique Games thresholds `α* ≈ 0.94616` (Brakensiek–Huang–Zwick, weighted MAX-HORN-2SAT) and `β* ≈ 0.94017` (Lewin–Livnat–Zwick, MAX 2-SAT), which hold for all instances. A Goemans–Williamson cut lifted to `T_{H(G)}` gives the factor `1 − (1 − α_ε)/(6d + 12) ≥ 83/84` for every `d ≥ 1`, and the cut recovered is the Goemans–Williamson cut, so the MAX-CUT guarantee itself is not improved. A bounded-degree cut guarantee `c_d` gives `1 − (1 − c_d)/(6d + 12)` (Proposition `prop:bounded-cut`), above `0.9977` in expectation for `d = 3`. The class has three occurrences per variable, so the result is consistent with the conjecture. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`); the Goemans–Williamson guarantee and the thresholds are cited (`CitedResults`).
 
 ## Repository layout
 
@@ -24,15 +24,12 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 | `SemanticHorn` | formalized | Explicit clauses with at most one negative literal, complement-variable translation to standard Horn clauses (`formula_horn`, `complement_satisfied`), score decomposition, `5n + m` clauses, three occurrences per variable. |
 | `DegreeTransfer` | formalized (arithmetic) | Degree-`d` ratio inequalities, `d = 21` two-branch arithmetic, `ρ(d)` and `(21d+20)/(21d+21)` bounds, Berman–Fujito form for every degree, `63d ≤ 4(d+1)(d+3)+126`. |
 | `DegreeFormula` | formalized | Uniform degree-`d` formula `T_H`, optimum `(d+1)n + m + α`, `2m = dn`, `2α ≤ n`, dual-Horn property and complement-variable translation to Horn clauses, `(d+2)n + m` clauses, three occurrences, lift of an independent set. |
-| `GeneralDegreeFormula` | formalized | Arbitrary degrees `d_v` with `(d_v+1)`-cycles: repair inequality, lift of an independent set, optimum `B + α` with `B = Σ(d_v+1) + m` (`= n + 3m` when degrees sum to `2m`), and the step `8α ≤ B`, `18785α ≤ 20000|I|` ⇒ `0.9932` ratio. |
-| `CutTransfer` | formalized | MAX-CUT as MAX 2-SAT: satisfied clauses of `F_G` equal `m + cut(S)`; arithmetic of the ratio transfer to the cut; the lifted ratio on `T_H` is strictly above `0.8785` (`lifted_ratio_gt_gw`). |
-| `PaperArithmetic` | formalized | Numerical statements of the paper: `83/84 > 0.94615981 > 0.94016567`, two-branch arithmetic of Theorem `thm:ratio`, constants of `thm:cutclass`, `thm:nonreg-cutclass`, `prop:bounded-cut`, the supremum of `rem:gamma-linear`, value tables. |
+| `CutTransfer` | formalized | MAX-CUT as MAX 2-SAT: satisfied clauses of `F_G` equal `m + cut(S)`; arithmetic of the ratio transfer to the cut. |
+| `PaperArithmetic` | formalized | Numerical statements of the paper: `83/84 > 0.94615981 > 0.94016567`, two-branch arithmetic of Theorem `thm:ratio`, constants of `thm:cutclass` and `prop:bounded-cut`, value tables. |
 | `CutLift` | formalized | Lifting step of Theorem `thm:cutclass`: `18785α(H) ≤ 20000|I|` gives `83/84` on `T_H`. |
-| `OnesOptimal` | formalized | Max-Ones for negative (Horn) 2-CNF is the independence number; Min-Ones for positive 2-CNF is `|F|` plus the minimum vertex cover outside `F`; Gallai's identity. |
 | `LReduction` | formalized | Greedy independent set `n ≤ (Δ+1)|I|`, `L`-reduction constants of Theorem `thm:apx` (`OPT ≤ 23α` for `d = 3`, second constant `1`). |
 | `ConflictGraph` | formalized | Conflict graph of `F_G` and `α(H(G)) = m + maxcut(G)` (Proposition `prop:cutconflict`). |
-| `ConflictDegree` | formalized | `(d+1)`-regularity of the conflict graph, `2 deg(v)` occurrences of `x_v`, and `M ≥ 4m` (Theorem `thm:nonreg-cutclass`). |
-| `OnesBridge` | formalized | `OPT(T_H) = 4n + m + α`, `MaxOnes(N_H) = α` and `MinOnes` of the positive formula `= n - α` for cubic `H`. |
+| `ConflictDegree` | formalized | `(d+1)`-regularity of the conflict graph, `2 deg(v)` occurrences of `x_v`, and `4m` vertices of the conflict graph. |
 | `SignedGraph` | formalized | Theorem `thm:signed`: weight `D·M + OPT(F)` of the signed graph for weighted width-two inputs. |
 | `CitedResults` | hypotheses | Explicit hypotheses for the Goemans–Williamson/Mahajan–Ramesh cut bound and the Berman–Fujito independent-set bound, and the end-to-end degree-21 statement. |
 
@@ -47,8 +44,15 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 
 - Theorem `thm:apx`: the `L`-reduction constants are in `LReduction`; the APX-hardness of cubic Maximum Independent Set is cited and the APX-completeness statement itself is not stated in Lean.
 - Theorem `thm:signed`: the weight identity `D·M + OPT(F)` of the signed graph is in `SignedGraph`; the vertex count and maximum degree of the signed graph are in the paper only.
-- Proposition `prop:cutconflict` and Theorem `thm:nonreg-cutclass`: the identity `α(H(G)) = m + maxcut(G)` is in `ConflictGraph`, and regularity, occurrence counts and `M ≥ 4m` are in `ConflictDegree`; the combination `B ≥ 16m ≥ 8α` for the conflict graph is carried out in the paper, with its arithmetic in `GeneralDegreeFormula` and `PaperArithmetic`.
-- The analytic part of Proposition `prop:gamma-ratio` (convex envelope, numerical maximum `0.10526`), the Unique Games thresholds, and all running-time statements.
+- Proposition `prop:cutconflict`: the identity `α(H(G)) = m + maxcut(G)` is in `ConflictGraph`, and regularity and occurrence counts are in `ConflictDegree`.
+- Proposition `prop:cutconflict`: the consequence `OPT(T_H) = B + m + maxcut(G)` as a single statement (its ingredients are in `ConflictGraph`, `DegreeFormula` and `CutTransfer`).
+- Feige–Karpinski–Langberg, Halperin–Livnat–Zwick and Hsieh–Kothari bounded-degree MAX-CUT guarantees (expected ratio `0.9326` for `d = 3`), stated in `CitedResults` as `BoundedCut`.
+- Proposition `prop:cutconflict`: simplicity of `H(G)` (no loops or repeated edges) is not stated as a separate lemma; the neighbour counts that give `(d+1)`-regularity are in `ConflictDegree`.
+- Proposition `prop:cut2sat` and Corollary `cor:cutratio`: `OPT(F_G) = m + maxcut(G)` is available through `value_eq_edges_add_cut` and `alpha_eq`, not as one statement; Corollary `cor:cutratio` is proved in division-free form (`cut_from_2sat_value`, `cut_from_TH_value`), not with real `γ` and `ρ`.
+- Section on Unique Games thresholds: the decimal remarks `19/20 > α*`, `r(3) − β* ≈ 0.04793` and `(d−2)/(3(d+1)(d+3)) < 0.022` are not stated; the comparison `83/84 > α* > β*`, the monotonicity of `r(d)` and the bound `63(d−2) ≤ 4(d+1)(d+3)` are.
+- Section on signed graphs: the unary-terminal path example (maximum weights `1,1,1,2`) and the example of `k = 82` positive unit clauses are not stated.
+- Theorem `thm:ratio` and Proposition `prop:degd`(5): the Trevisan bound `1 − 4√ε + 8ε > 0.95`, the Goemans–Williamson bound `arccos(1−2c)/π` and the exhaustive solution of small orders are cited or in the text only; Lean has the arithmetic consequences.
+- The Unique Games thresholds, and all polynomial-time statements: Lean proves the ratio of the lift of a given independent set or cut, not that an algorithm produces it.
 
 ## Building and verifying
 

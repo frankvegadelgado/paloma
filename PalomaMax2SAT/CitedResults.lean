@@ -24,14 +24,11 @@ and proves everything that follows from them.
 * `BFGuarantee`: a Berman--Fujito independent set of size `≥ 50α/241` on `21`-regular
   graphs [Berman and Fujito, 1999]; again only existence is stated.
 
-* `GWCut`, `GammaCut`, `BoundedCut`: the cut guarantees of the MAX-CUT part of the paper,
-  stated for a given cut of `k` edges in a graph of maximum cut `c` and `m` edges.
-  `GWCut` is `cut ≥ 0.8785 · maxcut` (Goemans--Williamson, with the semidefinite error
-  `10⁻⁵`; Mahajan--Ramesh derandomization). `GammaCut` is `maxcut - cut ≤ 0.1053 m`, which
-  follows from the Goemans--Williamson analysis through the convex envelope of
-  `arccos(1 - 2x)/π` and the numerical maximum `0.10526` of `γ - h(γ)` computed in the
-  paper. `BoundedCut p q` is `(p/q) · maxcut ≤ cut`, the guarantee `c_d = p/q` on graphs of
-  maximum degree `d`: Feige--Karpinski--Langberg, J. Algorithms 43 (2002) 201--219;
+* `GWCut`: the Goemans--Williamson cut guarantee of the MAX-CUT part of the paper, stated for
+  a given cut of `k` edges in a graph of maximum cut `c`: `cut ≥ 0.8785 · maxcut` (with the
+  semidefinite error `10⁻⁵`; Mahajan--Ramesh derandomization).
+* `BoundedCut p q` is `(p/q) · maxcut ≤ cut`, the guarantee `c_d = p/q` on graphs of maximum
+  degree `d`: Feige--Karpinski--Langberg, J. Algorithms 43 (2002) 201--219;
   Halperin--Livnat--Zwick, J. Algorithms 53 (2004) 169--185 (an *expected* ratio `0.9326`
   for maximum degree `3`); Hsieh--Kothari, ICALP 2023, arXiv:2206.09204. For a randomized
   algorithm these are statements about the expected cut.
@@ -125,10 +122,6 @@ theorem degree_21_end_to_end {n m alpha : ℕ} (G : PortGraph 21 n m)
 
 /-- Cited: Goemans--Williamson cut, `0.8785 · maxcut ≤ cut`. -/
 def GWCut (c k : ℕ) : Prop := 8785 * c ≤ 10000 * k
-
-/-- Cited/computed: `maxcut - cut ≤ 0.1053 m` (convex-envelope form of the
-Goemans--Williamson analysis). -/
-def GammaCut (m c k : ℕ) : Prop := 10000 * c ≤ 10000 * k + 1053 * m
 
 /-- Cited: a cut guarantee `p/q` on graphs of bounded degree (Feige--Karpinski--Langberg,
 Halperin--Livnat--Zwick, Hsieh--Kothari). -/
