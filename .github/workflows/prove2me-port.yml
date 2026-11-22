@@ -1,0 +1,38 @@
+name: Prove2Me port (Lean v4.33.1)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [prove2me-v4.33.1]
+
+permissions:
+  contents: read
+
+jobs:
+  port-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install elan and the platform toolchain
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install toolchain from lean-toolchain
+        run: elan toolchain install "$(cat lean-toolchain)"
+      - name: Update Mathlib to the pinned rev
+        run: lake update mathlib
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build (all errors are reported, not just the first)
+        run: lake build -KcontinueOnError 2>&1 | tee build.log || lake build 2>&1 | tee build.log
+      - name: Upload manifest and log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: port-results
+          path: |
+            lake-manifest.json
+            build.log
