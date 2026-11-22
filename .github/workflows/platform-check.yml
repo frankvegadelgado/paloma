@@ -2,6 +2,11 @@ name: Prove2Me platform check
 
 on:
   workflow_dispatch:
+  push:
+    branches: [prove2me-v4.33.1]
+    paths:
+      - 'prove2me/platform/**'
+      - '.github/workflows/platform-check.yml'
 
 permissions:
   contents: read
