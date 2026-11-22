@@ -5,7 +5,7 @@ literature as explicit hypotheses, and what it does not touch.
 
 ## Main result: ratio above the Unique Games thresholds
 
-Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances, the polynomial-time factor `83/84` exceeds the Unique Games thresholds `0.94615981` (Brakensiek, Huang, Zwick) and `0.94016567` (Lewin, Livnat, Zwick), which hold for all instances. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`, `CitedResults`); the Goemans-Williamson cut guarantee and the thresholds are the cited hypotheses listed below.
+Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances, the polynomial-time factor `83/84` exceeds the Unique Games thresholds `0.94615981` (Brakensiek, Huang, Zwick) and `0.94016567` (Lewin, Livnat, Zwick), which hold for all instances. The main theorem in Lean is `PalomaMax2SAT.UgcBarrier.ugc_barrier`: `83/84 > 0.94615981 > 0.94016567`, and the lift of an independent set `I` with `18785 alpha <= 20000 |I|` satisfies at least `83/84` of the optimum of `T_H`, for every degree `D >= 1`. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`, `CitedResults`); the Goemans-Williamson cut guarantee and the thresholds are the cited hypotheses listed below.
 
 ## Proved in Lean
 
@@ -33,6 +33,7 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 * `ConflictDegree`: the neighbours of `(e, s, b)` are its partner in the clause and the opposite-sign occurrences of the same variable (`nbrs_eq`, `card_nbrs`); hence `(d+1)`-regularity (`card_nbrs_regular`), `2 deg(v)` occurrences per variable (`occurrences_eq`), `4m` vertices (`card_occ`).
 * `LReduction`: `exists_large_independent` (greedy bound), `opt_le_const` (first constant for degree `d`), `cubic_opt_le` (`OPT <= 23 alpha`), `repair_le` and `repair_abs_le` (second constant `1`). The APX-completeness of cubic MIS is cited.
 * `SignedGraph`: the signed graph `J` is encoded by a set `P` of ports and a set `R` of reward vertices with the conditions of `Indep` (pair edge, cycle edge, reward-to-port edge, reward-to-reward edge). `upper` bounds the weight by `D*M + score(x)` for an assignment `x` read from the ports, `lower` realizes `D*M + score(x)`, and `signed_theorem` combines them. The vertex count `3D` and the maximum degree three of `J` are not formalized.
+* `UgcBarrier`: the main theorem `ugc_barrier` (Theorem `thm:ugc-class`), the conjunction of `PaperArithmetic.ugc_thresholds` and `CutLift.lift_ratio_from_cut`.
 * `CutLift`: an independent set `I` of `H` with `18785 alpha <= 20000 |I|` lifts to ratio `83/84` on `T_H` for every degree (the last step of Theorem `thm:cutclass`). The construction of `I` from a cut is in `ConflictGraph` (`selSet`, `alpha_eq`); the cut guarantee `cut >= 0.8785 maxcut` is the cited Goemans-Williamson/Mahajan-Ramesh result.
 
 * `DegreeTransfer.bf_general_degree_d_proof` and `DegreeFormula.lift_ratio_bf_general`: the Berman-Fujito transfer for every degree with `epsilon = 1/c`, in division-free form (seventh claim of Proposition `prop:degd`).

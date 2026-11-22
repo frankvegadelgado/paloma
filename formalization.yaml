@@ -51,7 +51,7 @@ main_result:
   name: ugc_barrier
   paper_theorem: thm:ugc-class
   statement: On the class {T_H(G)} of three-occurrence Horn formulas from MAX-CUT instances the polynomial-time factor 83/84 exceeds the Unique Games thresholds 0.94616 (Brakensiek-Huang-Zwick) and 0.94017 (Lewin-Livnat-Zwick) that hold for all instances.
-  lean_modules: [PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.CitedResults]
+  lean_modules: [PalomaMax2SAT.UgcBarrier, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.CitedResults]
   cited_not_formalized: [Goemans-Williamson/Mahajan-Ramesh cut guarantee, Unique Games thresholds]
 
 modules:
@@ -89,6 +89,11 @@ modules:
     path: PalomaMax2SAT/CutLift.lean
     status: formalized
     notes: Lifting step for Theorem thm:cutclass from independent sets with 18785 α(H) ≤ 20000 |I|.
+
+  - name: PalomaMax2SAT.UgcBarrier
+    path: PalomaMax2SAT/UgcBarrier.lean
+    status: formalized
+    notes: "Theorem ugc_barrier (thm:ugc-class): 83/84 above the Unique Games thresholds, and the 83/84 ratio of the lift of an independent set with 18785 alpha <= 20000 |I| on T_H, for every degree D >= 1. The cut guarantee is a hypothesis."
 
   - name: PalomaMax2SAT.CitedResults
     path: PalomaMax2SAT/CitedResults.lean
