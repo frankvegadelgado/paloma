@@ -3,7 +3,7 @@ import Solution
 
 open Lean Elab Command
 
-/-- Lists every theorem declared in the project modules whose axioms are not
+/- Lists every theorem declared in the project modules whose axioms are not
 among `propext`, `Classical.choice`, `Quot.sound`. Prints a summary and fails
 if any such theorem exists. -/
 run_cmd do
