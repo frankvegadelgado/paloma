@@ -10,7 +10,9 @@ Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurre
 ## Proved in Lean
 
 * `CubicThreeOccurrence`, `SemanticHorn` (degree 3) and `DegreeFormula` (every degree `d`):
-  the formula `T_H` as an explicit list of Horn clauses, the number of satisfied clauses,
+  the formula `T_H` as an explicit list of clauses with at most one negative literal (`IsDualHorn`),
+  the complement-variable translation to standard Horn clauses with at most one positive literal
+  (`IsHorn`, `Clause.compl`; `formula_horn`, `complement_satisfied`), the number of satisfied clauses,
   the exact optimum `(d+1)n + m + alpha`, `2m = dn`, `2 alpha <= n`, and that every variable
   occurs exactly three times.
 * `DegreeTransfer`: the arithmetic of Proposition 3 (baseline, `d >= 27`, Berman--Fujito for

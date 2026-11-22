@@ -36,9 +36,21 @@ def Lit.eval {n : ℕ} (z : Fin n → Fin 4 → Bool) (l : Lit n) : Bool :=
 def Clause.satisfied {n : ℕ} (z : Fin n → Fin 4 → Bool) (c : Clause n) : Bool :=
   c.any (Lit.eval z)
 
-/-- Horn: at most one negative literal. -/
-def IsHorn {n : ℕ} (c : Clause n) : Prop :=
+/-- Dual-Horn: at most one negative literal. This is the polarity in which `T_H` is written. -/
+def IsDualHorn {n : ℕ} (c : Clause n) : Prop :=
   (c.filter fun l => !l.positive).length ≤ 1
+
+/-- Horn: at most one positive literal. -/
+def IsHorn {n : ℕ} (c : Clause n) : Prop :=
+  (c.filter fun l => l.positive).length ≤ 1
+
+/-- The complement of a literal: the variable is renamed to its negation. -/
+def Lit.compl {n : ℕ} (l : Lit n) : Lit n :=
+  ⟨l.var, !l.positive⟩
+
+/-- The complement of a clause: every literal is complemented. -/
+def Clause.compl {n : ℕ} (c : Clause n) : Clause n :=
+  c.map Lit.compl
 
 /-- Indices of the clauses of `T_H`: one unit clause per vertex, one edge clause
 per edge, and four cyclic implications per vertex. -/
@@ -132,9 +144,28 @@ theorem optimum_identity_proof {n m alpha : ℕ} (G : PortGraph n m)
     rw [satCount_eq_score_proof]
     exact hle w
 
+theorem formula_dual_horn_proof {n m : ℕ} (G : PortGraph n m) (c : ClauseIdx n m) :
+    IsDualHorn (clauseOf G c) := by
+  rcases c with v | e | ⟨v, i⟩ <;> simp [IsDualHorn, clauseOf, unitClause, edgeClause, consClause]
+
 theorem formula_horn_proof {n m : ℕ} (G : PortGraph n m) (c : ClauseIdx n m) :
-    IsHorn (clauseOf G c) := by
-  rcases c with v | e | ⟨v, i⟩ <;> simp [IsHorn, clauseOf, unitClause, edgeClause, consClause]
+    IsHorn (Clause.compl (clauseOf G c)) := by
+  rcases c with v | e | ⟨v, i⟩ <;>
+    simp [IsHorn, Clause.compl, Lit.compl, clauseOf, unitClause, edgeClause, consClause]
+
+theorem eval_compl_proof {n : ℕ} (z : Fin n → Fin 4 → Bool) (l : Lit n) :
+    Lit.eval (fun v i => !z v i) (Lit.compl l) = Lit.eval z l := by
+  rcases l with ⟨⟨v, i⟩, b⟩
+  cases b <;> simp [Lit.eval, Lit.compl]
+
+theorem satisfied_compl_proof {n : ℕ} (z : Fin n → Fin 4 → Bool) (c : Clause n) :
+    Clause.satisfied (fun v i => !z v i) (Clause.compl c) = Clause.satisfied z c := by
+  induction c with
+  | nil => simp [Clause.satisfied, Clause.compl]
+  | cons l t ih =>
+    simp only [Clause.satisfied, Clause.compl, List.map_cons, List.any_cons,
+      eval_compl_proof] at ih ⊢
+    rw [ih]
 
 theorem formula_size_proof (n m : ℕ) :
     Fintype.card (ClauseIdx n m) = 5 * n + m := by

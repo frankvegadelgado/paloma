@@ -17,6 +17,8 @@
     "PalomaMax2SAT.SemanticPublic.satCount_eq_score",
     "PalomaMax2SAT.SemanticPublic.optimum_identity",
     "PalomaMax2SAT.SemanticPublic.formula_horn",
+    "PalomaMax2SAT.SemanticPublic.formula_dual_horn",
+    "PalomaMax2SAT.SemanticPublic.complement_satisfied",
     "PalomaMax2SAT.SemanticPublic.formula_size",
     "PalomaMax2SAT.SemanticPublic.three_occurrences",
     "PalomaMax2SAT.DegreePublic.baseline_degree_d",

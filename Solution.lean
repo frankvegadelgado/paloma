@@ -75,8 +75,18 @@ theorem optimum_identity {n m alpha : ℕ} (G : PortGraph n m)
 
 /-- Every clause of `T_H` is Horn. -/
 theorem formula_horn {n m : ℕ} (G : PortGraph n m) (c : ClauseIdx n m) :
-    IsHorn (clauseOf G c) := by
+    IsHorn (Clause.compl (clauseOf G c)) := by
   exact formula_horn_proof G c
+
+theorem formula_dual_horn {n m : ℕ} (G : PortGraph n m) (c : ClauseIdx n m) :
+    IsDualHorn (clauseOf G c) := by
+  exact formula_dual_horn_proof G c
+
+theorem complement_satisfied {n m : ℕ} (G : PortGraph n m) (z : Fin n → Fin 4 → Bool)
+    (c : ClauseIdx n m) :
+    Clause.satisfied (fun v i => !z v i) (Clause.compl (clauseOf G c)) =
+      Clause.satisfied z (clauseOf G c) := by
+  exact satisfied_compl_proof z (clauseOf G c)
 
 /-- `T_H` has `5n + m` clauses. -/
 theorem formula_size (n m : ℕ) :

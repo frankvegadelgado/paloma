@@ -22,9 +22,9 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 | Module | Status | What it contains |
 | --- | --- | --- |
 | `CubicThreeOccurrence` | formalized | Cubic 3-port construction, repair, optimum `4n + m + α`, `83/84` transfer arithmetic. |
-| `SemanticHorn` | formalized | Explicit Horn clauses, score decomposition, `5n + m` clauses, three occurrences per variable. |
+| `SemanticHorn` | formalized | Explicit clauses with at most one negative literal, complement-variable translation to standard Horn clauses (`formula_horn`, `complement_satisfied`), score decomposition, `5n + m` clauses, three occurrences per variable. |
 | `DegreeTransfer` | formalized (arithmetic) | Degree-`d` ratio inequalities, `d = 21` two-branch arithmetic, `ρ(d)` and `(21d+20)/(21d+21)` bounds, Berman–Fujito form for every degree, `63d ≤ 4(d+1)(d+3)+126`. |
-| `DegreeFormula` | formalized | Uniform degree-`d` formula `T_H`, optimum `(d+1)n + m + α`, `2m = dn`, `2α ≤ n`, Horn property, `(d+2)n + m` clauses, three occurrences, lift of an independent set. |
+| `DegreeFormula` | formalized | Uniform degree-`d` formula `T_H`, optimum `(d+1)n + m + α`, `2m = dn`, `2α ≤ n`, dual-Horn property and complement-variable translation to Horn clauses, `(d+2)n + m` clauses, three occurrences, lift of an independent set. |
 | `GeneralDegreeFormula` | formalized | Arbitrary degrees `d_v` with `(d_v+1)`-cycles: repair inequality, lift of an independent set, optimum `B + α` with `B = Σ(d_v+1) + m` (`= n + 3m` when degrees sum to `2m`), and the step `8α ≤ B`, `18785α ≤ 20000|I|` ⇒ `0.9932` ratio. |
 | `HardOccurrenceSplit` | formalized | Hard-cycle consistency for the occurrence split `P(F)`. |
 | `GraphTransfer` | formalized with hypotheses | Hard optima `4m + α` and `m + α`, `257/260` and `77/80` transfers, `27/28` branch arithmetic from numerical hypotheses. |
