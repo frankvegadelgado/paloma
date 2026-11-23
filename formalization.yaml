@@ -51,7 +51,7 @@ main_result:
   name: ugc_bounded
   paper_theorem: thm:ugc-class
   statement: On the class {T_H(G)} of three-occurrence Horn formulas from MAX-CUT instances the polynomial-time factor 83/84 exceeds the Unique Games thresholds 0.94616 (Brakensiek-Huang-Zwick) and 0.94017 (Lewin-Livnat-Zwick) that hold for all instances.
-  lean_modules: [PalomaMax2SAT.UgcBounded, PalomaMax2SAT.GeneralDegreeFormula, PalomaMax2SAT.UgcClass, PalomaMax2SAT.UgcBarrier, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.ConflictGraph, PalomaMax2SAT.ConflictDegree, PalomaMax2SAT.CitedResults]
+  lean_modules: [PalomaMax2SAT.UgcBounded, PalomaMax2SAT.BoundedLemmas, PalomaMax2SAT.GeneralDegreeFormula, PalomaMax2SAT.UgcClass, PalomaMax2SAT.UgcBarrier, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.ConflictGraph, PalomaMax2SAT.ConflictDegree, PalomaMax2SAT.CitedResults]
   cited_not_formalized: [Goemans-Williamson/Mahajan-Ramesh cut guarantee, Unique Games thresholds]
 
 modules:
@@ -109,6 +109,11 @@ modules:
     path: PalomaMax2SAT/GeneralDegreeFormula.lean
     status: formalized
     notes: "T_H for a port-labelled graph with a degree d_v at every vertex: sum d_v = 2m, sum (d_v+1) + m = n + 3m, satisfied clauses = U + (m - F) + (sum (d_v+1) - T), cycle lemma and repair, OPT = sum (d_v+1) + m + alpha, and the value sum (d_v+1) + m + |I| of the lift of an independent set. The Horn property and the three-occurrence count are formalized only for regular graphs (DegreeFormula)."
+
+  - name: PalomaMax2SAT.BoundedLemmas
+    path: PalomaMax2SAT/BoundedLemmas.lean
+    status: formalized
+    notes: "Counting lemmas for H(G): degree sums, 4m <= M, maximum degree d+1, and the division-free ratio arithmetic used by ugc_bounded."
 
   - name: PalomaMax2SAT.UgcBounded
     path: PalomaMax2SAT/UgcBounded.lean

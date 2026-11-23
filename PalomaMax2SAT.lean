@@ -16,4 +16,5 @@ public import PalomaMax2SAT.UgcBarrier
 public import PalomaMax2SAT.UgcBroken
 public import PalomaMax2SAT.UgcClass
 public import PalomaMax2SAT.GeneralDegreeFormula
+public import PalomaMax2SAT.BoundedLemmas
 public import PalomaMax2SAT.UgcBounded
