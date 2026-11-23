@@ -18,7 +18,7 @@ The formalized parts of Theorem `thm:ugc-class` and of the non-regular family be
 1. `83/84 < 0.9932` and `83/84 > 0.94615981 > 0.94016567`;
 2. the occurrences selected by a vertex set `S` of `G` form an independent set of the conflict
    graph `H(G)` of size `m + cut(S)`, and `α(H(G)) = m + maxcut(G)`;
-3. if `G` has maximum degree at most `Δ`, every vertex of `H(G)` has degree at most `Δ + 1`;
+3. if `G` has maximum degree at most `Dmax`, every vertex of `H(G)` has degree at most `Dmax + 1`;
 4. for every graph `G`, the degree sum of `H(G)` is `4 m + 2 Σ_v deg(v)²`, so `H(G)` has at
    least `4 m` edges;
 5. the division-free arithmetic `B ≥ 8 α`, `18785 α ≤ 20000 |I|` implies
@@ -114,15 +114,15 @@ theorem ratio_nonregular (m M alpha s : ℕ) (hM : 4 * m ≤ M) (ha : alpha ≤ 
       83 * ((4 * m + 3 * M) + alpha) ≤ 84 * ((4 * m + 3 * M) + s) := by
   constructor <;> omega
 
-/-- A graph of maximum degree at most `Δ` has a conflict graph of maximum degree at most
-`Δ + 1`. -/
-theorem nbrs_le {n m : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m) (Δ : ℕ)
-    (hΔ : ∀ v, PalomaMax2SAT.ConflictDegree.occ G v ≤ Δ)
+/-- A graph of maximum degree at most `Dmax` has a conflict graph of maximum degree at most
+`Dmax + 1`. -/
+theorem nbrs_le {n m : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m) (Dmax : ℕ)
+    (hD : ∀ v, PalomaMax2SAT.ConflictDegree.occ G v ≤ Dmax)
     (p : PalomaMax2SAT.ConflictGraph.Occ m) :
-    (PalomaMax2SAT.ConflictDegree.nbrs G p).card ≤ Δ + 1 := by
+    (PalomaMax2SAT.ConflictDegree.nbrs G p).card ≤ Dmax + 1 := by
   obtain ⟨e, s, b⟩ := p
   rw [PalomaMax2SAT.ConflictDegree.card_nbrs]
-  have := hΔ (PalomaMax2SAT.ConflictGraph.ov G e b)
+  have := hD (PalomaMax2SAT.ConflictGraph.ov G e b)
   omega
 
 theorem ugc_bounded :
@@ -136,10 +136,10 @@ theorem ugc_bounded :
     (∀ {n m mc : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m),
       PalomaMax2SAT.ConflictGraph.IsMaxCut G mc →
         PalomaMax2SAT.ConflictGraph.IsIndNumber G (m + mc)) ∧
-    (∀ {n m : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m) (Δ : ℕ),
-      (∀ v, PalomaMax2SAT.ConflictDegree.occ G v ≤ Δ) →
+    (∀ {n m : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m) (Dmax : ℕ),
+      (∀ v, PalomaMax2SAT.ConflictDegree.occ G v ≤ Dmax) →
         ∀ p : PalomaMax2SAT.ConflictGraph.Occ m,
-          (PalomaMax2SAT.ConflictDegree.nbrs G p).card ≤ Δ + 1) ∧
+          (PalomaMax2SAT.ConflictDegree.nbrs G p).card ≤ Dmax + 1) ∧
     (∀ {n m : ℕ} (G : PalomaMax2SAT.CutTransfer.EdgeGraph n m) (M : ℕ),
       2 * M = ∑ p : PalomaMax2SAT.ConflictGraph.Occ m,
           (PalomaMax2SAT.ConflictDegree.nbrs G p).card →
@@ -175,7 +175,7 @@ theorem ugc_bounded :
         rw [PalomaMax2SAT.ConflictGraph.card_selSet,
           PalomaMax2SAT.CutTransfer.value_eq_edges_add_cut]⟩,
     fun G h => PalomaMax2SAT.ConflictGraph.alpha_eq G h,
-    fun G Δ hΔ p => nbrs_le G Δ hΔ p,
+    fun G Dmax hD p => nbrs_le G Dmax hD p,
     fun G M hM => edges_ge G M hM,
     fun m M alpha s hM ha hs => ratio_nonregular m M alpha s hM ha hs,
     fun G => ⟨PalomaMax2SAT.GeneralDegreeFormula.sum_deg_eq G,

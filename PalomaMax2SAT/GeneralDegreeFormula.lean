@@ -139,7 +139,10 @@ theorem mem_transVertices {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ →
 theorem transCount_pos {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) (v : Fin n) (i : ℕ)
     (hi : i ∈ Finset.range (deg v + 1)) (h : transAt deg z v i) : 0 < transCount deg z v := by
   unfold transCount
-  calc 0 < (fun i => if transAt deg z v i then 1 else 0) i := by simp [h]
+  calc 0 < (fun i => if transAt deg z v i then 1 else 0) i := by
+        show 0 < (if transAt deg z v i then 1 else 0 : ℕ)
+        rw [if_pos h]
+        exact Nat.one_pos
     _ ≤ ∑ i ∈ Finset.range (deg v + 1), if transAt deg z v i then 1 else 0 :=
       Finset.single_le_sum (f := fun i => if transAt deg z v i then 1 else 0)
         (fun _ _ => Nat.zero_le _) hi
