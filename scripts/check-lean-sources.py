@@ -19,6 +19,10 @@ ID_FIRST = rf"A-Za-z_{ID_LETTER_LIKE}"
 ID_REST = rf"{ID_FIRST}0-9'!?\u2080-\u2089\u2090-\u209c\u1d62-\u1d6a\u2c7c"
 IDENTIFIER_CONTINUATION = re.compile(rf"[{ID_REST}]|\.[{ID_FIRST}«]")
 
+# Folders that are not part of the verified library: generated Prove2.me
+# platform packages and helper scripts.
+SKIPPED_DIRECTORIES = {".git", ".lake", "prove2me", "scripts"}
+
 
 def has_module_header(text: str) -> bool:
     """Recognize the initial marker, without confusing comments with headers.
@@ -69,7 +73,7 @@ def lean_source_files(root: Path) -> list[Path]:
     for directory, subdirectories, names in os.walk(root, followlinks=False):
         subdirectories[:] = sorted(
             name for name in subdirectories
-            if name not in {".git", ".lake"} and not (Path(directory) / name).is_symlink()
+            if name not in SKIPPED_DIRECTORIES and not (Path(directory) / name).is_symlink()
         )
         for name in sorted(names):
             path = Path(directory) / name
