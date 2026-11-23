@@ -115,6 +115,16 @@ modules:
     status: formalized
     notes: "Counting lemmas for H(G): degree sums, 4m <= M, maximum degree d+1, and the division-free ratio arithmetic used by ugc_bounded."
 
+  - name: PalomaMax2SAT.RegularLemmas
+    path: PalomaMax2SAT/RegularLemmas.lean
+    status: formalized
+    notes: "Degrees 1 and 2 of T_H: the independence number of a 1-regular port graph is m, the optimum is 3n for d = 1 and 4n + alpha for d = 2 (m = n). The exact computation of a maximum independent set on paths and cycles is not formalized."
+
+  - name: PalomaMax2SAT.UgcRegular
+    path: PalomaMax2SAT/UgcRegular.lean
+    status: formalized
+    notes: "Theorem all_degd (thm:all-degd): for every d >= 1 the optimum (d+1)n+m+alpha, 2m = dn, 2 alpha <= n, the repair, the lift (d+1)n+m+|I|, the all-true ratio (3d+2)/(3d+3) and 83/84 for d >= 27, the 6/7 transfer (21d+20)/(21d+21), the threshold, Berman-Fujito (d >= 22 and the epsilon = 1/c form) and d = 21 transfers as hypotheses, and the exact optima for d = 1 and d = 2. The polynomial running times and the cited guarantees are not formalized."
+
   - name: PalomaMax2SAT.UgcBounded
     path: PalomaMax2SAT/UgcBounded.lean
     status: formalized

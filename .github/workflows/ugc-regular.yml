@@ -1,4 +1,4 @@
-name: UGC bounded degree (Prove2Me)
+name: UGC regular degree (Prove2Me)
 
 on:
   workflow_dispatch:
@@ -12,19 +12,19 @@ on:
         type: boolean
         default: false
   push:
-    branches: [ugc-bounded-degree]
+    branches: [ugc-regular-degree]
     paths-ignore:
-      - 'prove2me/platform_ugc_bounded/**'
+      - 'prove2me/platform_ugc_regular/**'
       - 'doc/**'
 
 permissions:
   contents: write
 
 env:
-  P2M_GOAL: PalomaMax2SAT.UgcBounded.ugc_bounded
-  P2M_DEF: PalomaMax2SAT_UgcBounded_Defs
-  SLUG: PalomaMax2SAT_UgcBounded_ugc_bounded
-  OUT: prove2me/platform_ugc_bounded
+  P2M_GOAL: PalomaMax2SAT.UgcRegular.all_degd
+  P2M_DEF: PalomaMax2SAT_UgcRegular_Defs
+  SLUG: PalomaMax2SAT_UgcRegular_all_degd
+  OUT: prove2me/platform_ugc_regular
 
 jobs:
   build-generate:
@@ -65,36 +65,36 @@ jobs:
       - name: Generate the platform tree
         run: python3 prove2me/generate.py . extract "$OUT" 2>&1 | tee generate.log
       - name: Build the generated definitions
-        working-directory: prove2me/platform_ugc_bounded
+        working-directory: prove2me/platform_ugc_regular
         run: |
           lake update
           lake exe cache get
-          lake build Definitions.Def_${P2M_DEF} 2>&1 | tee ../defs_bounded.log
+          lake build Definitions.Def_${P2M_DEF} 2>&1 | tee ../defs_regular.log
       - name: Build the theorem stub (sorry warning expected)
-        working-directory: prove2me/platform_ugc_bounded
-        run: lake build Theorems.Thm_${SLUG} 2>&1 | tee ../thm_bounded.log
+        working-directory: prove2me/platform_ugc_regular
+        run: lake build Theorems.Thm_${SLUG} 2>&1 | tee ../thm_regular.log
       - name: Build the solution
-        working-directory: prove2me/platform_ugc_bounded
-        run: lake build Solutions.Sol_${SLUG} 2>&1 | tee ../sol_bounded.log
+        working-directory: prove2me/platform_ugc_regular
+        run: lake build Solutions.Sol_${SLUG} 2>&1 | tee ../sol_regular.log
       - name: Solution has no sorry and no own-target import
-        working-directory: prove2me/platform_ugc_bounded
+        working-directory: prove2me/platform_ugc_regular
         run: |
           ! grep -n "sorry" Solutions/Sol_${SLUG}.lean
           ! grep -n "Thm_${SLUG}" Solutions/Sol_${SLUG}.lean
       - name: Commit the generated tree to the branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/ugc-bounded-degree'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/ugc-regular-degree'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OUT/Definitions" "$OUT/Theorems" "$OUT/Solutions" "$OUT/upload_goal.json"
           if ! git diff --cached --quiet; then
-            git commit -m "Generate Prove2Me platform tree for ugc_bounded [skip ci]"
+            git commit -m "Generate Prove2Me platform tree for all_degd [skip ci]"
             git push
           fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ugc-bounded-results
+          name: ugc-regular-results
           path: |
             build.log
             axioms.log
@@ -103,8 +103,8 @@ jobs:
             extract/
       - uses: actions/upload-artifact@v4
         with:
-          name: ugc-bounded-platform
-          path: prove2me/platform_ugc_bounded
+          name: ugc-regular-platform
+          path: prove2me/platform_ugc_regular
 
   upload:
     needs: build-generate
@@ -118,10 +118,10 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
-          name: ugc-bounded-platform
-          path: prove2me/platform_ugc_bounded
+          name: ugc-regular-platform
+          path: prove2me/platform_ugc_regular
       - name: Upload to Prove2.me (new definition bundle, theorem stub, solution)
         env:
           P2M_API_KEY: ${{ secrets.P2M_API_KEY }}
         run: |
-          python3 prove2me/upload.py --platform prove2me/platform_ugc_bounded --execute ${{ inputs.public && '--public' || '' }}
+          python3 prove2me/upload.py --platform prove2me/platform_ugc_regular --execute ${{ inputs.public && '--public' || '' }}

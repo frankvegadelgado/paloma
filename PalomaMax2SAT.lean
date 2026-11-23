@@ -18,3 +18,5 @@ public import PalomaMax2SAT.UgcClass
 public import PalomaMax2SAT.GeneralDegreeFormula
 public import PalomaMax2SAT.BoundedLemmas
 public import PalomaMax2SAT.UgcBounded
+public import PalomaMax2SAT.RegularLemmas
+public import PalomaMax2SAT.UgcRegular
