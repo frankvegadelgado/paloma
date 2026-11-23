@@ -1,7 +1,0 @@
-{
- "definition_name": "PalomaMax2SAT_DegreeFormula",
- "theorem_name": "PalomaMax2SAT.UgcBroken.ugc_broken",
- "slug": "PalomaMax2SAT_UgcBroken_ugc_broken",
- "preamble": "import Mathlib\nimport Definitions.Def_PalomaMax2SAT_DegreeFormula\nopen PalomaMax2SAT.DegreeFormula",
- "formal_statement": "theorem PalomaMax2SAT.UgcBroken.ugc_broken :\n    (((94016567 : ℚ) / 100000000 < 94615981 / 100000000 ∧\n        (94615981 : ℚ) / 100000000 < 83 / 84) ∧\n      (94615981 : ℚ) / 100000000 < 19 / 20) ∧\n    (∀ d : ℕ, 6 ≤ d → 19 * (3 * d + 3) < 20 * (3 * d + 2)) ∧\n    ∀ {D n m alpha : ℕ} (G : PortGraph D n m) (_ : 3 ≤ D)\n      (_ : IsIndependenceNumber G alpha) (I : Finset (Fin n)) (_ : Independent G I)\n      (_ : 6 * alpha ≤ 7 * I.card),\n      83 * ((D + 1) * n + m + alpha) ≤\n        84 * satCount G (assignmentOfIndependent I : Fin n → Fin (D + 1) → Bool) := by sorry\n"
-}

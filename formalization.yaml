@@ -51,7 +51,7 @@ main_result:
   name: ugc_bounded
   paper_theorem: thm:ugc-class
   statement: On the class {T_H(G)} of three-occurrence Horn formulas from MAX-CUT instances the polynomial-time factor 83/84 exceeds the Unique Games thresholds 0.94616 (Brakensiek-Huang-Zwick) and 0.94017 (Lewin-Livnat-Zwick) that hold for all instances.
-  lean_modules: [PalomaMax2SAT.UgcBounded, PalomaMax2SAT.BoundedLemmas, PalomaMax2SAT.GeneralDegreeFormula, PalomaMax2SAT.UgcClass, PalomaMax2SAT.UgcBarrier, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.ConflictGraph, PalomaMax2SAT.ConflictDegree, PalomaMax2SAT.CitedResults]
+  lean_modules: [PalomaMax2SAT.UgcBounded, PalomaMax2SAT.BoundedLemmas, PalomaMax2SAT.GeneralDegreeFormula, PalomaMax2SAT.UgcClass, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.ConflictGraph, PalomaMax2SAT.ConflictDegree, PalomaMax2SAT.CitedResults]
   cited_not_formalized: [Goemans-Williamson/Mahajan-Ramesh cut guarantee, Unique Games thresholds]
 
 modules:
@@ -89,11 +89,6 @@ modules:
     path: PalomaMax2SAT/CutLift.lean
     status: formalized
     notes: Lifting step for Theorem thm:cutclass from independent sets with 18785 α(H) ≤ 20000 |I|.
-
-  - name: PalomaMax2SAT.UgcBarrier
-    path: PalomaMax2SAT/UgcBarrier.lean
-    status: formalized
-    notes: "Theorem ugc_barrier (thresholds and lift part of thm:ugc-class): 83/84 above the Unique Games thresholds, and the 83/84 ratio of the lift of an independent set with 18785 alpha <= 20000 |I| on T_H, for every degree D >= 1. The cut guarantee is a hypothesis."
 
   - name: PalomaMax2SAT.UgcBroken
     path: PalomaMax2SAT/UgcBroken.lean
@@ -150,19 +145,13 @@ modules:
     status: formalized
     notes: Degrees of the conflict graph, (d+1)-regularity, 2 deg(v) occurrences of x_v, and 4m vertices of the conflict graph.
 
-  - name: PalomaMax2SAT.SignedGraph
-    path: PalomaMax2SAT/SignedGraph.lean
-    status: formalized
-    notes: Theorem thm:signed. Independent sets of the signed graph J have weight at most D M + OPT(F), decode to assignments, and the bound is attained.
-
 unformalized_in_lean:
   - Semidefinite programming rounding and derandomization (Goemans-Williamson, Mahajan-Ramesh, Trevisan)
   - Berman-Fujito approximation algorithm proofs
   - APX-completeness of cubic Maximum Independent Set (Alimonti-Kann), used to conclude APX-completeness of the image class
   - Unique Games Conjecture hardness thresholds (Brakensiek-Huang-Zwick, Lewin-Livnat-Zwick, Ghoshal et al., Khot-Kindler-Mossel-O'Donnell for MAX-CUT)
-  - Vertex count 3D and maximum degree three of the signed graph J (Theorem thm:signed)
   - "OPT(T_H) = B + m + maxcut(G) for the conflict graph as a single statement (Proposition prop:cutconflict); its ingredients are proved separately"
   - "Simplicity of the conflict graph H(G) as a separate lemma (Proposition prop:cutconflict); OPT(F_G) = m + maxcut(G) as one statement and Corollary cor:cutratio with real gamma and rho (proved division-free)"
-  - "Decimal remarks of the Unique Games section (19/20 above 0.94615981, 0.04793, 0.022) and the examples of the signed-graph section (unary-terminal path, k = 82 unit clauses)"
+  - "Decimal remarks of the Unique Games section (19/20 above 0.94615981, 0.04793, 0.022)"
   - "Trevisan bound 1 - 4 sqrt(eps) + 8 eps > 0.95, the Goemans-Williamson bound arccos(1-2c)/pi for c >= 0.845 and the exhaustive solution of small orders (Theorem thm:ratio, Proposition prop:degd (5))"
   - Polynomial running time of every constructive statement (the repair, the lifts and the decodings are defined as functions, their running time is not modelled)
