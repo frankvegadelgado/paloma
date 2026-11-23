@@ -1,7 +1,14 @@
 name: Palomar Lean checks
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
+env:
+  P2M_GOAL: PalomaMax2SAT.UgcRegular.all_degd
+  P2M_DEF: PalomaMax2SAT_UgcRegular_Defs
+  SLUG: PalomaMax2SAT_UgcRegular_all_degd
+  OUT: prove2me/platform_ugc_regular
 
 permissions:
   contents: read
