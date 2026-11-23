@@ -99,7 +99,7 @@ def selectedVertices {n : ℕ} (z : Fin n → ℕ → Bool) : Finset (Fin n) :=
   Finset.univ.filter fun v => z v 0 = false
 
 def transVertices {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) : Finset (Fin n) :=
-  Finset.univ.filter fun v => ∃ i ∈ Finset.range (deg v + 1), transAt deg z v i
+  Finset.univ.filter fun v => 0 < transCount deg z v
 
 def cleanVertices {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) : Finset (Fin n) :=
   selectedVertices z \ transVertices deg z
@@ -131,10 +131,18 @@ theorem mem_selectedVertices {n : ℕ} (z : Fin n → ℕ → Bool) (v : Fin n) 
   exact ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
 
 theorem mem_transVertices {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) (v : Fin n) :
-    v ∈ transVertices deg z ↔ ∃ i ∈ Finset.range (deg v + 1), transAt deg z v i := by
+    v ∈ transVertices deg z ↔ 0 < transCount deg z v := by
   unfold transVertices
   rw [Finset.mem_filter]
   exact ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
+
+theorem transCount_pos {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) (v : Fin n) (i : ℕ)
+    (hi : i ∈ Finset.range (deg v + 1)) (h : transAt deg z v i) : 0 < transCount deg z v := by
+  unfold transCount
+  calc 0 < (fun i => if transAt deg z v i then 1 else 0) i := by simp [h]
+    _ ≤ ∑ i ∈ Finset.range (deg v + 1), if transAt deg z v i then 1 else 0 :=
+      Finset.single_le_sum (f := fun i => if transAt deg z v i then 1 else 0)
+        (fun _ _ => Nat.zero_le _) hi
 
 theorem cons_split {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → Bool) (v : Fin n) :
     (∑ i ∈ Finset.range (deg v + 1), if ¬ transAt deg z v i then 1 else 0) +
@@ -207,7 +215,8 @@ theorem clean_all_false {n : ℕ} (deg : Fin n → ℕ) (z : Fin n → ℕ → B
   have h0 := (Finset.mem_sdiff.mp hv).1
   have hT := (Finset.mem_sdiff.mp hv).2
   exact no_transition_all_false deg z v ((mem_selectedVertices z v).mp h0)
-    (fun i hi h => hT ((mem_transVertices deg z v).mpr ⟨i, Finset.mem_range.mpr hi, h⟩))
+    (fun i hi h => hT ((mem_transVertices deg z v).mpr
+      (transCount_pos deg z v i (Finset.mem_range.mpr hi) h)))
 
 theorem internalEdges_subset_falseEdges {n m : ℕ} {deg : Fin n → ℕ}
     (G : GPortGraph n m deg) (z : Fin n → ℕ → Bool) :
@@ -228,14 +237,9 @@ theorem score_le {n m : ℕ} {deg : Fin n → ℕ} (G : GPortGraph n m deg)
     rw [Finset.card_filter]
     apply Finset.sum_le_sum
     intro v _
-    by_cases h : ∃ i ∈ Finset.range (deg v + 1), transAt deg z v i
+    by_cases h : 0 < transCount deg z v
     · rw [if_pos h]
-      obtain ⟨i, hi, hti⟩ := h
-      unfold transCount
-      calc (1 : ℕ) = (fun i => if transAt deg z v i then 1 else 0) i := (if_pos hti).symm
-        _ ≤ ∑ i ∈ Finset.range (deg v + 1), if transAt deg z v i then 1 else 0 :=
-          Finset.single_le_sum (f := fun i => if transAt deg z v i then 1 else 0)
-            (fun _ _ => Nat.zero_le _) hi
+      exact h
     · rw [if_neg h]
       exact Nat.zero_le _
   have hTle : ∑ v, transCount deg z v ≤ ∑ v, (deg v + 1) := by
@@ -364,6 +368,12 @@ theorem card_filter_sum_proof {α β γ : Type*} [Fintype α] [Fintype β] [Fint
   simp only [Finset.card_filter, Fintype.sum_sum_type]
   ring
 
+theorem consClause_satisfied {n : ℕ} {deg : Fin n → ℕ} (z : Fin n → ℕ → Bool)
+    (p : Σ v : Fin n, Fin (deg v + 1)) :
+    Clause.satisfied z (consClause p) = true ↔ ¬ transAt deg z p.1 (p.2 : ℕ) := by
+  cases ha : z p.1 (p.2 : ℕ) <;> cases hb : z p.1 (cyc (deg p.1) (p.2 : ℕ)) <;>
+    simp [transAt, consClause, Clause.satisfied, Lit.eval, ha, hb]
+
 theorem satCount_eq_score {n m : ℕ} {deg : Fin n → ℕ} (G : GPortGraph n m deg)
     (z : Fin n → ℕ → Bool) : satCount G z = score G z := by
   have h := card_filter_sum_proof
@@ -394,8 +404,7 @@ theorem satCount_eq_score {n m : ℕ} {deg : Fin n → ℕ} (G : GPortGraph n m 
     refine Finset.sum_congr rfl fun v _ => ?_
     rw [Finset.sum_range]
     refine Finset.sum_congr rfl fun i _ => ?_
-    cases ha : z v (i : ℕ) <;> cases hb : z v (cyc (deg v) (i : ℕ)) <;>
-      simp [transAt, clauseOf, consClause, Clause.satisfied, Lit.eval, ha, hb]
+    exact if_congr (consClause_satisfied (deg := deg) z ⟨v, i⟩) rfl rfl
   have hsplit : ∑ v, (∑ i ∈ Finset.range (deg v + 1), if ¬ transAt deg z v i then 1 else 0) +
       ∑ v, transCount deg z v = ∑ v, (deg v + 1) := by
     rw [← Finset.sum_add_distrib]
