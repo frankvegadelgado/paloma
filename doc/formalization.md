@@ -7,9 +7,9 @@ literature as explicit hypotheses, and what it does not touch.
 
 Theorem `thm:ugc-class` of the paper: on the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CUT instances, the polynomial-time factor `83/84` exceeds the Unique Games thresholds `0.94615981` (Brakensiek, Huang, Zwick) and `0.94016567` (Lewin, Livnat, Zwick), which hold for all instances. The main theorem in Lean for graphs of bounded degree is `PalomaMax2SAT.UgcBounded.ugc_bounded`: thresholds and `83/84 < 0.9932`; `selSet` and `alpha(H(G)) = m + maxcut(G)`; maximum degree at most `d+1` of `H(G)` when `G` has maximum degree at most `d`; the degree sum `4m + 2 sum deg(v)^2` of `H(G)`; the arithmetic `9932 (B+alpha) <= 10000 (B+|I|)` from `B >= 8 alpha`; and, for the formula `T_H` of every port-labelled graph with degrees `d_v` (`GeneralDegreeFormula`), `sum d_v = 2m`, `OPT = sum (d_v+1) + m + alpha` and the value of the lift of an independent set. The identification of `T_{H(G)}` with a port-labelled graph is not formalized. The regular-graph counterpart is `PalomaMax2SAT.UgcClass.ugc_class`, a conjunction of: `83/84 > 0.94615981 > 0.94016567`; the independent set `selSet` of the conflict graph has size `m + cut(S)`; `alpha(H(G)) = m + maxcut(G)`; `H(G)` is `(d+1)`-regular with `4m` vertices; `8785 c <= 10000 cut` implies `18785 (m+c) <= 20000 (m+cut)`; and the lift of an independent set `I` with `18785 alpha <= 20000 |I|` satisfies at least `83/84` of the optimum of `T_H`, for every degree `D >= 1`. Lean proves the arithmetic of the lift (`CutLift`, `CutTransfer`, `CitedResults`); the Goemans-Williamson cut guarantee and the thresholds are the cited hypotheses listed below.
 
-## Prove2.me and toolchain
+## Toolchain
 
-The development builds with Lean `v4.35.0-rc2` and the Mathlib tag `v4.35.0-rc2`, as the Palomar comparator requires. The Prove2.me submissions (`ugc_broken`, `ugc_class`, `ugc_bounded`, `all_degd`) are generated in their own branches on Lean `v4.33.1`, together with the tools `prove2me/generate.py` and `prove2me/upload.py`; the generated files carry no `module` header, so none of these files is part of `main`, which Palomar checks.
+The development builds with Lean `v4.35.0-rc2` and the Mathlib tag `v4.35.0-rc2`, as the Palomar comparator requires.
 
 ## Proved in Lean
 

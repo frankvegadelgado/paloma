@@ -79,7 +79,7 @@ modules:
   - name: PalomaMax2SAT.CutTransfer
     path: PalomaMax2SAT/CutTransfer.lean
     status: formalized
-    notes: MAX-CUT clause count m + cut(S) and and Corollary cor:cutratio arithmetic.
+    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic.
 
   - name: PalomaMax2SAT.PaperArithmetic
     path: PalomaMax2SAT/PaperArithmetic.lean

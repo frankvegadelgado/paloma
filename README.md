@@ -61,17 +61,6 @@ On the class `{T_{H(G)}}` of three-occurrence Horn formulas obtained from MAX-CU
 
 Lean `v4.35.0-rc2` with Mathlib tag `v4.35.0-rc2` (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`). The Palomar comparator requires this toolchain or later.
 
-## Prove2.me submissions
-
-Each theorem below is submitted to Prove2.me from its own branch, which holds the generated `prove2me/platform*` tree (built on Lean `v4.33.1`) and the tools `prove2me/generate.py` and `prove2me/upload.py`. None of these files is part of `main`.
-
-| Lean theorem | Paper | Prove2.me |
-| --- | --- | --- |
-| `PalomaMax2SAT.UgcBroken.ugc_broken` | `thm:ugc-broken` | https://prove2.me/theorems/ac0b6f98-aa74-4047-a83b-446fa3307e21 |
-| `PalomaMax2SAT.UgcClass.ugc_class` | `thm:ugc-class` | https://prove2.me/theorems/0af5de5e-cc87-4f6b-89b1-c3728ad25ff4 |
-| `PalomaMax2SAT.UgcBounded.ugc_bounded` | `thm:ugc-class` (bounded degree) | https://prove2.me/theorems/3ca93908-150c-4b65-9e9e-94d9884fe07a |
-| `PalomaMax2SAT.UgcRegular.all_degd` | `thm:all-degd` | https://prove2.me/theorems/0e9bbdb8-656d-40f9-ade9-3d9064d4bb23 |
-
 ## Building and verifying
 
 ```bash
