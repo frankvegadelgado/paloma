@@ -35,13 +35,13 @@ sources:
 automation:
   methods:
     - method: manual
-      notes: "The author states the theorems, writes the paper, and reviews the formal statements in Challenge.lean."
+      notes: "The author states the theorems, writes and edits the paper (with the AI assistance described below), and reviews the formal statements in Challenge.lean."
     - method: other
       notes: "Claude (Anthropic) assisted in deriving the proofs, in writing the Lean 4 formalization and in preparing the manuscript; the author reviewed and edited the AI-assisted content. The Lean proofs are checked by the Lean kernel via lake build, and lake comparator verifies Solution.lean against Challenge.lean in GitHub Actions. The fuller account is in the Acknowledgments of the pinned manuscript (doc/paper.tex)."
 
 review:
   status: "self-assessed"
-  notes: "Checked by the author alone, not independently reviewed. The author reviewed the formal statements in Challenge.lean, the manuscript and the AI-assisted proofs and text. The mechanical basis is the Lean kernel check (lake build) and the Comparator run of Solution.lean against Challenge.lean in GitHub Actions."
+  notes: "Checked by the author alone, not independently reviewed. The author reviewed the formal statements in Challenge.lean, the manuscript and the AI-assisted content, as the manuscript states. The mechanical basis is the Lean kernel check (lake build) and the Comparator run of Solution.lean against Challenge.lean in GitHub Actions."
 
 repository:
   role: substantive-development
@@ -79,7 +79,7 @@ modules:
   - name: PalomaMax2SAT.CutTransfer
     path: PalomaMax2SAT/CutTransfer.lean
     status: formalized
-    notes: MAX-CUT clause count m + cut(S) and Corollary cor:cutratio arithmetic.
+    notes: MAX-CUT clause count m + cut(S) and and Corollary cor:cutratio arithmetic.
 
   - name: PalomaMax2SAT.PaperArithmetic
     path: PalomaMax2SAT/PaperArithmetic.lean
