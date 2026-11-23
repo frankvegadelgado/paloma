@@ -70,8 +70,8 @@ def call(method, path, token=None, body=None, form=None):
     except urllib.error.HTTPError as e:
         return e.code, {'error': e.read().decode(errors='replace')[:2000]}
 
-definition_body = {'definition_name': DEF, 'definition_title': r'Port graphs, independent sets and the formula $T_H$ (three-occurrence Horn class)',
-                   'definition': defs_src, 'natural_language_statement': DEF_NL, 'source': paper,
+definition_body = {'definition_name': DEF, 'definition_title': meta.get('definition_title', r'Port graphs, independent sets and the formula $T_H$ (three-occurrence Horn class)'),
+                   'definition': defs_src, 'natural_language_statement': meta.get('definition_nl', DEF_NL), 'source': paper,
                    'tags': ['paloma-max2sat'], 'private': private}
 THM_NL = meta.get('natural_language_statement', THM_NL); EXPL = meta.get('explanation', EXPL)
 problem_body = {'theorem_name': THM, 'theorem_title': meta.get('theorem_title', r'Ratio $83/84$ above the Unique Games thresholds'),

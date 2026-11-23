@@ -14,3 +14,4 @@ public import PalomaMax2SAT.SignedGraph
 public import PalomaMax2SAT.PaperArithmetic
 public import PalomaMax2SAT.UgcBarrier
 public import PalomaMax2SAT.UgcBroken
+public import PalomaMax2SAT.UgcClass

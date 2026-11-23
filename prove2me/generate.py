@@ -6,7 +6,7 @@ repo, ext, out = sys.argv[1:4]
 GOAL = os.environ.get('P2M_GOAL', 'PalomaMax2SAT.UgcBarrier.ugc_barrier')   # fully qualified goal theorem
 GOAL_SHORT = GOAL.rsplit('.', 1)[1]
 GOAL_MODULE = GOAL.rsplit('.', 1)[0]
-DEF_NAME = 'PalomaMax2SAT_DegreeFormula'   # definition bundle name
+DEF_NAME = os.environ.get('P2M_DEF', 'PalomaMax2SAT_DegreeFormula')   # definition bundle name
 THM_NAME = GOAL
 THM_SLUG = THM_NAME.replace('.', '_')
 
