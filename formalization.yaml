@@ -48,10 +48,10 @@ repository:
 related_formalizations: []
 
 main_result:
-  name: ugc_barrier
+  name: ugc_bounded
   paper_theorem: thm:ugc-class
   statement: On the class {T_H(G)} of three-occurrence Horn formulas from MAX-CUT instances the polynomial-time factor 83/84 exceeds the Unique Games thresholds 0.94616 (Brakensiek-Huang-Zwick) and 0.94017 (Lewin-Livnat-Zwick) that hold for all instances.
-  lean_modules: [PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.CitedResults]
+  lean_modules: [PalomaMax2SAT.UgcBounded, PalomaMax2SAT.BoundedLemmas, PalomaMax2SAT.GeneralDegreeFormula, PalomaMax2SAT.UgcClass, PalomaMax2SAT.UgcBarrier, PalomaMax2SAT.CutLift, PalomaMax2SAT.CutTransfer, PalomaMax2SAT.ConflictGraph, PalomaMax2SAT.ConflictDegree, PalomaMax2SAT.CitedResults]
   cited_not_formalized: [Goemans-Williamson/Mahajan-Ramesh cut guarantee, Unique Games thresholds]
 
 modules:
@@ -89,6 +89,46 @@ modules:
     path: PalomaMax2SAT/CutLift.lean
     status: formalized
     notes: Lifting step for Theorem thm:cutclass from independent sets with 18785 α(H) ≤ 20000 |I|.
+
+  - name: PalomaMax2SAT.UgcBarrier
+    path: PalomaMax2SAT/UgcBarrier.lean
+    status: formalized
+    notes: "Theorem ugc_barrier (thresholds and lift part of thm:ugc-class): 83/84 above the Unique Games thresholds, and the 83/84 ratio of the lift of an independent set with 18785 alpha <= 20000 |I| on T_H, for every degree D >= 1. The cut guarantee is a hypothesis."
+
+  - name: PalomaMax2SAT.UgcBroken
+    path: PalomaMax2SAT/UgcBroken.lean
+    status: formalized
+    notes: "Theorem ugc_broken (thm:ugc-broken, item 3 and the threshold comparison): beta* < alpha* < 19/20 < 83/84, (3d+2)/(3d+3) > 19/20 for d >= 6, and for every degree D >= 3 an independent set with 6 alpha <= 7 |I| lifts to the ratio 83/84 on T_H. The GHLMM guarantee (items 1 and 2) and the Unique Games thresholds are cited, not formalized."
+
+  - name: PalomaMax2SAT.UgcClass
+    path: PalomaMax2SAT/UgcClass.lean
+    status: formalized
+    notes: "Theorem ugc_class (thm:ugc-class): beta* < alpha* < 83/84; selSet is an independent set of size m + cut(S) of the conflict graph; alpha(H(G)) = m + maxcut(G); H(G) is (d+1)-regular with 4m vertices; 8785 c <= 10000 cut implies 18785 (m+c) <= 20000 (m+cut); and the 83/84 lift of an independent set with 18785 alpha <= 20000 |I| on T_H for every D > 0. The Goemans-Williamson guarantee and the Unique Games thresholds are cited, not formalized."
+
+  - name: PalomaMax2SAT.GeneralDegreeFormula
+    path: PalomaMax2SAT/GeneralDegreeFormula.lean
+    status: formalized
+    notes: "T_H for a port-labelled graph with a degree d_v at every vertex: sum d_v = 2m, sum (d_v+1) + m = n + 3m, satisfied clauses = U + (m - F) + (sum (d_v+1) - T), cycle lemma and repair, OPT = sum (d_v+1) + m + alpha, and the value sum (d_v+1) + m + |I| of the lift of an independent set. The Horn property and the three-occurrence count are formalized only for regular graphs (DegreeFormula)."
+
+  - name: PalomaMax2SAT.BoundedLemmas
+    path: PalomaMax2SAT/BoundedLemmas.lean
+    status: formalized
+    notes: "Counting lemmas for H(G): degree sums, 4m <= M, maximum degree d+1, and the division-free ratio arithmetic used by ugc_bounded."
+
+  - name: PalomaMax2SAT.RegularLemmas
+    path: PalomaMax2SAT/RegularLemmas.lean
+    status: formalized
+    notes: "Degrees 1 and 2 of T_H: the independence number of a 1-regular port graph is m, the optimum is 3n for d = 1 and 4n + alpha for d = 2 (m = n). The exact computation of a maximum independent set on paths and cycles is not formalized."
+
+  - name: PalomaMax2SAT.UgcRegular
+    path: PalomaMax2SAT/UgcRegular.lean
+    status: formalized
+    notes: "Theorem all_degd (thm:all-degd): for every d >= 1 the optimum (d+1)n+m+alpha, 2m = dn, 2 alpha <= n, the repair, the lift (d+1)n+m+|I|, the all-true ratio (3d+2)/(3d+3) and 83/84 for d >= 27, the 6/7 transfer (21d+20)/(21d+21), the threshold, Berman-Fujito (d >= 22 and the epsilon = 1/c form) and d = 21 transfers as hypotheses, and the exact optima for d = 1 and d = 2. The polynomial running times and the cited guarantees are not formalized."
+
+  - name: PalomaMax2SAT.UgcBounded
+    path: PalomaMax2SAT/UgcBounded.lean
+    status: formalized
+    notes: "Theorem ugc_bounded (thm:ugc-class, bounded degree): beta* < alpha* < 83/84 < 0.9932; selSet is independent of size m + cut(S); alpha(H(G)) = m + maxcut(G); H(G) has maximum degree at most d+1 when G has maximum degree at most d; the degrees of H(G) add up to 4m + 2 sum deg^2; 4m <= M, alpha <= 2m and 18785 alpha <= 20000 s give 9932 (B+alpha) <= 10000 (B+s); and the identities and the 9932/10000 lift of T_H for every port-labelled graph. The identification of T_H(G) with a port-labelled graph, the Goemans-Williamson guarantee and the Unique Games thresholds are not formalized."
 
   - name: PalomaMax2SAT.CitedResults
     path: PalomaMax2SAT/CitedResults.lean

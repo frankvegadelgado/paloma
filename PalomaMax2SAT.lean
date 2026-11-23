@@ -12,3 +12,11 @@ public import PalomaMax2SAT.ConflictGraph
 public import PalomaMax2SAT.ConflictDegree
 public import PalomaMax2SAT.SignedGraph
 public import PalomaMax2SAT.PaperArithmetic
+public import PalomaMax2SAT.UgcBarrier
+public import PalomaMax2SAT.UgcBroken
+public import PalomaMax2SAT.UgcClass
+public import PalomaMax2SAT.GeneralDegreeFormula
+public import PalomaMax2SAT.BoundedLemmas
+public import PalomaMax2SAT.UgcBounded
+public import PalomaMax2SAT.RegularLemmas
+public import PalomaMax2SAT.UgcRegular
