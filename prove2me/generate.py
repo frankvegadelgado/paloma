@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Generate the Prove2Me platform tree for one goal theorem by skeleton subtraction.
-Usage: generate.py <repo_dir> <extract_dir> <out_dir>"""
+Usage: [P2M_GOAL=<qualified theorem>] generate.py <repo_dir> <extract_dir> <out_dir>"""
 import json, sys, re, os, collections
 repo, ext, out = sys.argv[1:4]
-GOAL = 'PalomaMax2SAT.UgcBarrier.ugc_barrier'
-GOAL_SHORT = 'ugc_barrier'
-GOAL_MODULE = 'PalomaMax2SAT.UgcBarrier'
+GOAL = os.environ.get('P2M_GOAL', 'PalomaMax2SAT.UgcBarrier.ugc_barrier')   # fully qualified goal theorem
+GOAL_SHORT = GOAL.rsplit('.', 1)[1]
+GOAL_MODULE = GOAL.rsplit('.', 1)[0]
 DEF_NAME = 'PalomaMax2SAT_DegreeFormula'   # definition bundle name
-THM_NAME = 'PalomaMax2SAT.UgcBarrier.ugc_barrier'
+THM_NAME = GOAL
 THM_SLUG = THM_NAME.replace('.', '_')
 
 rows = [json.loads(l) for l in open(f'{ext}/decl_graph.jsonl')]

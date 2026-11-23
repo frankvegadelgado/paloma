@@ -95,6 +95,11 @@ modules:
     status: formalized
     notes: "Theorem ugc_barrier (thm:ugc-class): 83/84 above the Unique Games thresholds, and the 83/84 ratio of the lift of an independent set with 18785 alpha <= 20000 |I| on T_H, for every degree D >= 1. The cut guarantee is a hypothesis."
 
+  - name: PalomaMax2SAT.UgcBroken
+    path: PalomaMax2SAT/UgcBroken.lean
+    status: formalized
+    notes: "Theorem ugc_broken (thm:ugc-broken, item 3 and the threshold comparison): beta* < alpha* < 19/20 < 83/84, (3d+2)/(3d+3) > 19/20 for d >= 6, and for every degree D >= 3 an independent set with 6 alpha <= 7 |I| lifts to the ratio 83/84 on T_H. The GHLMM guarantee (items 1 and 2) and the Unique Games thresholds are cited, not formalized."
+
   - name: PalomaMax2SAT.CitedResults
     path: PalomaMax2SAT/CitedResults.lean
     status: axiomatized_as_hypotheses

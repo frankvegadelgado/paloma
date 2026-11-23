@@ -12,6 +12,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--platform', required=True)
 ap.add_argument('--public', action='store_true')
 ap.add_argument('--execute', action='store_true')
+ap.add_argument('--skip-definition', action='store_true', help='reuse the definition bundle already published under the same name')
 args = ap.parse_args()
 private = not args.public
 sha = os.environ.get('GITHUB_SHA', '<commit-sha>')
@@ -23,6 +24,7 @@ defs_src = open(f'{args.platform}/Definitions/Def_{DEF}.lean', encoding='utf-8')
 sol_src = open(f'{args.platform}/Solutions/Sol_{SLUG}.lean', encoding='utf-8').read()
 
 paper = f'{repo}/blob/{sha}/doc/paper.tex'
+meta = json.load(open(f'{args.platform}/meta.json')) if os.path.exists(f'{args.platform}/meta.json') else {}
 DEF_NL = (r"Formal model of the three-occurrence Horn formula $T_H$ of a simple $d$-regular graph $H$ "
           r"with a port labelling (`PortGraph`), its independent sets and independence number, and the "
           r"number of clauses of $T_H$ satisfied by an assignment (`satCount`), together with the "
@@ -71,9 +73,10 @@ def call(method, path, token=None, body=None, form=None):
 definition_body = {'definition_name': DEF, 'definition_title': r'Port graphs, independent sets and the formula $T_H$ (three-occurrence Horn class)',
                    'definition': defs_src, 'natural_language_statement': DEF_NL, 'source': paper,
                    'tags': ['paloma-max2sat'], 'private': private}
-problem_body = {'theorem_name': THM, 'theorem_title': r'Ratio $83/84$ above the Unique Games thresholds',
+THM_NL = meta.get('natural_language_statement', THM_NL); EXPL = meta.get('explanation', EXPL)
+problem_body = {'theorem_name': THM, 'theorem_title': meta.get('theorem_title', r'Ratio $83/84$ above the Unique Games thresholds'),
                 'formal_statement': goal['formal_statement'], 'natural_language_statement': THM_NL,
-                'preamble': goal['preamble'], 'source': paper + '#L295', 'tags': ['paloma-max2sat'], 'private': private}
+                'preamble': goal['preamble'], 'source': paper + '#L' + str(meta.get('source_line', 295)), 'tags': ['paloma-max2sat'], 'private': private}
 
 print('mode:', 'EXECUTE' if args.execute else 'DRY RUN', '| visibility:', 'private' if private else 'PUBLIC')
 print('definition:', DEF, len(defs_src), 'chars'); print('theorem:', THM); print('solution:', len(sol_src), 'chars'); print('source:', paper)
@@ -96,10 +99,13 @@ def wait_job(job_id):
         time.sleep(10)
     sys.exit('timed out waiting for job ' + job_id)
 
-st, r = call('POST', '/submit-definition', tok(), definition_body); print('submit-definition', st, {k: r.get(k) for k in ('job_id', 'status', 'error')})
-if st not in (200, 202): sys.exit(1)
-job = wait_job(r['job_id']); print('definition job:', job.get('status'), job.get('error_message', '')[:1500])
-if job.get('status') != 'PUBLISHED': sys.exit(1)
+if args.skip_definition:
+    print('submit-definition skipped (reusing the published bundle', DEF + ')')
+else:
+    st, r = call('POST', '/submit-definition', tok(), definition_body); print('submit-definition', st, {k: r.get(k) for k in ('job_id', 'status', 'error')})
+    if st not in (200, 202): sys.exit(1)
+    job = wait_job(r['job_id']); print('definition job:', job.get('status'), job.get('error_message', '')[:1500])
+    if job.get('status') != 'PUBLISHED': sys.exit(1)
 
 st, r = call('POST', '/submit-problem', tok(), problem_body); print('submit-problem', st, {k: r.get(k) for k in ('jobs', 'errors', 'error')})
 if st not in (200, 202) or r.get('errors') or not r.get('jobs'): sys.exit(1)
