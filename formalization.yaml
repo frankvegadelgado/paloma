@@ -30,7 +30,7 @@ sources:
     authors: ["Michel X. Goemans", "David P. Williamson"]
   - title: "On approximation properties of the independent set problem for low degree graphs"
     relationship: background
-    authors: ["Piotr Berman", "Toshihiro Fujito"]
+    authors: ["Piotr Berman", "Toshihiro Fujito"]
 
 automation:
   methods:
