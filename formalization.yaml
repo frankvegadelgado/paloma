@@ -1,7 +1,7 @@
 version: v0.4
 project:
-  name: "PalomaMax2SAT: an 83/84 approximation for a cubic three-occurrence Horn class"
-  description: "Lean 4 formalization of the paper 'An 83/84 approximation for a cubic three-occurrence Horn class'. The compared results are: the three-occurrence formula T_H built from a cubic graph, its explicit clause semantics (at most one negative literal per clause, with a proved complement-variable translation to standard Horn clauses that preserves satisfaction), the exact identity OPT(T_H) = 4n + m + alpha, the repair lemma, the number of clauses and the three occurrences of every variable, and the 83/84 approximation ratio transferred from a cubic independent-set guarantee, together with the degree-d ratio arithmetic. The supporting modules also formalize the MAX-CUT reduction, the conflict graph and the lift of a Goemans-Williamson cut to the 83/84 ratio. Goemans-Williamson, Berman-Fujito and the Unique Games thresholds are cited hypotheses, not reproved."
+  name: "PalomaMax2SAT: an 83/84 approximation for three-occurrence Horn formulas above the Unique Games thresholds"
+  description: "Lean 4 formalization of the paper 'An 83/84 approximation for three-occurrence Horn formulas above the Unique Games thresholds'. The compared results are: the three-occurrence formula T_H built from a cubic graph, its explicit clause semantics (at most one negative literal per clause, with a proved complement-variable translation to standard Horn clauses that preserves satisfaction), the exact identity OPT(T_H) = 4n + m + alpha, the repair lemma, the number of clauses and the three occurrences of every variable, and the 83/84 approximation ratio transferred from a cubic independent-set guarantee, together with the degree-d ratio arithmetic. The supporting modules also formalize the MAX-CUT reduction, the conflict graph and the lift of a Goemans-Williamson cut to the 83/84 ratio. Goemans-Williamson, Berman-Fujito and the Unique Games thresholds are cited hypotheses, not reproved."
   authors:
     - name: "Frank Vega"
       orcid: "0000-0001-8210-4126"
@@ -21,16 +21,16 @@ paper: paper.tex
 lean_toolchain_file: lean-toolchain
 
 sources:
-  - title: "An 83/84 approximation for a cubic three-occurrence Horn class"
+  - title: "An 83/84 approximation for three-occurrence Horn formulas above the Unique Games thresholds"
     type: manuscript
     relationship: formalizes
     authors: ["Frank Vega"]
   - title: "Improved approximation algorithms for maximum cut and satisfiability problems using semidefinite programming"
     relationship: background
     authors: ["Michel X. Goemans", "David P. Williamson"]
-  - title: "Approximating vertex cover / independent set in bounded-degree graphs (Berman-Fujito)"
+  - title: "On approximation properties of the independent set problem for low degree graphs"
     relationship: background
-    authors: ["Piotr Berman", "Toshihide Fujito"]
+    authors: ["Piotr Berman", "Toshihiro Fujito"]
 
 automation:
   methods:

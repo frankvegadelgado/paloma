@@ -1,6 +1,6 @@
 # Paloma: MAX-HORN-2SAT and MAX-CUT formalization
 
-Lean 4 formalization for *An 83/84 approximation for a cubic three-occurrence Horn class* (`doc/paper.tex`). The paper also covers degree-d graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
+Lean 4 formalization for *An 83/84 approximation for three-occurrence Horn formulas above the Unique Games thresholds* (`doc/paper.tex`). The paper also covers degree-d graphs, MAX 2-SAT, MAX-CUT through the conflict graph, and the Unique Games thresholds. `formalization.yaml` is the machine-readable inventory; this file explains it.
 
 ## Main result: ratio above the Unique Games thresholds
 
