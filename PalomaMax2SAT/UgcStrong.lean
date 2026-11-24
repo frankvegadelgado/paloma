@@ -35,18 +35,18 @@ and cycles, and the Unique Games statements are not formalized.
 namespace PalomaMax2SAT.UgcStrong
 
 theorem strong_ugc_broken :
-    ((((87856 : ℚ) / 100000 < 94016567 / 100000000 ∧
-          (94016567 : ℚ) / 100000000 < 94615981 / 100000000) ∧
-        (94615981 : ℚ) / 100000000 < 83 / 84) ∧
-      (83 : ℚ) / 84 < 9932 / 10000) ∧
-    (∀ a : ℚ, (8785 : ℚ) / 10000 ≤ a →
-      (9932 : ℚ) / 10000 < 1 - (1 - a) / 18 ∧
-        ∀ τ : ℚ, τ ≤ 9932 / 10000 → τ < 1 - (1 - a) / 18) ∧
-    (∀ a : ℚ, (8785 : ℚ) / 10000 ≤ a → ∀ d : ℕ, 1 ≤ d →
-      (9932 : ℚ) / 10000 < 1 - (1 - a) / (6 * d + 12) ∧
-        ∀ τ : ℚ, τ ≤ 9932 / 10000 → τ < 1 - (1 - a) / (6 * d + 12)) ∧
-    (∀ a : ℚ, (8785 : ℚ) / 10000 ≤ a → ∀ ε : ℚ, 0 < ε →
-      ∃ D : ℕ, ∀ d : ℕ, D ≤ d → 1 - ε < 1 - (1 - a) / (6 * d + 12)) ∧
+    (87856 : ℚ) / 100000 < 94016567 / 100000000 ∧
+    (94016567 : ℚ) / 100000000 < 94615981 / 100000000 ∧
+    (94615981 : ℚ) / 100000000 < 83 / 84 ∧
+    (83 : ℚ) / 84 < 9932 / 10000 ∧
+    (∀ x : ℚ, (8785 : ℚ) / 10000 ≤ x →
+      (9932 : ℚ) / 10000 < 1 - (1 - x) / 18 ∧
+        ∀ t : ℚ, t ≤ 9932 / 10000 → t < 1 - (1 - x) / 18) ∧
+    (∀ x : ℚ, (8785 : ℚ) / 10000 ≤ x → ∀ d : ℕ, 1 ≤ d →
+      (9932 : ℚ) / 10000 < 1 - (1 - x) / (6 * d + 12) ∧
+        ∀ t : ℚ, t ≤ 9932 / 10000 → t < 1 - (1 - x) / (6 * d + 12)) ∧
+    (∀ x : ℚ, (8785 : ℚ) / 10000 ≤ x → ∀ e : ℚ, 0 < e →
+      ∃ D : ℕ, ∀ d : ℕ, D ≤ d → 1 - e < 1 - (1 - x) / (6 * d + 12)) ∧
     ((87856 : ℚ) / 100000 < 9326 / 10000 ∧
       (9326 : ℚ) / 10000 - 87856 / 100000 = 5404 / 100000) ∧
     (∀ d m mc cut p q : ℕ, mc ≤ m → p ≤ q → p * mc ≤ q * cut →
@@ -75,13 +75,13 @@ theorem strong_ugc_broken :
       PalomaMax2SAT.DegreeFormula.IsIndependenceNumber G alpha →
         m = n ∧
           IsGreatest (Set.range (PalomaMax2SAT.DegreeFormula.satCount G)) (4 * n + alpha) :=
-  ⟨⟨⟨⟨by norm_num, PalomaMax2SAT.PaperArithmetic.ugc_thresholds.1⟩,
-      PalomaMax2SAT.PaperArithmetic.ugc_thresholds.2⟩, by norm_num⟩,
-    fun a ha => ⟨PalomaMax2SAT.StrongLemmas.lift_gt a ha, fun τ hτ =>
-      lt_of_le_of_lt hτ (PalomaMax2SAT.StrongLemmas.lift_gt a ha)⟩,
-    fun a ha d hd => ⟨PalomaMax2SAT.StrongLemmas.regular_gt a ha d hd, fun τ hτ =>
-      lt_of_le_of_lt hτ (PalomaMax2SAT.StrongLemmas.regular_gt a ha d hd)⟩,
-    fun a ha ε hε => PalomaMax2SAT.StrongLemmas.tends_one a ha ε hε,
+  ⟨by norm_num, PalomaMax2SAT.PaperArithmetic.ugc_thresholds.1,
+    PalomaMax2SAT.PaperArithmetic.ugc_thresholds.2, by norm_num,
+    fun x hx => ⟨PalomaMax2SAT.StrongLemmas.lift_gt x hx, fun t ht =>
+      lt_of_le_of_lt ht (PalomaMax2SAT.StrongLemmas.lift_gt x hx)⟩,
+    fun x hx d hd => ⟨PalomaMax2SAT.StrongLemmas.regular_gt x hx d hd, fun t ht =>
+      lt_of_le_of_lt ht (PalomaMax2SAT.StrongLemmas.regular_gt x hx d hd)⟩,
+    fun x hx e he => PalomaMax2SAT.StrongLemmas.tends_one x hx e he,
     ⟨by norm_num, by norm_num⟩,
     fun d m mc cut p q hmc hpq hcut =>
       PalomaMax2SAT.StrongLemmas.cut_lift_ratio d m mc cut p q hmc hpq hcut,
