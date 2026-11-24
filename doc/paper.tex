@@ -91,9 +91,12 @@ On general graphs, $\mathrm{MAX\text{-}E2LIN}(2)$ admits the Goemans--Williamson
 Let $G=(V,E)$ be a finite simple graph with $m \ge 1$ edges, and let $H(G)$ be the conflict graph of the $\mathrm{MAX\text{-}E2LIN}(2)$ instance on $G$.
 \begin{enumerate}
 \item \emph{($d$-regular graphs, $d \ge 1$)} If $G$ is $d$-regular ($d \ge 1$), lifting the derandomized Goemans--Williamson assignment on $G$ produces in polynomial time an assignment of $T_{H(G)}$ of value at least
-\[
-\Bigl(1 - \frac{1-\alpha_\varepsilon}{6d+12}\Bigr)\operatorname{OPT}(T_{H(G)}) \ge \Bigl(1 - \frac{1-\alpha_\varepsilon}{18}\Bigr)\operatorname{OPT}(T_{H(G)}) > 0.99325\,\operatorname{OPT}(T_{H(G)}) > 0.9932\,\operatorname{OPT}(T_{H(G)}) > \frac{83}{84}\operatorname{OPT}(T_{H(G)}).
-\]
+\begin{align*}
+\Bigl(1 - \frac{1-\alpha_\varepsilon}{6d+12}\Bigr)\operatorname{OPT}(T_{H(G)}) &\ge \Bigl(1 - \frac{1-\alpha_\varepsilon}{18}\Bigr)\operatorname{OPT}(T_{H(G)}) \\
+&> 0.99325\,\operatorname{OPT}(T_{H(G)}) \\
+&> 0.9932\,\operatorname{OPT}(T_{H(G)}) \\
+&> \frac{83}{84}\operatorname{OPT}(T_{H(G)}).
+\end{align*}
 Moreover, the same lifted assignment unconditionally achieves the $D=d+1$ endpoint ratio $\frac{21(d+1)+20}{21(d+1)+21}$ for every $d \ge 3$ (giving $\frac{104}{105} \approx 0.99048$ for cubic graphs $d=3$).
 \item \emph{(Bounded-degree / arbitrary simple graphs)} If $G$ is any simple graph with $m \ge 1$ edges (in particular, any graph of maximum degree at most $d$ for any $d \ge 1$), the derandomized Goemans--Williamson lift achieves on $T_{H(G)}$ a polynomial-time ratio of at least
 \[
