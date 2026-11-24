@@ -1,0 +1,127 @@
+name: Strong UGC broken (Prove2Me)
+
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: 'Upload to Prove2.me (needs the P2M_API_KEY secret)'
+        type: boolean
+        default: false
+      public:
+        description: 'Make the uploaded theorem public (permanent)'
+        type: boolean
+        default: false
+  push:
+    branches: [strong-ugc-broken]
+    paths-ignore:
+      - 'prove2me/platform_strong_ugc_broken/**'
+      - 'doc/**'
+
+permissions:
+  contents: write
+
+env:
+  P2M_GOAL: PalomaMax2SAT.UgcStrong.strong_ugc_broken
+  P2M_DEF: PalomaMax2SAT_UgcStrong_Defs
+  SLUG: PalomaMax2SAT_UgcStrong_strong_ugc_broken
+  OUT: prove2me/platform_strong_ugc_broken
+
+jobs:
+  build-generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: true
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install toolchain
+        run: elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve Mathlib
+        run: lake update mathlib
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build
+        run: lake build 2>&1 | tee build.log
+      - name: Axiom check
+        run: lake env lean scripts/AxiomCheck.lean 2>&1 | tee axioms.log
+      - name: Extract declaration graph
+        run: |
+          mkdir -p extract
+          lake env lean scripts/extract_decl_graph.lean 2>&1 | tee extract/stage1.log
+          mv decl_graph.jsonl extract/
+      - name: Extract sketch facts
+        run: |
+          for f in PalomaMax2SAT/*.lean Solution.lean; do
+            b=$(basename "$f" .lean)
+            lake env lean --run scripts/extract_sketch_info.lean "$f" PalomaMax2SAT > "extract/sketch_info.$b.jsonl" 2> "extract/sketch_info.$b.err"
+          done
+      - name: Generate the platform tree
+        run: python3 prove2me/generate.py . extract "$OUT" 2>&1 | tee generate.log
+      - name: Build the generated definitions
+        working-directory: prove2me/platform_strong_ugc_broken
+        run: |
+          lake update
+          lake exe cache get
+          lake build Definitions.Def_${P2M_DEF} 2>&1 | tee ../defs_class.log
+      - name: Build the theorem stub (sorry warning expected)
+        working-directory: prove2me/platform_strong_ugc_broken
+        run: lake build Theorems.Thm_${SLUG} 2>&1 | tee ../thm_class.log
+      - name: Build the solution
+        working-directory: prove2me/platform_strong_ugc_broken
+        run: lake build Solutions.Sol_${SLUG} 2>&1 | tee ../sol_class.log
+      - name: Solution has no sorry and no own-target import
+        working-directory: prove2me/platform_strong_ugc_broken
+        run: |
+          ! grep -n "sorry" Solutions/Sol_${SLUG}.lean
+          ! grep -n "Thm_${SLUG}" Solutions/Sol_${SLUG}.lean
+      - name: Commit the generated tree to the branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/strong-ugc-broken'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$OUT/Definitions" "$OUT/Theorems" "$OUT/Solutions" "$OUT/upload_goal.json"
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate Prove2Me platform tree for strong_ugc_broken [skip ci]"
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strong-ugc-broken-results
+          path: |
+            build.log
+            axioms.log
+            generate.log
+            prove2me/*.log
+            extract/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: strong-ugc-broken-platform
+          path: prove2me/platform_strong_ugc_broken
+
+  upload:
+    needs: build-generate
+    if: github.event_name == 'workflow_dispatch' && inputs.execute
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: strong-ugc-broken-platform
+          path: prove2me/platform_strong_ugc_broken
+      - name: Upload to Prove2.me (new definition bundle, theorem stub, solution)
+        env:
+          P2M_API_KEY: ${{ secrets.P2M_API_KEY }}
+        run: |
+          python3 prove2me/upload.py --platform prove2me/platform_strong_ugc_broken --execute ${{ inputs.public && '--public' || '' }}

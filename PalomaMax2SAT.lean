@@ -20,3 +20,5 @@ public import PalomaMax2SAT.BoundedLemmas
 public import PalomaMax2SAT.UgcBounded
 public import PalomaMax2SAT.RegularLemmas
 public import PalomaMax2SAT.UgcRegular
+public import PalomaMax2SAT.StrongLemmas
+public import PalomaMax2SAT.UgcStrong

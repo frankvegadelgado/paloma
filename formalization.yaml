@@ -105,6 +105,16 @@ modules:
     status: formalized
     notes: "Theorem ugc_class (thm:ugc-class): beta* < alpha* < 83/84; selSet is an independent set of size m + cut(S) of the conflict graph; alpha(H(G)) = m + maxcut(G); H(G) is (d+1)-regular with 4m vertices; 8785 c <= 10000 cut implies 18785 (m+c) <= 20000 (m+cut); and the 83/84 lift of an independent set with 18785 alpha <= 20000 |I| on T_H for every D > 0. The Goemans-Williamson guarantee and the Unique Games thresholds are cited, not formalized."
 
+  - name: PalomaMax2SAT.StrongLemmas
+    path: PalomaMax2SAT/StrongLemmas.lean
+    status: formalized
+    notes: "Arithmetic of thm:strong-ugc-broken: 1 - (1-a)/18 and 1 - (1-a)/(6d+12) exceed 0.9932 for a >= 0.8785, the latter tends to 1, and the division-free ratio of a cut guarantee p/q on a d-regular graph."
+
+  - name: PalomaMax2SAT.UgcStrong
+    path: PalomaMax2SAT/UgcStrong.lean
+    status: formalized
+    notes: "Theorem strong_ugc_broken (thm:strong-ugc-broken, item 2): alpha_GW < beta* < alpha* < 83/84 < 0.9932, lifted ratios above every threshold <= 0.9932, 0.9326 - 0.87856 = 0.05404, alpha(H(G)) = m + maxcut(G), maximum degree <= d+1 of H(G), exact optima of T_H for d = 1, 2. tau_strong(d), the Goemans-Williamson and Halperin-Livnat-Zwick guarantees and the Unique Games statements are cited, not formalized."
+
   - name: PalomaMax2SAT.GeneralDegreeFormula
     path: PalomaMax2SAT/GeneralDegreeFormula.lean
     status: formalized
