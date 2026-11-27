@@ -1,0 +1,266 @@
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+
+%%%% Packages
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{graphicx}%
+\usepackage{threeparttable}%
+\usepackage[title]{appendix}%
+\usepackage{manyfoot}%
+
+\theoremstyle{thmstyleone}%
+\newtheorem{Theorem}{Theorem}[section]
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Corollary}[Theorem]{Corollary}
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{Remark}[Theorem]{Remark}
+
+\theoremstyle{thmstylethree}%
+\newtheorem{Definition}[Theorem]{Definition}
+
+\makeatletter\def\toclevel@subparagraph{2}\makeatother
+
+\raggedbottom
+
+\begin{document}
+
+\title{Exceeding Weak and Strong Unique Games Barriers for $\mathrm{MAX\text{-}E2LIN}(2)$ in Bounded-Degree Graphs}
+
+\author*[1]{\fnm{Frank} \sur{Vega}}\email{vega.frank@gmail.com}
+
+\affil*[1]{\orgname{Information Physics Institute (ORCID: \href{https://orcid.org/0000-0001-8210-4126}{0000-0001-8210-4126})}, \orgaddress{\street{840 W 67th St}, \city{Hialeah}, \postcode{33012}, \state{FL}, \country{USA}}}
+
+\abstract{We study the approximability of $\mathrm{MAX\text{-}E2LIN}(2)$ on finite simple $d$-regular graphs $G=(V,E)$ for every integer $d \ge 1$, as well as on arbitrary simple graphs of maximum degree at most $d$ with at least one edge. Reducing a $\mathrm{MAX\text{-}E2LIN}(2)$ instance on $G$ to an unweighted $\mathrm{MAX\text{-}2SAT}$ formula $F_G$ with two clauses per edge and passing to its conflict graph $H(G)$ yields $\alpha(H(G)) = m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$. Applying the three-occurrence reduction $T_{H(G)}$ gives an exact affine optimum $\operatorname{OPT}(T_{H(G)}) = B(H(G)) + m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$, where every variable in $T_{H(G)}$ has exactly three literal occurrences. For every $d$-regular graph $G$ ($d \ge 1$), lifting the derandomized Goemans--Williamson guarantee $\alpha_\varepsilon = \alpha_{\mathrm{GW}} - 10^{-5}$ yields a polynomial-time ratio of at least
+\[
+1 - \frac{1-\alpha_\varepsilon}{6d+12} > \frac{83}{84} \approx 0.98810,
+\]
+and unconditionally achieves $\frac{21(d+1)+20}{21(d+1)+21}$ for every $d \ge 3$ (in particular, $\frac{104}{105}$ for cubic graphs $d=3$). For arbitrary simple graphs $G$ of maximum degree at most $d \ge 1$ with $m \ge 1$ edges, $H(G)$ has maximum degree at most $d+1$ and $T_{H(G)}$ admits a polynomial-time ratio of at least $1 - \frac{1-\alpha_\varepsilon}{18} > 0.9932 > \frac{83}{84}$. Moreover, if $\mathrm{MAX\text{-}E2LIN}(2)$ on graphs of maximum degree $d$ admits a guarantee $c_d$, the lifted ratio on $T_{H(G)}$ improves to $1 - \frac{1-c_d}{6d+12}$ (exceeding $0.99775$ for $d=3$ with $c_3 = 0.9326$). Finally, we distinguish between the \emph{weak UGC barrier} $\alpha_{\mathrm{GW}} \approx 0.87856$ (for unrestricted $\mathrm{MAX\text{-}E2LIN}(2)$ and $\mathrm{MAX\text{-}CUT}$) and the \emph{strong bounded-degree UGC barrier} $\alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d)$ / $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ characterized by Hsieh--Kothari and Buhai et al., proving how both barriers are broken across bounded-degree and lifted three-occurrence classes.}
+
+\keywords{approximate computing, MAX-E2LIN(2), MAX-CUT, bounded-degree graphs, Unique Games Conjecture}
+
+\pacs[MSC Classification]{68Q25, 68W25, 90C27}
+
+\maketitle
+
+\section{MAX-E2LIN(2) for General Degree $d \ge 1$ and the Conflict-Graph Reduction}
+
+Let $G=(V,E)$ be a finite simple graph with $n=|V|$ vertices and $m=|E| \ge 1$ edges. An instance of $\mathrm{MAX\text{-}E2LIN}(2)$ on $G$ assigns to each edge $e=uv\in E$ a linear equation over $\mathbb{F}_2$:
+\begin{equation}\label{eq:e2lin}
+x_u \oplus x_v \equiv b_e \pmod{2}, \qquad b_e \in \{0,1\}.
+\end{equation}
+When $b_e = 1$ for every $e \in E$, \eqref{eq:e2lin} specializes to $\mathrm{MAX\text{-}CUT}$ on $G$. For an assignment $x : V \to \{0,1\}$, let $\operatorname{sat}_G(x)$ be the number of satisfied equations in \eqref{eq:e2lin}, and let $\operatorname{OPT}_{\mathrm{E2LIN}}(G) = \max_x \operatorname{sat}_G(x) \in [m/2, m]$.
+
+\begin{Proposition}[MAX-E2LIN(2) as MAX-2SAT]\label{prop:e2lin2sat}
+Let $G=(V,E)$ be a simple graph with $m$ edges and edge parities $\{b_e\}_{e\in E}$. Define the $\mathrm{MAX\text{-}2SAT}$ formula $F_G$ over the variables $\{x_v : v\in V\}$ by associating to each edge $e=uv\in E$ the pair of $2$-clauses:
+\begin{itemize}
+\item $(x_u \lor x_v)$ and $(\lnot x_u \lor \lnot x_v)$ if $b_e = 1$;
+\item $(x_u \lor \lnot x_v)$ and $(\lnot x_u \lor x_v)$ if $b_e = 0$.
+\end{itemize}
+Then:
+\begin{enumerate}
+\item Every assignment $x$ satisfies exactly $m + \operatorname{sat}_G(x)$ clauses of $F_G$; hence $\operatorname{OPT}(F_G) = m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$.
+\item Every variable $x_v$ occurs in exactly $2\deg_G(v)$ clauses of $F_G$ ($\deg_G(v)$ positive and $\deg_G(v)$ negative occurrences). If $G$ has maximum degree at most $d$, every variable occurs at most $2d$ times.
+\item If an assignment satisfies at least $\rho \operatorname{OPT}(F_G)$ clauses, then $\operatorname{sat}_G(x) \ge \rho(m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)) - m$.
+\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+For each edge $e=uv$, if $x_u \oplus x_v \equiv b_e \pmod{2}$, both clauses associated with $e$ are satisfied; otherwise, exactly one of the two clauses is satisfied. Summing over all $m$ edges yields $\operatorname{val}_{F_G}(x) = m + \operatorname{sat}_G(x)$. Each incident edge of $v$ contributes one positive and one negative occurrence of $x_v$, giving $2\deg_G(v)$ occurrences in total.
+\end{proof}
+
+We now construct the conflict graph $H(G)$ of $F_G$ and apply the three-occurrence formula $T_{H(G)}$ for arbitrary simple graphs and for $d$-regular graphs ($d \ge 1$).
+
+\begin{Proposition}[General and $d$-regular conflict-graph lifting]\label{prop:conflict}
+Let $G=(V,E)$ be a simple graph with $m \ge 1$ edges, and let $H(G)$ be the conflict graph of $F_G$, whose $N=4m$ vertices correspond to the literal occurrences of $F_G$, with two vertices adjacent if they belong to the same clause or are complementary occurrences of the same variable. Then:
+\begin{enumerate}
+\item $H(G)$ is a simple graph with $N=4m$ vertices and $M = |E(H(G))| = 2m + \sum_{v\in V} \deg_G(v)^2 \ge 4m$ edges. Every literal occurrence of $x_v$ has degree $\deg_G(v)+1$ in $H(G)$; hence if $G$ has maximum degree at most $d$, $H(G)$ has maximum degree at most $d+1$, and if $G$ is $d$-regular ($d \ge 1$), $H(G)$ is $(d+1)$-regular ($D = d+1$) with $M = 2(d+1)m$.
+\item $\alpha(H(G)) = \operatorname{OPT}(F_G) = m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$.
+\item Constructing the three-occurrence formula $T_{H(G)}$ on $H(G)$ (introducing $\deg_{H(G)}(w)+1$ clones per vertex $w \in V(H(G))$, one unit clause, $\deg_{H(G)}(w)$ edge clauses, and a directed cycle of consistency implications) yields a $\mathrm{MAX\text{-}2SAT}$ formula in which every variable has exactly $3$ literal occurrences and
+\[
+\operatorname{OPT}(T_{H(G)}) = B(H(G)) + \alpha(H(G)) = B(H(G)) + m + \operatorname{OPT}_{\mathrm{E2LIN}}(G),
+\]
+where $B(H(G)) = N + 3M$. When $G$ is $d$-regular ($d \ge 1$), $B(H(G)) = (6d+10)m$ and $\operatorname{OPT}(T_{H(G)}) = (6d+11)m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$.
+\item Any assignment of $T_{H(G)}$ of value $A$ decodes in polynomial time to an independent set $I$ in $H(G)$ of size $|I| \ge A - B(H(G))$, and hence to an assignment of $G$ satisfying at least $A - B(H(G)) - m$ equations of \eqref{eq:e2lin}.
+\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+Each vertex $v \in V$ of degree $d_v = \deg_G(v)$ contributes $d_v$ positive and $d_v$ negative literal occurrences to $F_G$, so $N = 2\sum_{v\in V} d_v = 4m$. Each literal occurrence of $x_v$ has $1$ in-clause neighbor and $d_v$ complementary neighbors in $H(G)$ (with no overlap since clauses involve distinct variables), giving degree $d_v + 1$ in $H(G)$. Thus
+\[
+M = \frac{1}{2}\sum_{v\in V} 2d_v(d_v+1) = \sum_{v\in V}(d_v^2 + d_v) = 2m + \sum_{v\in V} d_v^2 \ge 2m + \sum_{v\in V} d_v = 4m,
+\]
+since $d_v^2 \ge d_v$ for every integer $d_v \ge 0$. When $G$ is $d$-regular, $d_v = d$ for all $v$, so $H(G)$ is $(d+1)$-regular with $M = \frac{1}{2}(4m)(d+1) = 2(d+1)m$.
+
+An independent set in $H(G)$ picks at most one literal per clause and no complementary pair, corresponding to a consistent partial assignment satisfying $|I|$ clauses; hence $\alpha(H(G)) = \operatorname{OPT}(F_G) = m + \operatorname{OPT}_{\mathrm{E2LIN}}(G)$. For any simple graph $H=(V_H,E_H)$ with $N$ vertices and $M$ edges, the general variable-degree three-occurrence construction $T_H$ introduces $\sum_{w\in V_H}(\deg_H(w)+1) = N+2M$ clone variables, each occurring once in a unit or edge clause and twice in its consistency cycle. Setting all clones of $w$ to $0$ for $w \in I$ and $1$ otherwise achieves value $B(H) + |I|$ with $B(H) = (N+2M) + M = N+3M$, while the cycle-transition deletion repair decodes any assignment of value $A$ in polynomial time to an independent set of size at least $A - B(H)$. For $d$-regular $G$, $B(H(G)) = 4m + 6(d+1)m = (6d+10)m$.
+\end{proof}
+
+\section{General Ratio Estimation for All $d \ge 1$ and Arbitrary Graphs}
+
+On general graphs, $\mathrm{MAX\text{-}E2LIN}(2)$ admits the Goemans--Williamson semidefinite programming approximation ratio $\alpha_{\mathrm{GW}} = \min_{0<x\le 1} \frac{\arccos(1-2x)}{\pi x} \approx 0.87856$ \cite{GoemansWilliamson1995}, which can be derandomized in polynomial time \cite{MahajanRamesh1999} (absorbing an additive SDP error of $10^{-5}$ into $\alpha_\varepsilon = \alpha_{\mathrm{GW}} - 10^{-5} \ge 0.87855$). On graphs of maximum degree $d$, bounded-degree SDP rounding algorithms achieve guarantees $c_d = \alpha_{\mathrm{GW}} + \epsilon_d > \alpha_{\mathrm{GW}}$ \cite{FeigeKarpinskiLangberg2002,HalperinLivnatZwick2004,HsiehKothari2023,BuhaiGhoshalHuang2026}, with $c_3 = 0.9326$ for $d=3$ \cite{HalperinLivnatZwick2004} and $c_d = \alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d)$ in general \cite{BuhaiGhoshalHuang2026}.
+
+\begin{Theorem}[General ratio transfer for MAX-E2LIN(2) for all $d \ge 1$]\label{thm:general-e2lin}
+Let $G=(V,E)$ be a finite simple graph with $m \ge 1$ edges, and let $H(G)$ be the conflict graph of the $\mathrm{MAX\text{-}E2LIN}(2)$ instance on $G$.
+\begin{enumerate}
+\item \emph{($d$-regular graphs, $d \ge 1$)} If $G$ is $d$-regular ($d \ge 1$), lifting the derandomized Goemans--Williamson assignment on $G$ produces in polynomial time an assignment of $T_{H(G)}$ of value at least
+\begin{align*}
+\Bigl(1 - \frac{1-\alpha_\varepsilon}{6d+12}\Bigr)\operatorname{OPT}(T_{H(G)}) &\ge \Bigl(1 - \frac{1-\alpha_\varepsilon}{18}\Bigr)\operatorname{OPT}(T_{H(G)}) \\
+&> 0.99325\,\operatorname{OPT}(T_{H(G)}) \\
+&> 0.9932\,\operatorname{OPT}(T_{H(G)}) \\
+&> \frac{83}{84}\operatorname{OPT}(T_{H(G)}).
+\end{align*}
+Moreover, the same lifted assignment unconditionally achieves the $D=d+1$ endpoint ratio $\frac{21(d+1)+20}{21(d+1)+21}$ for every $d \ge 3$ (giving $\frac{104}{105} \approx 0.99048$ for cubic graphs $d=3$).
+\item \emph{(Bounded-degree / arbitrary simple graphs)} If $G$ is any simple graph with $m \ge 1$ edges (in particular, any graph of maximum degree at most $d$ for any $d \ge 1$), the derandomized Goemans--Williamson lift achieves on $T_{H(G)}$ a polynomial-time ratio of at least
+\begin{multline*}
+\Bigl(1 - \frac{1-\alpha_\varepsilon}{18}\Bigr)\operatorname{OPT}(T_{H(G)}) > 0.99325\,\operatorname{OPT}(T_{H(G)}) \\
+> 0.9932\,\operatorname{OPT}(T_{H(G)}) > \frac{83}{84}\operatorname{OPT}(T_{H(G)}),
+\end{multline*}
+where every variable of $T_{H(G)}$ has exactly $3$ literal occurrences and $H(G)$ has maximum degree at most $d+1$.
+\item \emph{(Bounded-degree cut amplification)} Suppose a polynomial-time algorithm achieves an approximation ratio $c_d \in (0,1]$ for $\mathrm{MAX\text{-}E2LIN}(2)$ on graphs of maximum degree at most $d$. Then on $\{T_{H(G)} : G \text{ is } d\text{-regular}\}$, lifting this algorithm yields a polynomial-time approximation ratio of at least
+\[
+1 - \frac{1-c_d}{6d+12}.
+\]
+In particular, for $d=3$ with $c_3 = 0.9326$ \cite{HalperinLivnatZwick2004}, the lifted ratio exceeds $1 - \frac{0.0674}{30} > 0.99775$.
+\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+Let $c = \operatorname{OPT}_{\mathrm{E2LIN}}(G) \le m$, so $\alpha(H(G)) = m + c \le 2m$. Given an assignment $x$ of $G$ satisfying $\operatorname{sat}_G(x) \ge \gamma c$ equations (with $\gamma = \alpha_\varepsilon$ in items~(1) and~(2), and $\gamma = c_d$ in item~(3)), selecting one satisfied literal per satisfied clause of $F_G$ yields an independent set $I$ in $H(G)$ of size $|I| = m + \operatorname{sat}_G(x)$. Because $(1-\gamma)(m-c) \ge 0$, we have
+\[
+|I| \ge m + \gamma c \ge \frac{1+\gamma}{2}(m+c) = \frac{1+\gamma}{2}\,\alpha(H(G)).
+\]
+In general, $B(H(G)) = N + 3M \ge 4m + 12m = 16m \ge 8\,\alpha(H(G))$, so $B(H(G)) + \alpha(H(G)) \ge 9\,\alpha(H(G))$. Lifting $I$ to $T_{H(G)}$ gives value $B(H(G)) + |I|$ with ratio
+\[
+\frac{B(H(G))+|I|}{B(H(G))+\alpha(H(G))} = 1 - \frac{\alpha(H(G)) - |I|}{B(H(G))+\alpha(H(G))} \ge 1 - \frac{\frac{1-\gamma}{2}\,\alpha(H(G))}{9\,\alpha(H(G))} = 1 - \frac{1-\gamma}{18}.
+\]
+For $\gamma = \alpha_\varepsilon \ge 0.87855$, $1 - \frac{1-\alpha_\varepsilon}{18} \ge 1 - \frac{0.12145}{18} = 1 - 0.006747\overline{2} > 0.99325 > 0.9932 > \frac{83}{84}$, proving item~(2).
+
+When $G$ is $d$-regular ($d \ge 1$), $H(G)$ is $D$-regular with $D = d+1$, $N = 4m$, and $B(H(G)) = (6d+10)m \ge (3d+5)\alpha(H(G)) = (3D+2)\alpha(H(G))$. Thus $B(H(G)) + \alpha(H(G)) \ge (3d+6)\alpha(H(G))$, which yields
+\[
+\frac{B(H(G))+|I|}{B(H(G))+\alpha(H(G))} \ge 1 - \frac{\frac{1-\gamma}{2}\,\alpha(H(G))}{(3d+6)\alpha(H(G))} = 1 - \frac{1-\gamma}{6d+12}.
+\]
+Setting $\gamma = \alpha_\varepsilon$ and noting $6d+12 \ge 18$ for all $d \ge 1$ gives the first bound in item~(1); setting $\gamma = c_d$ gives item~(3). Furthermore, since $\frac{1+\alpha_\varepsilon}{2} > 0.93927 > \frac{6}{7}$, we have $7|I| \ge 6\alpha(H(G))$, and for every $D = d+1 \ge 4$ ($d \ge 3$),
+\[
+\frac{B(H(G))+|I|}{B(H(G))+\alpha(H(G))} \ge \frac{(3D+2) + 6/7}{3D+3} = \frac{21D+20}{21D+21} = \frac{21(d+1)+20}{21(d+1)+21}. \qedhere
+\]
+\end{proof}
+
+\begin{Corollary}[Inverse recovery trade-off for general $d \ge 1$]\label{cor:inverse}
+Let $G$ be a simple $d$-regular graph ($d \ge 1$) with $\operatorname{OPT}_{\mathrm{E2LIN}}(G) = \mu m$, $\mu \in [1/2, 1]$. If an assignment of $T_{H(G)}$ achieves approximation ratio $\rho \in [0,1]$, the decoded assignment on $G$ satisfies at least
+\[
+\left(\rho - \frac{(6d+11)(1-\rho)}{\mu}\right) \operatorname{OPT}_{\mathrm{E2LIN}}(G)
+\]
+equations. For $d=3$ ($6d+11 = 29$), $\rho = \frac{104}{105}$, and $\mu = \frac{3}{4}$, this recovers at least $\frac{49}{105}m$ satisfied equations.
+\end{Corollary}
+
+\begin{proof}
+By Proposition~\ref{prop:conflict}(4), an assignment of value $A \ge \rho((6d+11)m + \mu m)$ decodes to at least $A - (6d+11)m \ge \left(\rho - \frac{(6d+11)(1-\rho)}{\mu}\right)\mu m$ satisfied equations.
+\end{proof}
+
+\section{Weak and Strong UGC Barriers: Consequences for Bounded-Degree MAX-E2LIN(2)}
+
+In the hardness of approximation of $2$-variable constraint satisfaction problems under the Unique Games Conjecture (UGC) \cite{Khot2002}, two distinct threshold regimes govern $\mathrm{MAX\text{-}E2LIN}(2)$ and $\mathrm{MAX\text{-}CUT}$:
+\begin{enumerate}
+\item \textbf{The Weak UGC Barrier ($\alpha_{\mathrm{GW}} \approx 0.87856$).} Khot, Kindler, Mossel, and O'Donnell \cite{KKMO2007} proved that on \emph{unrestricted} graphs, $\mathrm{MAX\text{-}CUT}$ and $\mathrm{MAX\text{-}E2LIN}(2)$ are $\mathrm{UG}$-hard to approximate within $\alpha_{\mathrm{GW}} + \varepsilon$ for every $\varepsilon > 0$, while Brakensiek, Huang, and Zwick \cite{BrakensiekHuangZwick2024} established the unrestricted $\mathrm{MAX\text{-}2SAT}$ threshold $\beta^\star \approx 0.94017$. Because $\alpha_{\mathrm{GW}}$ applies only when vertex degrees are unbounded, it acts as a \emph{weak barrier} that fails as soon as a finite degree bound $d$ is imposed.
+\item \textbf{The Strong Bounded-Degree UGC Barrier ($\alpha_{\mathrm{GW}} + \widetilde{\Theta}(1/d)$).} When graphs are restricted to maximum degree $d$, bounded-degree SDP rounding improves upon $\alpha_{\mathrm{GW}}$ by an additive term scaling with $1/d$: Hsieh and Kothari \cite{HsiehKothari2023} achieved $\alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d^2)$, and Buhai, Ghoshal, Huang, Kothari, Lee, Makarychev, and Makarychev \cite{BuhaiGhoshalHuang2026} recently established the tight asymptotic bounded-degree threshold
+\[
+\alpha_{\mathrm{GW}} + \widetilde{\Theta}(1/d),
+\]
+proving both an $\alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d)$ approximation algorithm and a matching $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ Unique Games hardness barrier on graphs of maximum degree $d$.
+\end{enumerate}
+
+\begin{Lemma}[Lifted ratio for $d$-regular graphs]\label{lem:strong-lift}
+Let $d \ge 1$, let $G$ be a $d$-regular graph with $m \ge 1$ edges and maximum cut $c^\ast$, and suppose a cut of size at least $c\,c^\ast$ is available for some $0 \le c \le 1$. Then the assignment of $T_{H(G)}$ obtained from this cut has value at least $\bigl(1 - \frac{1-c}{6d+12}\bigr)\operatorname{OPT}(T_{H(G)})$. In particular, if $c = \alpha_\varepsilon \ge 0.8785$, then:
+\begin{enumerate}
+\item the ratio exceeds $0.9932$ for every $d \ge 1$;
+\item for every $\varepsilon > 0$ the ratio exceeds $1 - \varepsilon$ whenever $6d+12 > 1/\varepsilon$.
+\end{enumerate}
+\end{Lemma}
+
+\begin{proof}
+By Proposition~\ref{prop:conflict}, $B(H(G)) = (6d+10)m$ and $\alpha(H(G)) = m + c^\ast$, so $\operatorname{OPT}(T_{H(G)}) = (6d+11)m + c^\ast$. A cut of size $k \ge c\,c^\ast$ yields an independent set of size $m+k$ and an assignment of value $B(H(G)) + m + k$. The loss is at most $c^\ast - k \le (1-c)\,c^\ast$, so the loss ratio is at most
+\[
+\frac{(1-c)\,c^\ast}{(6d+11)m + c^\ast} \le \frac{(1-c)\,m}{(6d+12)\,m} = \frac{1-c}{6d+12},
+\]
+because $t \mapsto t/((6d+11)m + t)$ is increasing and $c^\ast \le m$. For $c = \alpha_\varepsilon \ge 0.8785$ we have $1-c \le 0.1215$. Since $6d+12 \ge 18$, the loss ratio is at most $0.1215/18 < 0.0068$, which gives~(1); and it is below $\varepsilon$ whenever $6d+12 > 1/\varepsilon$, which gives~(2).
+\end{proof}
+
+The Lean~4 theorem supporting item~(2) below is available on Prove2.me \cite{VegaProve2MeStrongUgcBroken2026}.
+
+The following theorem formalizes how both the weak UGC barrier and the strong bounded-degree $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ barrier are broken across bounded-degree and lifted three-occurrence classes.
+
+\begin{Theorem}[Breaking the weak and strong UGC barriers]\label{thm:strong-ugc-broken}
+Let $\alpha_{\mathrm{GW}} \approx 0.87856$ be the unrestricted UGC threshold for $\mathrm{MAX\text{-}E2LIN}(2)$, let $\beta^\star \approx 0.94017$ be the unrestricted UGC threshold for $\mathrm{MAX\text{-}2SAT}$, and let $\tau_{\mathrm{strong}}(d) = \alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ denote the strong bounded-degree UGC hardness threshold of Buhai et al.~\cite{BuhaiGhoshalHuang2026} for $\mathrm{MAX\text{-}CUT}$ / $\mathrm{MAX\text{-}E2LIN}(2)$ on graphs of maximum degree $d$.
+\begin{enumerate}
+\item \emph{(Weak UGC barrier broken for all $d \ge 1$)} For every $d \ge 1$, $\mathrm{MAX\text{-}E2LIN}(2)$ on graphs of maximum degree $d$ admits a polynomial-time ratio $c_d = \alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d) > \alpha_{\mathrm{GW}}$ \cite{BuhaiGhoshalHuang2026}, and on the three-occurrence conflict-graph class $\{T_{H(G)} : G \text{ has maximum degree at most } d\}$, Theorem~\ref{thm:general-e2lin} achieves a polynomial-time ratio of at least $0.9932 > \frac{83}{84} > \beta^\star > \alpha_{\mathrm{GW}}$ for every $d \ge 1$.
+\item \emph{(Strong $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ barrier broken for all degrees $d \ge 1$)} For every integer $d \ge 1$, lifting to the three-occurrence class $\{T_{H(G)} : G \text{ has maximum degree at most } d\}$ yields a polynomial-time approximation ratio of at least $1 - \frac{1-\alpha_\varepsilon}{18} > 0.9932$, which strictly exceeds $\tau_{\mathrm{strong}}(d) = \alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ for all $d \ge 1$ (and converges to $1$ as $d \to \infty$ on $d$-regular graphs, whereas $\tau_{\mathrm{strong}}(d) \to \alpha_{\mathrm{GW}} \approx 0.87856$). Moreover, for small degrees $d \in \{1,2,3\}$, explicit bounded-degree algorithms surpass $\tau_{\mathrm{strong}}(d)$ directly on $G$: for $d \in \{1,2\}$, $\mathrm{MAX\text{-}E2LIN}(2)$ is solvable exactly in polynomial time (ratio $1 > \tau_{\mathrm{strong}}(d)$), and for $d=3$, the Halperin--Livnat--Zwick guarantee $c_3 = 0.9326$ \cite{HalperinLivnatZwick2004} exceeds $\alpha_{\mathrm{GW}}$ by $0.05404$.
+\item \emph{(Consistency with UGC)} Breaking $\alpha_{\mathrm{GW}}$ and $\tau_{\mathrm{strong}}(d)$ on these classes does not imply $\mathrm{P}=\mathrm{NP}$ under the Unique Games Conjecture.
+\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+Item~(1) combines the $\alpha_{\mathrm{GW}} + \widetilde{\Omega}(1/d)$ bounded-degree guarantee of \cite{BuhaiGhoshalHuang2026} with Theorem~\ref{thm:general-e2lin}(2), noting that $0.9932 > 83/84 \approx 0.98810 > \beta^\star \approx 0.94017 > \alpha_{\mathrm{GW}} \approx 0.87856$.
+
+For item~(2), fix an arbitrary integer $d \ge 1$. We show that the strong barrier $\tau_{\mathrm{strong}}(d)$ is broken both on the original degree-$d$ instances (for small $d$) and, for every $d \ge 1$, on the three-occurrence lift $\{T_{H(G)}\}$.
+\begin{itemize}
+\item On graphs of maximum degree $d \in \{1,2\}$, every connected component is a path or a cycle, so $\mathrm{MAX\text{-}E2LIN}(2)$ is solvable exactly in $O(n)$ time (ratio $1 > \tau_{\mathrm{strong}}(d)$).
+\item For $d=3$, the explicit Halperin--Livnat--Zwick guarantee $c_3 = 0.9326$ \cite{HalperinLivnatZwick2004} exceeds $\alpha_{\mathrm{GW}}$ by a constant $0.05404$, which already surpasses the asymptotic $\widetilde{O}(1/d)$ scaling at this fixed degree.
+\item For every $d \ge 1$, Theorem~\ref{thm:general-e2lin}(1)--(2) supplies a polynomial-time algorithm for the lifted class $\{T_{H(G)}\}$ whose ratio is at least
+\[
+1 - \frac{1-\alpha_\varepsilon}{18} > 0.9932
+\]
+(and, when $G$ is $d$-regular, the stronger ratio $1 - \frac{1-\alpha_\varepsilon}{6d+12}$, which tends to $1$ as $d\to\infty$). Because $\tau_{\mathrm{strong}}(d) = \alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ is strictly less than $0.9932$ for every finite $d$ (it is bounded away from $1$ for all $d\ge 3$ and converges to $\alpha_{\mathrm{GW}}\approx 0.87856$ as $d\to\infty$), the lifted ratio strictly exceeds $\tau_{\mathrm{strong}}(d)$ for every $d\ge 1$.
+\end{itemize}
+Lemma~\ref{lem:strong-lift} makes the last bullet quantitative: for every $d \ge 1$ and every $\alpha_\varepsilon \ge 0.8785$, the ratio $1 - \frac{1-\alpha_\varepsilon}{6d+12}$ exceeds $0.9932$, and for every $\varepsilon>0$ it exceeds $1-\varepsilon$ once $6d+12 > 1/\varepsilon$; any threshold $\tau \le 0.9932$ is therefore strictly below it. The same lemma applied to a bounded-degree cut guarantee $c_d$ gives the ratio $1 - \frac{1-c_d}{6d+12}$.
+Thus the strong bounded-degree UGC barrier is broken for all degrees $d\ge 1$.
+
+For item~(3), the strong UGC hardness reduction of Buhai et al.~\cite{BuhaiGhoshalHuang2026} requires degree-$d$ instances of $\mathrm{MAX\text{-}CUT}$ / $\mathrm{MAX\text{-}E2LIN}(2)$ with $d$ growing to achieve soundness $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ and relies on unrestricted occurrence structures; conversely, the lifted formulas $T_{H(G)}$ belong to a structured three-occurrence $\mathrm{MAX\text{-}2SAT}$ subclass whose affine padding $B(H(G)) + m$ prevents recovering a ratio above $\tau_{\mathrm{strong}}(d)$ on $G$ itself (Corollary~\ref{cor:inverse}).
+\end{proof}
+
+\subsection*{Consequences of Breaking the Weak and Strong Barriers}
+
+\begin{enumerate}
+\item \textbf{Separation between $\mathrm{MAX\text{-}E2LIN}(2)$ on $G$ and its three-occurrence lift $T_{H(G)}$.} While Buhai et al.~\cite{BuhaiGhoshalHuang2026} show that $\mathrm{MAX\text{-}E2LIN}(2)$ on degree-$d$ graphs cannot be approximated beyond $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ under the UGC, encoding $G$ via its conflict graph $H(G)$ into the three-occurrence formula $T_{H(G)}$ boosts the approximability above $0.9932$ for \emph{all} $d \ge 1$ (and above $1 - \frac{1-\alpha_\varepsilon}{6d+12}$ for $d$-regular $G$). This demonstrates that the strong $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ barrier is sensitive to affine objective shifts: adding the structural constant $B(H(G)) + m$ preserves exact $\mathrm{NP}$-hardness and $\mathrm{APX}$-completeness while lifting the approximation ratio past both $\tau_{\mathrm{strong}}(d)$ and $\beta^\star$.
+
+\item \textbf{Tightness of the bounded-degree regime for small $d$.} For $d \in \{1,2\}$ (ratio $1$) and $d=3$ ($c_3 = 0.9326$), explicit combinatorial and SDP rounding methods outperform the asymptotic $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ regime directly on the original graph $G$. In particular, $d=3$ is the smallest degree at which $\mathrm{MAX\text{-}E2LIN}(2)$ is $\mathrm{NP}$-hard, yet its approximability sits well above $\alpha_{\mathrm{GW}}$ even before lifting to $T_{H(G)}$.
+
+\item \textbf{Compatibility with the Unique Games Conjecture.} If a polynomial-time algorithm beat $\alpha_{\mathrm{GW}}$ on \emph{all} graphs, or beat $\alpha_{\mathrm{GW}} + \widetilde{O}(1/d)$ on \emph{all} degree-$d$ graphs for arbitrarily large $d$, the Unique Games Conjecture would imply $\mathrm{P}=\mathrm{NP}$ (which would hold unconditionally if the recent unverified proof of the UGC \cite{OpenAIMath2026} is confirmed). Because our guarantees apply either to fixed small degrees $d$ or to the bounded-occurrence image class $\{T_{H(G)}\}$, they remain fully consistent with the Unique Games Conjecture (as well as with the general bounded-occurrence $\mathrm{MAX\text{-}2SAT}$ guarantee $\beta^\star + \Omega(d^{-2}\log^{-1} d)$ of Ghoshal et al.~\cite{GHLMM2026}).
+\end{enumerate}
+
+
+\backmatter
+
+\bmhead{Acknowledgements}
+
+The author would like to thank Iris, Marilin, Sonia, Yoselin, and Arelis for their support.
+
+\section*{Declarations}
+
+\bmhead{Competing interests}
+
+The author declares no competing interests.
+
+\bmhead{Funding}
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\bmhead{Declaration of generative AI in scientific writing}
+
+The author designed the results of this article, and used Claude Sonnet 5.5 to improve the readability of this manuscript and to write the Lean~4 code that formalizes Theorem~\ref{thm:strong-ugc-broken}.
+
+\bmhead{Data and code availability}
+
+The Lean~4 formalization of Theorem~\ref{thm:strong-ugc-broken} is available on Prove2.me \cite{VegaProve2MeStrongUgcBroken2026} and in the repository \url{https://github.com/frankvegadelgado/paloma}. No other data were generated or analyzed.
+
+\bmhead{Author contributions}
+
+Frank Vega is the sole author.
+
+\bibliography{sn-bibliography}
+
+\end{document}
